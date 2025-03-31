@@ -1,31 +1,16 @@
-import { MongoClient } from 'mongodb';
+import { connectDb } from "./utils.js";
 
-const uri = process.env.DATABASE_URI;
-const client = new MongoClient(uri);
-const dbName = process.env.DATABASE_NAME;
-
-async function connectDB() {
-  if (!client.isConnected()) {
-    await client.connect();
-  }
-  return client.db(dbName);
+export async function findUserByEmail(email) {
+  const db = await connectDb();
+  return await db.collection("users").findOne({ email });
 }
 
-// Find user by email
-async function findUserByEmail(email) {
-  const db = await connectDB();
-  const user = await db.collection('users').findOne({ email });
-  return user;
+export async function findUserById(userId) {
+  const db = await connectDb();
+  return db.collection("users").findOne({ _id: userId });
 }
 
-// Create new user
-async function createUser(userData) {
-  const db = await connectDB();
-  const result = await db.collection('users').insertOne(userData);
-  return result;
+export async function createUser(userData) {
+  const db = await connectDb();
+  return await db.collection("users").insertOne(userData);
 }
-
-export default {
-  findUserByEmail,
-  createUser,
-};

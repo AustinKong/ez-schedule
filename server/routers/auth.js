@@ -1,47 +1,50 @@
-import { Router } from 'express';
-import { hash, compare } from 'bcrypt';
-import { sign } from 'jsonwebtoken';
-import { findUserByEmail, createUser } from '../database/userDb';
+import { Router } from "express";
+import { hash, compare } from "bcrypt";
+import jwt from "jsonwebtoken";
+import { findUserByEmail, createUser } from "../database/userDb.js";
 
 const router = Router();
 
-router.post('/register', async (req, res) => {
+router.post("/register", async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+
     const existingUser = await findUserByEmail(email);
     if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(400).json({ error: "User already exists" });
     }
 
     const hashedPassword = await hash(password, 10);
-
     await createUser({ email, password: hashedPassword });
 
-    return res.status(201).json({ message: 'User registered successfully' });
+    return res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
 });
 
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     const user = await findUserByEmail(email);
     if (!user) {
-      return res.status(400).json({ error: 'Invalid credentials' });
+      return res.status(400).json({ error: "Invalid credentials" });
     }
 
     const isMatch = await compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ error: 'Invalid credentials' });
+      return res.status(400).json({ error: "Invalid credentials" });
     }
 
-    const token = sign(
+    const token = jwt.sign(
       { userId: user._id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: "1h" }
     );
 
     return res.status(200).json({ token });
