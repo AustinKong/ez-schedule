@@ -22,7 +22,7 @@ export async function findUserById(userId) {
 
 export async function createUser(userData) {
   const db = await connectDb();
-  return await db.collection("users").insertOne(userData);
+  return db.collection("users").insertOne(userData);
 }
 
 export async function updateUser(userId, userData) {

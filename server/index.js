@@ -9,6 +9,7 @@ import requireAuth from "./middleware/requireAuth.js";
 import authRouter from "./routers/auth.js";
 import slotRouter from "./routers/slots.js";
 import userRouter from "./routers/users.js";
+import groupRouter from "./routers/groups.js";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/slots", requireAuth, slotRouter);
 app.use("/api/users", userRouter);
+app.use("/api/groups", requireAuth, groupRouter);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
