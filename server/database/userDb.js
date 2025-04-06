@@ -22,20 +22,23 @@ export async function findUserById(userId) {
 
 export async function createUser(userData) {
   const db = await connectDb();
-  return await db.collection("users").insertOne(userData);
+  return db.collection("users").insertOne(userData);
 }
 
-export async function updateUser(userId, user) {
+export async function updateUser(userId, userData) {
   const db = await connectDb();
-  const {email} = user;
-  // const {email, password} = user;
 
-  await db.collection("users").updateOne({
-    _id: ObjectId.createFromHexString(userId)
-  }, {
-    $set: {
-      email,
-      // password,
-    }
-  });
+  const updateFields = {};
+  if (userData.email) {
+    updateFields.email = userData.email;
+  }
+  if (userData.password) {
+    updateFields.password = userData.password;
+  }
+
+  await db.collection("users").updateOne(
+    {_id: ObjectId.createFromHexString(userId)}, 
+    {$set: updateFields}
+  );
 }
+
