@@ -1,12 +1,17 @@
 // src/pages/manager/TimeslotEndedPage.jsx
 import { useParams } from 'react-router-dom';
 import { useTimeslots } from '../../hooks/useTimeslots';
+import { TimeslotStats } from '../ui';
 
 const TimeslotEndedPage = () => {
   const { id } = useParams();
   const { getTimeslot } = useTimeslots();
   const [timeslot, setTimeslot] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const formatConsultationTime = (isoString) => {
+    return isoString ? format(parseISO(isoString), 'd MMM yyyy, h:mm a') : 'N/A';
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -28,24 +33,29 @@ const TimeslotEndedPage = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="bg-white shadow rounded-lg p-6 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Timeslot Ended</h1>
-        <p className="text-gray-600 mb-4">
-          The timeslot "{timeslot.name}" has ended. Here are the final statistics:
-        </p>
-        
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="font-semibold">Total Participants</p>
-            <p className="text-2xl">{timeslot.participants?.length || 0}</p>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="font-semibold">Average Wait Time</p>
-            <p className="text-2xl">{(timeslot.avgWaitTime || 0).toFixed(1)} mins</p>
-          </div>
+      <div className="bg-white shadow rounded-lg p-6">
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{timeslot.name}</h1>
+          <p className="text-gray-600">
+            {formatConsultationTime(timeslot.startTime)} - {formatConsultationTime(timeslot.endTime)}
+          </p>
+          <p className="text-sm text-gray-500 mt-2">Singapore Standard Time (GMT+8)</p>
+          <p className="text-gray-600 mt-2">Location: {timeslot.location}</p>
         </div>
+        
+        <TimeslotStats timeslot={timeslot} />
 
-        <p className="text-gray-600">Thank you for using our system!</p>
+        <div className="mt-6 text-center space-y-4">
+          <button
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded"
+            onClick={() => exportToCSV(timeslot)}
+          >
+            Download Consultation Report
+          </button>
+          <p className="text-sm text-gray-500">
+            Includes participant list, wait times, and session notes
+          </p>
+        </div>
       </div>
     </div>
   );
