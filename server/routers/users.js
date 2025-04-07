@@ -22,8 +22,8 @@ router.get("/:userId", async(req, res) => {
 });
 
 
-// PUT /api/users/:userId - Update/Edit user profile
-router.put("/:userId", async(req, res) => {
+// PATCH /api/users/:userId - Update/Edit user profile
+router.patch("/:userId", async(req, res) => {
     const userId = req.params.userId;
     // const user = await findUserById(userId);
     const userData = req.body;
@@ -31,13 +31,14 @@ router.put("/:userId", async(req, res) => {
         await updateUser(userId, userData);
         res.status(200).json({ message: "User profile updated." });
     } catch (error) {
-        res.sendStatus(404);
+        console.error("Update user error:", error);
+        res.status(500).json({ error: "Failed to update user profile." });
     }
 });
 
 
-//PUT  /api/users/:userId/password - Reset password (for logged in users)
-router.put("/:userId/password", async(req,res) => {
+//PATCH  /api/users/:userId/password - Reset password (for logged in users)
+router.patch("/:userId/password", async(req,res) => {
     // const userId = req.user.userId;
     const userId = req.params.userId;
     const {password: newPassword} = req.body;

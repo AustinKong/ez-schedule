@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { hash, compare } from "bcrypt";
 import jwt from "jsonwebtoken";
-import { findUserByEmail, createUser } from "../database/userDb.js";
+import { findUserByEmail, createUser, updateUser } from "../database/userDb.js";
 import { sendResetEmail } from "../utils/mailer.js";
 
 const router = Router();

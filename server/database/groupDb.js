@@ -1,4 +1,6 @@
-import {connectDb} from "./utils.js";
+import { ObjectId } from "mongodb";
+import { connectDb } from "./utils.js";
+
 
 export async function createGroup(groupData) {
     const db = await connectDb();
@@ -52,6 +54,36 @@ export async function getAllGroupsByUsername(username) {
     } catch (error) {
         console.error("Error fetching groups:", error);
     }
+}
+
+export async function updateGroup(groupId, groupData) {
+    const db = await connectDb();
+
+    const updateFields = {}
+    if (groupData.name) {
+        updateFields.name = groupData.name;
+    }
+    if (groupData.description) {
+        updateFields.description = groupData.description;
+    }
+    if (groupData.maxUsers) {
+        updateFields.maxUsers = groupData.maxUsers;
+    }
+    if (groupData.createdBy) {
+        updateFields.createdBy = groupData.createdBy;
+    }
+
+    try {
+        await db.collection("groups").updateOne(
+            {_id: ObjectId.createFromHexString(groupId)},
+            {$set: updateFields}
+        );
+
+    } catch (error) {
+        console.error("(groupDb.js) Error updating group:", error);
+        throw error;
+    }
+
 }
 
 
