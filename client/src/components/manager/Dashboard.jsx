@@ -5,12 +5,12 @@ import GroupCard from '../ui/GroupCard';
 
 const Dashboard = () => {
     const { groups, loading, error } = useGroups();
-    
-    if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
-    if (error) return <div className="flex justify-center items-center h-screen text-red-500">Error: {error}</div>;
-    
+
+    if (loading) return <div className="text-center py-8">Loading...</div>;
+    if (error) return <div className="text-center py-8 text-red-500">Error: {error}</div>;
+
     return (
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-900">My Consultation Groups</h1>
                 <Link
@@ -22,8 +22,8 @@ const Dashboard = () => {
             </div>
             
             {groups.length === 0 ? (
-                <div className="bg-white shadow rounded-lg p-8 text-center">
-                    <p className="text-gray-600 mb-4">You don't have any consultation groups yet.</p>
+                <div className="text-center py-12 bg-white shadow rounded-lg">
+                    <p className="text-gray-500 mb-4">You don't have any consultation groups yet.</p>
                     <Link
                         to="/manager/group/create"
                         className="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -32,9 +32,9 @@ const Dashboard = () => {
                     </Link>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 gap-6">
+                <div className="space-y-6">
                     {groups.map(group => (
-                        <GroupCard key={group.id} group={group} />
+                        <GroupCard key={group._id} group={group} />
                     ))}
                 </div>
             )}

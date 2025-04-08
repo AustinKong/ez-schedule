@@ -11,7 +11,7 @@ const EditGroup = () => {
     const { id } = useParams();
     const { getGroup, editGroup } = useGroups();
     const navigate = useNavigate();
-    
+
     useEffect(() => {
         const loadGroup = async () => {
             setIsLoading(true);
@@ -27,7 +27,7 @@ const EditGroup = () => {
         
         loadGroup();
     }, [id, getGroup]);
-    
+
     const handleSubmit = async (formData) => {
         setIsSubmitting(true);
         try {
@@ -39,14 +39,14 @@ const EditGroup = () => {
             setIsSubmitting(false);
         }
     };
-    
-    if (isLoading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
-    if (!group) return <div className="flex justify-center items-center h-screen">Group not found</div>;
-    
+
+    if (isLoading) return <div className="text-center py-8">Loading...</div>;
+    if (!group) return <div className="text-center py-8">Group not found</div>;
+
     return (
-        <div className="max-w-3xl mx-auto px-4 py-8">
-            <div className="bg-white shadow rounded-lg p-6">
-                <h1 className="text-2xl font-bold text-gray-900 mb-6">Edit Consultation Group</h1>
+        <div className="max-w-2xl mx-auto px-4 py-8">
+            <div className="bg-white shadow-md rounded-lg p-6">
+                <h1 className="text-2xl font-bold mb-6">Edit Consultation Group</h1>
                 <GroupForm group={group} onSubmit={handleSubmit} isLoading={isSubmitting} />
             </div>
         </div>

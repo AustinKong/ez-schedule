@@ -5,25 +5,19 @@ const GroupForm = ({ group = {}, onSubmit, isLoading }) => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        startTime: '',
-        endTime: '',
-        location: '',
-        maxUsers: '',
+        maxUsers: 10,
         ...group
     });
 
     useEffect(() => {
-        if (group && group.id) {  // Only run when group ID changes
-          setFormData({
-            name: group.name || '',
-            description: group.description || '',
-            startTime: group.startTime || '',
-            endTime: group.endTime || '',
-            location: group.location || '',
-            maxStudents: group.maxStudents || '',
-          });
+        if (group  && group.id) {
+            setFormData({
+                name: group.name || '',
+                description: group.description || '',
+                maxUsers: group.maxUsers || 10,
+            });
         }
-      }, [group?.id]);  // Only depend on the ID      
+    }, [group?.id]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -61,43 +55,6 @@ const GroupForm = ({ group = {}, onSubmit, isLoading }) => {
                 />
             </div>
             <div>
-                <div>
-                    <label htmlFor="startTime" className="block text-sm font-medium">Start Time</label>
-                    <input
-                        type="datetime-local"
-                        id="startTime"
-                        name="startTime"
-                        value={formData.startTime}
-                        onChange={handleChange}
-                        required
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="endTime" className="block text-sm font-medium">End Time</label>
-                    <input
-                        type="datetime-local"
-                        id="endTime"
-                        name="endTime"
-                        value={formData.endTime}
-                        onChange={handleChange}
-                        required
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                    />
-                </div>
-            </div>
-            <div>
-                <label htmlFor="location" className="block text-sm font-medium">Location</label>
-                <input
-                    type="text"
-                    id="location"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                />
-            </div>
-            <div>
                 <label htmlFor="maxUsers" className="block text-sm font-medium">Maximum Users</label>
                 <input
                     type="number"
@@ -115,7 +72,7 @@ const GroupForm = ({ group = {}, onSubmit, isLoading }) => {
                     disabled={isLoading}
                     className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
                 >
-                    {isLoading ? 'Saving...' : group.id ? 'Update Group' : 'Create Group'}
+                    {isLoading ? 'Saving...' : group._id ? 'Update Group' : 'Create Group'}
                 </button>
             </div>
         </form>

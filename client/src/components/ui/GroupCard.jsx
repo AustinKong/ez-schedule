@@ -7,45 +7,37 @@ const GroupCard = ({ group }) => {
         const date = new Date(dateString);
         return date.toLocaleString();
     };
-    
+
     return (
-        <div className="bg-white shadow rounded-lg p-6 mb-4">
-            <div className="mb-4">
-                <h3 className="text-lg font-medium text-gray-900">{group.name}</h3>
-                <p className="text-gray-600">{group.description}</p>
+        <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-4">
+            <div className="px-4 py-5 sm:px-6">
+                <h3 className="text-lg leading-6 font-medium text-gray-900">{group.name}</h3>
+                <p className="mt-1 max-w-2xl text-sm text-gray-500">{group.description}</p>
             </div>
-            <div className="mb-4">
-                <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
-                    <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Location</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{group.location}</dd>
+            <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
+                <dl className="sm:divide-y sm:divide-gray-200">
+                    <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt className="text-sm font-medium text-gray-500">Maximum Users</dt>
+                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{group.maxUsers}</dd>
                     </div>
-                    <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Start Time</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{formatDate(group.startTime)}</dd>
-                    </div>
-                    <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">End Time</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{formatDate(group.endTime)}</dd>
-                    </div>
-                    <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Max Users</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{group.maxUsers}</dd>
+                    <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt className="text-sm font-medium text-gray-500">Created At</dt>
+                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{formatDate(group.createdAt)}</dd>
                     </div>
                 </dl>
             </div>
-            <div className="flex space-x-4">
+            <div className="px-4 py-3 bg-gray-50 text-right sm:px-6 space-x-2">
                 <Link
-                    to={`/manager/group/edit/${group.id}`}
-                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                    to={`/manager/group/edit/${group._id}`}
+                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
                 >
                     Edit
                 </Link>
                 <Link
-                    to={`/manager/queue/${group.id}`}
+                    to={`/manager/timeslots/${group._id}`}
                     className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
                 >
-                    Manage Queue
+                    Manage Timeslots
                 </Link>
             </div>
         </div>

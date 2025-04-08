@@ -37,7 +37,14 @@ export const useGroups = () => {
     const addGroup = async (groupData) => {
         try {
             setLoading(true);
-            const newGroup = await createGroup(groupData);
+            // Add the current user ID to the group data
+            const userData = JSON.parse(localStorage.getItem('user') || '{}');
+            const groupWithUser = {
+                ...groupData,
+                userId: userData.id // This should match how your backend expects it
+            };
+            
+            const newGroup = await createGroup(groupWithUser);
             setGroups([...groups, newGroup]);
             setError(null);
             return newGroup;
@@ -53,7 +60,7 @@ export const useGroups = () => {
         try {
             setLoading(true);
             const updatedGroup = await updateGroup(id, groupData);
-            setGroups(groups.map(group => group.id === id ? updatedGroup : group));
+            setGroups(groups.map(group => group._id === id ? updatedGroup : group));
             setError(null);
             return updatedGroup;
         } catch (err) {
