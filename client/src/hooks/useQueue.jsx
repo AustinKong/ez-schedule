@@ -1,14 +1,14 @@
 // src/hooks/useQueue.jsx
 import { useState } from 'react';
 import {
-    fetchQueueByGroup,
+    fetchQueueByTimeslot,
     startQueue,
     pauseQueue,
     callNextUser,
     markUserAsServed
 } from '../services/api';
 
-export const useQueue = (groupId) => {
+export const useQueue = (timeslotId) => {
     const [queue, setQueue] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -17,7 +17,7 @@ export const useQueue = (groupId) => {
     const loadQueue = async () => {
         try {
             setLoading(true);
-            const data = await fetchQueueByGroup(groupId);
+            const data = await fetchQueueByTimeslot(timeslotId);
             setQueue(data.users || []);
             setQueueStatus(data.status || 'inactive');
             setError(null);
@@ -30,7 +30,7 @@ export const useQueue = (groupId) => {
 
     const start = async () => {
         try {
-            await startQueue(groupId);
+            await startQueue(timeslotId);
             setQueueStatus('active');
             return true;
         } catch (err) {
@@ -41,7 +41,7 @@ export const useQueue = (groupId) => {
 
     const pause = async () => {
         try {
-            await pauseQueue(groupId);
+            await pauseQueue(timeslotId);
             setQueueStatus('paused');
             return true;
         } catch (err) {
@@ -52,7 +52,7 @@ export const useQueue = (groupId) => {
 
     const callNext = async () => {
         try {
-            const result = await callNextUser(groupId);
+            const result = await callNextUser(timeslotId);
             await loadQueue(); // Refresh queue after calling next
             return result;
         } catch (err) {
@@ -63,7 +63,7 @@ export const useQueue = (groupId) => {
 
     const markServed = async (userId) => {
         try {
-            await markUserAsServed(groupId, userId);
+            await markUserAsServed(timeslotId, userId);
             setQueue(queue.filter(user => user.id !== userId));
             return true;
         } catch (err) {
