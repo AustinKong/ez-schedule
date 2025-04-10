@@ -1,7 +1,7 @@
 // src/hooks/useTimeslots.jsx
 import { useState, useEffect } from 'react';
 import { 
-  fetchTimeslots, 
+  fetchTimeslotsByGroup, 
   fetchTimeslot, 
   createTimeslot, 
   updateTimeslot 
@@ -15,7 +15,7 @@ export const useTimeslots = () => {
   const loadTimeslots = async () => {
     try {
       setLoading(true);
-      const data = await fetchTimeslots();
+      const data = await fetchTimeslotsByGroup();
       setTimeslots(data);
       setError(null);
     } catch (err) {
@@ -28,7 +28,7 @@ export const useTimeslots = () => {
   const getTimeslot = async (id) => {
     try {
       setLoading(true);
-      const data = await fetchTimeslot(id);
+      const data = await fetchTimeslotsByGroup(id);
       setError(null);
       return data;
     } catch (err) {

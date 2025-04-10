@@ -1,73 +1,57 @@
 // src/hooks/useQueue.jsx
 import { useState } from 'react';
-import {
-    fetchQueueByTimeslot,
-    startQueue,
-    pauseQueue,
-    callNextUser,
-    markUserAsServed
+import { 
+  getSlotDetails, 
+  advanceQueue, 
+  closeSlot 
 } from '../services/api';
-
-export const useQueue = (timeslotId) => {
+import { toaster } from '../../src/components/ui/toaster';
+import { isSlotActive } from '../utils/dateUtils';
+export const useQueue = (slotId) => {
     const [queue, setQueue] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [queueStatus, setQueueStatus] = useState('inactive');
+    const [slotStatus, setSlotStatus] = useState('inactive');
 
     const loadQueue = async () => {
         try {
             setLoading(true);
-            const data = await fetchQueueByTimeslot(timeslotId);
-            setQueue(data.users || []);
-            setQueueStatus(data.status || 'inactive');
+            const slotData = await getSlotDetails(slotId);
+            
+            setQueue(slotData.entries || []);
+            setSlotStatus(slotData.isClosed ? 'closed' : isSlotActive(slotData) ? 'active' : 'inactive');
             setError(null);
         } catch (err) {
             setError(err.message);
+            toaster.error('Failed to load queue data');
         } finally {
             setLoading(false);
         }
     };
 
-    const start = async () => {
-        try {
-            await startQueue(timeslotId);
-            setQueueStatus('active');
-            return true;
-        } catch (err) {
-            setError(err.message);
-            return false;
-        }
-    };
-
-    const pause = async () => {
-        try {
-            await pauseQueue(timeslotId);
-            setQueueStatus('paused');
-            return true;
-        } catch (err) {
-            setError(err.message);
-            return false;
-        }
-    };
-
     const callNext = async () => {
         try {
-            const result = await callNextUser(timeslotId);
-            await loadQueue(); // Refresh queue after calling next
-            return result;
-        } catch (err) {
-            setError(err.message);
-            return null;
-        }
-    };
-
-    const markServed = async (userId) => {
-        try {
-            await markUserAsServed(timeslotId, userId);
-            setQueue(queue.filter(user => user.id !== userId));
+            await advanceQueue(slotId);
+            await loadQueue(); // Refresh queue after advancing
+            toaster.success('Queue advanced successfully');
             return true;
         } catch (err) {
             setError(err.message);
+            toaster.error('Failed to advance queue');
+            return false;
+        }
+    };
+
+    const closeQueue = async () => {
+        try {
+            await closeSlot(slotId);
+            setSlotStatus('closed');
+            await loadQueue(); // Refresh final state
+            toaster.success('Queue closed successfully');
+            return true;
+        } catch (err) {
+            setError(err.message);
+            toaster.error('Failed to close queue');
             return false;
         }
     };
@@ -76,11 +60,10 @@ export const useQueue = (timeslotId) => {
         queue,
         loading,
         error,
-        queueStatus,
+        queueStatus: slotStatus,
         loadQueue,
-        start,
-        pause,
         callNext,
-        markServed
+        closeQueue,
+        // Removed unused actions
     };
 };

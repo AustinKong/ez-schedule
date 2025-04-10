@@ -1,25 +1,26 @@
 // src/components/manager/QueueManagement.jsx
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import QueueDisplay from '../ui/QueueDisplay';
 import { useQueue } from '../../hooks/useQueue';
-import { useGroups } from '../../hooks/useGroups';
+import { getSlotDetails, advanceQueue, closeSlot } from '../../services/api';
+import { formatSlotTime, isSlotActive } from '../../utils/dateUtils';
+import { toaster } from '../ui/toaster';
 
 const QueueManagement = () => {
-    const { id } = useParams(); // This is now the timeslotId, not groupId
-    const [timeslot, setTimeslot] = useState(null);
-    const [group, setGroup] = useState(null);
+    const { id: slotId } = useParams();
+    const { user } = useAuth();
+    const [slot, setSlot] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const { getTimeslot, getGroupByTimeslot } = useGroups();
+    
     const {
         queue,
         queueStatus,
         loadQueue,
-        start,
-        pause,
         callNext,
         markServed
-    } = useQueue(id); // Using timeslotId for queue operations
+    } = useQueue(slotId);
 
     // Prepare queue data for display
     const [queueData, setQueueData] = useState({
@@ -36,16 +37,19 @@ const QueueManagement = () => {
         const loadData = async () => {
             setIsLoading(true);
             try {
-                const timeslotData = await getTimeslot(id);
-                setTimeslot(timeslotData);
+                const slotData = await getSlotDetails(slotId);
                 
-                // Get the group this timeslot belongs to
-                const groupData = await getGroupByTimeslot(id);
-                setGroup(groupData);
+                // Verify host ownership
+                if(slotData.host !== user?.id) {
+                    toaster.error('Unauthorized access to slot');
+                    return;
+                }
                 
+                setSlot(slotData);
                 await loadQueue();
             } catch (error) {
                 console.error('Failed to load data:', error);
+                toaster.error('Failed to load queue data');
             } finally {
                 setIsLoading(false);
             }
@@ -56,76 +60,107 @@ const QueueManagement = () => {
         // Set up polling to refresh queue data
         const interval = setInterval(() => {
             loadQueue();
-        }, 30000); // Refresh every 30 seconds
+        }, 30000);
         
         return () => clearInterval(interval);
-    }, [id, getTimeslot, getGroupByTimeslot, loadQueue]);
+    }, [slotId, user?.id, loadQueue]);
 
-    // Update queue data whenever queue or timeslot changes
+    // Update queue data whenever queue changes
     useEffect(() => {
-        if (timeslot && queue) {
-            const currentUser = queue.find(user => user.status === 'serving');
+        if (slot && queue) {
+            const currentUser = queue[0]; // First entry is being served
             setQueueData({
-                date: new Date(timeslot.startTime).toLocaleDateString(),
-                startTime: timeslot.startTime,
-                endTime: timeslot.endTime,
-                currentNumber: currentUser ? currentUser.queueNumber : null,
+                date: formatSlotTime(slot.start),
+                startTime: slot.start,
+                endTime: slot.end,
+                currentNumber: currentUser?.queueNumber || null,
                 currentUser: currentUser,
-                waitingCount: queue.filter(user => user.status === 'waiting').length,
-                waitingUsers: queue.filter(user => user.status === 'waiting')
+                waitingCount: queue.length,
+                waitingUsers: queue
             });
         }
-    }, [queue, timeslot]);
+    }, [queue, slot]);
 
     const handleStartQueue = async () => {
-        await start();
-        loadQueue();
+        try {
+            // No explicit "start" needed - queue starts when first user joins
+            toaster.info('Queue starts automatically with first participant');
+        } catch (error) {
+            toaster.error('Failed to start queue');
+        }
     };
 
     const handleCallNext = async () => {
-        await callNext();
-        loadQueue();
-    };
-
-    const handleEndSession = async () => {
-        if (queueData.currentUser) {
-            await markServed(queueData.currentUser.id);
-            loadQueue();
+        try {
+            await advanceQueue(slotId);
+            await loadQueue();
+            toaster.success('Called next participant successfully');
+        } catch (error) {
+            toaster.error('Failed to advance queue');
         }
     };
 
-    if (isLoading) return <div className="text-center py-8">Loading...</div>;
-    if (!timeslot) return <div className="text-center py-8">Timeslot not found</div>;
-    if (!group) return <div className="text-center py-8">Group not found</div>;
+    const handleCloseSlot = async () => {
+        try {
+            await closeSlot(slotId);
+            await loadQueue();
+            toaster.success('Slot closed successfully');
+        } catch (error) {
+            toaster.error('Failed to close slot');
+        }
+    };
+
+    if (isLoading) return <div className="text-center py-8">Loading queue data...</div>;
+    if (!slot) return <div className="text-center py-8">Slot not found or unauthorized</div>;
 
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="mb-6">
                 <div className="flex justify-between items-center">
-                    <h1 className="text-2xl font-bold mb-2">{group.name} - Queue Management</h1>
+                    <div>
+                        <h1 className="text-2xl font-bold mb-2">{slot.name}</h1>
+                        <p className="text-gray-600">
+                            {formatSlotTime(slot.start)} - {formatSlotTime(slot.end)}
+                        </p>
+                    </div>
                     <Link 
-                        to={`/manager/timeslots/${group._id}`}
+                        to="/manager"
                         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
                     >
-                        Back to Timeslots
+                        Back to Dashboard
                     </Link>
                 </div>
-                <p className="text-gray-600">{group.description}</p>
-                <p className="text-gray-600 mt-2">
-                    <span className="font-semibold">Timeslot:</span> {new Date(timeslot.startTime).toLocaleTimeString()} - {new Date(timeslot.endTime).toLocaleTimeString()}
-                </p>
-                <p className="text-gray-600">
-                    <span className="font-semibold">Capacity:</span> {timeslot.capacity} users
-                </p>
+                
+                <div className="mt-4 grid grid-cols-2 gap-4">
+                    <div className="bg-gray-50 p-4 rounded">
+                        <p className="font-semibold">Location:</p>
+                        <p>{slot.location || 'Not specified'}</p>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded">
+                        <p className="font-semibold">Status:</p>
+                        <p>{isSlotActive(slot) ? 'Active' : 'Closed'}</p>
+                    </div>
+                </div>
             </div>
             
             <QueueDisplay
                 queueData={queueData}
-                queueStatus={queueStatus}
+                queueStatus={isSlotActive(slot) ? 'active' : 'closed'}
                 onStartSession={handleStartQueue}
                 onCallNext={handleCallNext}
-                onEndSession={handleEndSession}
+                onEndSession={handleCloseSlot}
             />
+
+            {!slot.isClosed && (
+                <div className="mt-6 text-center">
+                    <button
+                        onClick={handleCloseSlot}
+                        className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg"
+                    >
+                        Close Slot Early
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

@@ -72,6 +72,44 @@ export const createTimeslot = async (groupId, timeslotData) => {
     return response.json();
 };
 
+export const getHostSlots = async () => {
+  const response = await fetch('/api/slots/host', {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+  return handleResponse(response);
+};
+
+export const getSlotDetails = async (slotId) => {
+  const response = await fetch(`/api/slots/${slotId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+  return handleResponse(response);
+};
+
+export const advanceQueue = async (slotId) => {
+  const response = await fetch(`/api/slots/${slotId}/advance`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+  return handleResponse(response);
+};
+
+export const closeSlot = async (slotId) => {
+  const response = await fetch(`/api/slots/${slotId}/close`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+  return handleResponse(response);
+};
+
 export const updateTimeslot = async (timeslotId, timeslotData) => {
     const response = await fetch(`${API_URL}/timeslots/${timeslotId}`, {
         method: 'PUT',
