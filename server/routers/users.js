@@ -9,6 +9,7 @@ import {
 
 const router = express.Router();
 
+
 // GET /api/users/:userId - View user profile
 router.get("/:userId", async(req, res) => {
     const userId = req.params.userId;
@@ -20,7 +21,6 @@ router.get("/:userId", async(req, res) => {
         res.status(404).json({error: "User not found"});
     }
 });
-
 
 // PATCH /api/users/:userId - Update/Edit user profile
 router.patch("/:userId", async(req, res) => {
@@ -37,7 +37,7 @@ router.patch("/:userId", async(req, res) => {
 });
 
 
-//PATCH  /api/users/:userId/password - Reset password (for logged in users)
+// PATCH /api/users/:userId/password - Reset password (for logged in users)
 router.patch("/:userId/password", async(req,res) => {
     // const userId = req.user.userId;
     const userId = req.params.userId;
@@ -59,10 +59,6 @@ router.patch("/:userId/password", async(req,res) => {
         res.status(500).json({ error: "Internal server error." });
     }
 });
-
-
-
-
 
 
 export default router;
