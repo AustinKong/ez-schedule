@@ -42,3 +42,13 @@ export async function updateUser(userId, userData) {
   );
 }
 
+export async function getUserByUsername(username) {
+  const db = await connectDb();
+  
+  try {
+    return db.collection("users").findOne({username});
+  } catch (error) {
+    console.error("(usersDb.js)Error fetching user:", error);
+  }
+}
+

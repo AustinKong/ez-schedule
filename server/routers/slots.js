@@ -46,6 +46,7 @@ router.post("/", async (req, res) => {
 // POST /api/slots/:slotId/join - Join a queue
 router.post("/:slotId/join", loadSlot, async (req, res) => {
   const userId = req.user.userId;
+  const entryData = req.body; //currently, the logic would be that the frontend would have tags, hence the request body would have the tags
 
   // Check if already in queue
   const alreadyInQueue = req.slot.entries.some(
@@ -54,7 +55,7 @@ router.post("/:slotId/join", loadSlot, async (req, res) => {
   if (alreadyInQueue)
     return res.status(400).json({ error: "Already in queue" });
 
-  const entry = await createEntry(userId);
+  const entry = await createEntry(userId, entryData);
   await addEntryToSlot(req.slot._id, entry.insertedId);
 
   res.status(200).json({ message: "Joined queue" });

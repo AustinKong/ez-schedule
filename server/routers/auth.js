@@ -1,26 +1,31 @@
 import { Router } from "express";
 import { hash, compare } from "bcrypt";
 import jwt from "jsonwebtoken";
-import { findUserByEmail, createUser, updateUser } from "../database/userDb.js";
+import { findUserByEmail, createUser, updateUser, getUserByUsername, } from "../database/userDb.js";
 import { sendResetEmail } from "../utils/mailer.js";
 
 const router = Router();
 
 router.post("/register", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, name, username, userType } = req.body; //userType is either host(such as Prof, employers) or participant(such as students, employees)
 
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
+    if (!email || !password || !name || !username || !userType ) {
+      return res.status(400).json({ error: "Email, password, name, username, userType are required" }); 
     }
 
-    const existingUser = await findUserByEmail(email);
+    let existingUser = await findUserByEmail(email);
     if (existingUser) {
       return res.status(400).json({ error: "User already exists" });
     }
 
+    existingUser = await getUserByUsername(username);
+    if (existingUser) {
+      return res.status(400).json({ error: "Username already exists" });
+    }
+
     const hashedPassword = await hash(password, 10);
-    await createUser({ email, password: hashedPassword });
+    await createUser({ email, password: hashedPassword, name, username, userType }); //userType is either host(such as Prof, employers) or participant(such as students, employees)
 
     return res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
