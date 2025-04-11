@@ -1,82 +1,92 @@
-
 // src/services/api.js
-const API_URL = 'http://localhost:5000/api';
+const API_URL = "http://localhost:5000/api";
 
 // Group Endpoints
 export const fetchGroups = async () => {
-    const response = await fetch(`${API_URL}/groups`, {
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-    });
-    if (!response.ok) throw new Error('Failed to fetch groups');
-    return response.json();
+  const response = await fetch(`${API_URL}/groups`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  if (!response.ok) throw new Error("Failed to fetch groups");
+  return response.json();
 };
 
 export const fetchGroup = async (id) => {
-    const response = await fetch(`${API_URL}/groups/${id}`, {
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-    });
-    if (!response.ok) throw new Error('Failed to fetch group');
-    return response.json();
+  const response = await fetch(`${API_URL}/groups/${id}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  if (!response.ok) throw new Error("Failed to fetch group");
+  return response.json();
 };
 
 export const createGroup = async (groupData) => {
-    const response = await fetch(`${API_URL}/groups/createGroup`, {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(groupData)
-    });
-    if (!response.ok) throw new Error('Failed to create group');
-    return response.json();
+  const response = await fetch(`${API_URL}/groups/createGroup`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(groupData),
+  });
+  if (!response.ok) throw new Error("Failed to create group");
+  return response.json();
 };
 
 export const updateGroup = async (id, groupData) => {
-    const response = await fetch(`${API_URL}/groups/${id}/editGroup`, {
-        method: 'PATCH',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(groupData)
-    });
-    if (!response.ok) throw new Error('Failed to update group');
-    return response.json();
+  const response = await fetch(`${API_URL}/groups/${id}/editGroup`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(groupData),
+  });
+  if (!response.ok) throw new Error("Failed to update group");
+  return response.json();
 };
 
 // Timeslot Endpoints (Josiah can add more endpoints here if needed)
 export const fetchTimeslotsByGroup = async (groupId) => {
-    const response = await fetch(`${API_URL}/groups/${groupId}/timeslots`);
-    if (!response.ok) throw new Error('Failed to fetch timeslots');
-    return response.json();
+  const response = await fetch(`${API_URL}/groups/${groupId}/timeslots`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  if (!response.ok) throw new Error("Failed to fetch timeslots");
+  return response.json();
 };
 
 export const fetchTimeslot = async (timeslotId) => {
-    const response = await fetch(`${API_URL}/timeslots/${timeslotId}`);
-    if (!response.ok) throw new Error('Failed to fetch timeslot');
-    return response.json();
+  const response = await fetch(`${API_URL}/timeslots/${timeslotId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  if (!response.ok) throw new Error("Failed to fetch timeslot");
+  return response.json();
 };
 
 export const createTimeslot = async (groupId, timeslotData) => {
-    const response = await fetch(`${API_URL}/groups/${groupId}/timeslots`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(timeslotData)
-    });
-    if (!response.ok) throw new Error('Failed to create timeslot');
-    return response.json();
+  const response = await fetch(`${API_URL}/groups/${groupId}/timeslots`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(timeslotData),
+  });
+  if (!response.ok) throw new Error("Failed to create timeslot");
+  return response.json();
 };
 
 export const getHostSlots = async () => {
-  const response = await fetch('/api/slots/host', {
+  const response = await fetch("/api/slots/host", {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`
-    }
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
   });
   return handleResponse(response);
 };
@@ -84,93 +94,131 @@ export const getHostSlots = async () => {
 export const getSlotDetails = async (slotId) => {
   const response = await fetch(`/api/slots/${slotId}`, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`
-    }
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
   });
   return handleResponse(response);
 };
 
 export const advanceQueue = async (slotId) => {
   const response = await fetch(`/api/slots/${slotId}/advance`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`
-    }
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
   });
   return handleResponse(response);
 };
 
 export const closeSlot = async (slotId) => {
   const response = await fetch(`/api/slots/${slotId}/close`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`
-    }
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
   });
   return handleResponse(response);
 };
 
 export const updateTimeslot = async (timeslotId, timeslotData) => {
-    const response = await fetch(`${API_URL}/timeslots/${timeslotId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(timeslotData)
-    });
-    if (!response.ok) throw new Error('Failed to update timeslot');
-    return response.json();
+  const response = await fetch(`${API_URL}/timeslots/${timeslotId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(timeslotData),
+  });
+  if (!response.ok) throw new Error("Failed to update timeslot");
+  return response.json();
 };
 
 export const deleteTimeslot = async (timeslotId) => {
-    const response = await fetch(`${API_URL}/timeslots/${timeslotId}`, {
-        method: 'DELETE'
-    });
-    if (!response.ok) throw new Error('Failed to delete timeslot');
-    return response.json();
+  const response = await fetch(`${API_URL}/timeslots/${timeslotId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  if (!response.ok) throw new Error("Failed to delete timeslot");
+  return response.json();
 };
 
 export const getGroupByTimeslot = async (timeslotId) => {
-    const response = await fetch(`${API_URL}/timeslots/${timeslotId}/group`);
-    if (!response.ok) throw new Error('Failed to get group for timeslot');
-    return response.json();
+  const response = await fetch(`${API_URL}/timeslots/${timeslotId}/group`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  if (!response.ok) throw new Error("Failed to get group for timeslot");
+  return response.json();
 };
 
 // Queue management endpoints
 export const fetchQueueByTimeslot = async (timeslotId) => {
-    const response = await fetch(`${API_URL}/timeslots/${timeslotId}/queue`);
-    if (!response.ok) throw new Error('Failed to fetch queue');
-    return response.json();
+  const response = await fetch(`${API_URL}/timeslots/${timeslotId}/queue`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  if (!response.ok) throw new Error("Failed to fetch queue");
+  return response.json();
 };
 
 export const startQueue = async (timeslotId) => {
-    const response = await fetch(`${API_URL}/timeslots/${timeslotId}/queue/start`, {
-        method: 'POST'
-    });
-    if (!response.ok) throw new Error('Failed to start queue');
-    return response.json();
+  const response = await fetch(
+    `${API_URL}/timeslots/${timeslotId}/queue/start`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+  if (!response.ok) throw new Error("Failed to start queue");
+  return response.json();
 };
 
 export const pauseQueue = async (timeslotId) => {
-    const response = await fetch(`${API_URL}/timeslots/${timeslotId}/queue/pause`, {
-        method: 'POST'
-    });
-    if (!response.ok) throw new Error('Failed to pause queue');
-    return response.json();
+  const response = await fetch(
+    `${API_URL}/timeslots/${timeslotId}/queue/pause`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+  if (!response.ok) throw new Error("Failed to pause queue");
+  return response.json();
 };
 
 export const callNextUser = async (timeslotId) => {
-    const response = await fetch(`${API_URL}/timeslots/${timeslotId}/queue/next`, {
-        method: 'POST'
-    });
-    if (!response.ok) throw new Error('Failed to call next user');
-    return response.json();
+  const response = await fetch(
+    `${API_URL}/timeslots/${timeslotId}/queue/next`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+  if (!response.ok) throw new Error("Failed to call next user");
+  return response.json();
 };
 
 export const markUserAsServed = async (timeslotId, userId) => {
-    const response = await fetch(`${API_URL}/timeslots/${timeslotId}/queue/${userId}/served`, {
-        method: 'POST'
-    });
-    if (!response.ok) throw new Error('Failed to mark user as served');
-    return response.json();
+  const response = await fetch(
+    `${API_URL}/timeslots/${timeslotId}/queue/${userId}/served`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+  if (!response.ok) throw new Error("Failed to mark user as served");
+  return response.json();
 };
 
 //------------------------MOCK DATA FOR TESTING----------------------------------
