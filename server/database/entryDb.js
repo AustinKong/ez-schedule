@@ -1,12 +1,15 @@
 import { connectDb } from './utils.js';
 import { ObjectId } from 'mongodb';
 
-export async function createEntry(visitorId) {
+export async function createEntry(visitorId, entryData) {
 	const db = await connectDb();
+
+	const tagArray = entryData.tags.split(',').map((tag) => tag.trim());
 	try {
 		const result = await db.collection('entries').insertOne({
 			visitor: visitorId,
 			status: 'waiting',
+			tags: tagArray,
 		});
 		console.log('New entry created: ', result);
 		return result;
