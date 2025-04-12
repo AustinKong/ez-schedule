@@ -7,6 +7,7 @@ import {
   advanceSlotQueue,
   getSlotsByHost,
   updateSlot,
+  closeSlot,
 } from "../database/slotDb.js";
 
 import {
@@ -21,8 +22,7 @@ const router = express.Router();
 async function loadSlot(req, res, next) {
   const slotId = req.params.slotId;
   const slot = await getSlotById(slotId);
-  if (!slot || slot.isClosed)
-    return res.status(404).json({ error: "Slot not found or closed" });
+  if (!slot) return res.status(404).json({ error: "Slot not found or closed" });
   slot.entries = await Promise.all(
     slot.entries.map((entryId) => getEntryById(entryId))
   );
@@ -122,7 +122,7 @@ router.post("/:slotId/close", loadSlot, async (req, res) => {
     return res.status(400).json({ error: "Slot already closed" });
   }
 
-  await closeSlot(req.slot._id);
+  await closeSlot(req.slot._id.toString());
   res.status(200).json({ message: "Slot closed" });
 });
 // GET /api/slots/:slotId/position - User queue position

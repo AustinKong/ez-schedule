@@ -68,7 +68,7 @@ const Navbar = () => {
             <FiLogOut />
           </IconButton>
           <AvatarRoot as={Link} to={`/users/${userId}`} size="sm">
-            <AvatarImage src={`/api/${user?.avatar}`} />
+            {user?.avatar && <AvatarImage src={`/api/${user?.avatar}`} />}
             <AvatarFallback>
               <FiUser />
             </AvatarFallback>

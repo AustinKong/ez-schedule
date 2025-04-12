@@ -63,7 +63,7 @@ export async function createUser({ email, password, username, userType }) {
 
   try {
     let userData;
-    if (userType === "user") {
+    if (userType === "participant") {
       userData = {
         email,
         password,

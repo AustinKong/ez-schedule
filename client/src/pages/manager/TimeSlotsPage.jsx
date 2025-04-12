@@ -57,7 +57,7 @@ const TimeSlotsPage = () => {
             bg={slot.isClosed ? "gray.100" : "white"}
           >
             <HStack justify="space-between">
-              <Box>
+              <Box as={Link} to={`/manager/timeslots/${slot._id}`} flex="1">
                 <Heading size="sm">
                   {format(new Date(slot.start), "d MMM yyyy, h:mm a")} –{" "}
                   {format(new Date(slot.end), "h:mm a")}
