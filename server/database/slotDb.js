@@ -1,23 +1,54 @@
 import { connectDb } from './utils.js';
 import { ObjectId } from 'mongodb';
 
-export async function createSlot({ host, start, end }) {
+export async function createSlot({ host, start, end, location, description, groupId, name }) {
+	const db = await connectDb();
+	try {
+		return await db.collection('slots').insertOne({
+			host,
+			start,
+			end,
+			location,
+			description,
+			groupId,
+			name,
+			entries: [],
+			isClosed: false,
+			createdAt: new Date(),
+		});
+	} catch (error) {
+		console.log('Error creating slot:', error);
+	}
+}
+
+export async function updateSlot(slotId, updateFields) {
 	const db = await connectDb();
 	try {
 		return await db
 			.collection('slots')
-			.insertOne({ host, entries: [], start, end, isClosed: false });
+			.updateOne({ _id: ObjectId.createFromHexString(slotId) }, { $set: updateFields });
 	} catch (error) {
-		console.log('Error creating slot:', error);
+		console.log('Error updating slot:', error);
 	}
 }
 
 export async function getSlotById(slotId) {
 	const db = await connectDb();
 	try {
-		return await db.collection('slots').findOne({ _id: new ObjectId.createFromHexString(slotId) });
+		return await db.collection('slots').findOne({ _id: ObjectId.createFromHexString(slotId) });
 	} catch (error) {
 		console.log('Error fetching slot by ID:', error);
+	}
+}
+
+export async function closeSlot(slotId) {
+	const db = await connectDb();
+	try {
+		return await db
+			.collection('slots')
+			.updateOne({ _id: ObjectId.createFromHexString(slotId) }, { $set: { isClosed: true } });
+	} catch (error) {
+		console.log('Error closing slot:', error);
 	}
 }
 
@@ -44,26 +75,26 @@ export async function updateSlotTiming(slotId, newStart, newEnd) {
 	}
 }
 
-export async function closeSlot(slotId) {
+export async function reopenSlot(slotId) {
 	const db = await connectDb();
 	try {
 		return await db
 			.collection('slots')
-			.updateOne({ _id: new ObjectId.createFromHexString(slotId) }, { $set: { isClosed: true } });
+			.updateOne({ _id: new ObjectId.createFromHexString(slotId) }, { $set: { isClosed: false } });
 	} catch (error) {
-		console.log('Error closing slot:', error);
+		console.log('Error reopening slot:', error);
 	}
 }
 
 export async function reopenSlot(slotId) {
-    const db = await connectDb();
-    try {
-        return await db
-            .collection('slots')
-            .updateOne({ _id: new ObjectId.createFromHexString(slotId) }, { $set: { isClosed: false } });
-    } catch (error) {
-        console.log('Error reopening slot:', error);
-    }
+	const db = await connectDb();
+	try {
+		return await db
+			.collection('slots')
+			.updateOne({ _id: new ObjectId.createFromHexString(slotId) }, { $set: { isClosed: false } });
+	} catch (error) {
+		console.log('Error reopening slot:', error);
+	}
 }
 
 export async function deleteSlot(slotId) {

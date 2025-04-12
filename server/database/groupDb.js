@@ -152,3 +152,16 @@ export async function updateGroup(groupId, groupData) {
 		throw error;
 	}
 }
+
+export async function deleteGroup(groupId) {
+	const db = await connectDb();
+	try {
+		const result = await db.collection('groups').deleteOne({
+			_id: ObjectId.createFromHexString(groupId),
+		});
+		return result;
+	} catch (error) {
+		console.error('Error deleting group:', error);
+		throw error;
+	}
+}
