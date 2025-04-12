@@ -39,6 +39,7 @@ router.post("/register", async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 });
+
 // POST /api/auth/login - Login (For not logged in users)
 router.post("/login", async (req, res) => {
   try {

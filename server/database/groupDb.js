@@ -7,7 +7,7 @@ export async function createGroup(groupData) {
     name: groupData.name,
     description: groupData.description,
     maxUsers: groupData.maxUsers,
-    memberUsers: [],
+    memberParticipants: [],
     createdAt: new Date(),
     createdBy: groupData.userId, //plan to change this to username (for registering as user, to implement a username also)
     password: groupData.password,
@@ -51,16 +51,16 @@ export async function getGroupByName(groupName) {
   }
 }
 
-// Newly added - assumes Managers have managedGroups attribute (Array storing GroupIds)
-export async function getGroupsManagedByManagerId(managerId) {
+// Newly added - assumes Hosts have managedGroups attribute (Array storing GroupIds)
+export async function getGroupsManagedByHostId(hostId) {
   const db = await connectDb();
   try {
     // First, find the manager to get the list of managed groups
-    const manager = await db
+    const host = await db
       .collection("users")
-      .findOne({ _id: ObjectId.createFromHexString(managerId) });
-    if (!manager || !manager.managedGroups) {
-      console.log("No manager or managed groups found for the given ID.");
+      .findOne({ _id: ObjectId.createFromHexString(hostId) });
+    if (!host || !host.managedGroups) {
+      console.log("No host or no managed groups found for the given ID.");
       return [];
     }
 
@@ -69,40 +69,40 @@ export async function getGroupsManagedByManagerId(managerId) {
       .collection("groups")
       .find({
         _id: {
-          $in: manager.managedGroups.map((id) =>
-            ObjectId.createFromHexString(id)
-          ),
+          $in: host.managedGroups.map((id) => ObjectId.createFromHexString(id)),
         },
       })
       .toArray();
 
     return groups;
   } catch (error) {
-    console.error("Error fetching groups by manager ID:", error);
+    console.error("Error fetching groups by host ID:", error);
   }
 }
 
-// Newly added - assumes Groups have memberUsers attribute (Array storing UserIds)
-//             - checks for Users' userRole to be users
-export async function getGroupsEnrolledByUserId(userId) {
+// Newly added - assumes Groups have memberParticipants attribute (Array storing UserIds)
+//             - checks for Users' userRole to be 'participant'
+export async function getGroupsContainingParticipantId(participantId) {
   const db = await connectDb();
 
   try {
-    // First, verify the user's role is 'user'
+    // First, verify the user's role is 'participant'
     const user = await db.collection("users").findOne({
-      _id: ObjectId.createFromHexString(userId),
-      userRole: "user",
+      _id: ObjectId.createFromHexString(participantId),
+      userRole: "participant",
     });
     if (!user) {
-      console.log("No user found with the specified ID and role 'user'.");
+      console.log(
+        "No participant found with the specified ID and role 'participant'."
+      );
       return [];
     }
 
-    // If user role is 'user', fetch all groups where this user is a member
+    // If user role is 'participant', fetch all groups where this user is a member
     const groups = await db
       .collection("groups")
       .find({
-        memberUsers: ObjectId.createFromHexString(userId),
+        memberParticipants: ObjectId.createFromHexString(participantId),
       })
       .toArray();
 
@@ -112,19 +112,22 @@ export async function getGroupsEnrolledByUserId(userId) {
   }
 }
 
-// Newly added - assumes Groups have memberUsers attribute (Array storing UserIds)
-export async function addMultipleMemberUsersToGroup(groupId, users) {
+// Newly added - assumes Groups have memberParticipants attribute (Array storing UserIds)
+export async function addMultipleMemberParticipantsToGroup(
+  groupId,
+  participants
+) {
   const db = await connectDb();
   try {
     // Map array of user objects to array of ObjectIds
-    const userIdsToAdd = users.map((user) =>
-      ObjectId.createFromHexString(user.userId)
+    const participantIdsToAdd = participants.map(
+      (p) => new ObjectId.createFromHexString(p.userId)
     );
 
-    // Update the group document to add multiple userIds to the 'memberUsers' array
+    // Update the group document to add multiple userIds to the 'memberParticipants' array
     const result = await db.collection("groups").updateOne(
       { _id: ObjectId.createFromHexString(groupId) },
-      { $addToSet: { memberUsers: { $each: userIdsToAdd } } } // $addToSet with $each ensures only unique userIds are added
+      { $addToSet: { memberParticipants: { $each: participantIdsToAdd } } } // $addToSet with $each ensures only unique userIds are added
     );
     console.log(
       `Added users to group: ${result.matchedCount} document(s) matched, ${result.modifiedCount} document(s) updated.`
@@ -160,8 +163,8 @@ export async function updateGroup(groupId, groupData) {
   if (groupData.createdBy) {
     updateFields.createdBy = groupData.createdBy;
   }
-  if (groupData.memberUsers) {
-    updateFields.memberUsers = groupData.memberUsers;
+  if (groupData.memberParticipants) {
+    updateFields.memberParticipants = groupData.memberParticipants;
   }
 
   try {

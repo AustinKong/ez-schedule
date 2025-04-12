@@ -37,38 +37,41 @@ export async function updateUser(userId, userData) {
     );
 }
 
-// Function to fetch all managers
-export async function getAllManagers() {
+// Function to fetch all hosts
+export async function getAllHosts() {
   const db = await connectDb();
   try {
-    return await db.collection("users").find({ userRole: "manager" }).toArray();
+    return await db.collection("users").find({ userRole: "host" }).toArray();
   } catch (error) {
     console.error("Error fetching all managers:", error);
   }
 }
 
-// Function to fetch all users
-export async function getAllUsers() {
+// Function to fetch all participants
+export async function getAllParticipants() {
   const db = await connectDb();
   try {
-    return await db.collection("users").find({ userRole: "user" }).toArray();
+    return await db
+      .collection("users")
+      .find({ userRole: "participant" })
+      .toArray();
   } catch (error) {
     console.error("Error fetching all users:", error);
   }
 }
 
-// Shared function to create a user/manager
+// Shared function to create a participant/host
 export async function createUser({ email, password, username, userType }) {
   const db = await connectDb();
 
   try {
     let userData;
-    if (userType === "participant") {
+    if (userType === "host") {
       userData = {
         email,
         password,
         username,
-        userRole: "user",
+        userRole: "host",
         createdAt: new Date(),
       };
     } else {
@@ -76,7 +79,7 @@ export async function createUser({ email, password, username, userType }) {
         email,
         password,
         username,
-        userRole: "manager",
+        userRole: "participant",
         createdAt: new Date(),
         managedGroups: [], // Initializing managedGroups to an empty array
       };

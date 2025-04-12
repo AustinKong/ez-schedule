@@ -90,7 +90,8 @@ router.get("/", async (req, res) => {
 //POST /api/groups/createGroup - Create a Group
 router.post("/createGroup", async (req, res) => {
   try {
-    const { name, description, maxUsers, memberUsers, password } = req.body;
+    const { name, description, maxUsers, memberParticipants, password } =
+      req.body;
     const userId = req.user.userId;
 
     if (!name) {
