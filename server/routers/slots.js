@@ -6,6 +6,7 @@ import {
   removeEntryFromSlot,
   advanceSlotQueue,
   getSlotsByHost,
+  updateSlot,
 } from "../database/slotDb.js";
 
 import {
@@ -149,6 +150,32 @@ router.get("/available", async (req, res) => {
 
   const slots = await getSlotsByHost(host);
   res.json(slots);
+});
+
+router.put("/:slotId", loadSlot, async (req, res) => {
+  if (req.slot.host !== req.user.userId) {
+    return res.status(403).json({ error: "Only host can edit timeslot" });
+  }
+
+  const { start, end, location, description, groupId, name } = req.body;
+
+  // Require at least one field to update
+  if (!start && !end && !location && !description && !groupId && !name) {
+    return res.status(400).json({ error: "No fields provided for update" });
+  }
+
+  const updateFields = {};
+  if (start) updateFields.start = new Date(start);
+  if (end) updateFields.end = new Date(end);
+  if (location) updateFields.location = location;
+  if (description !== undefined) updateFields.description = description;
+  if (groupId) updateFields.groupId = groupId;
+  if (name) updateFields.name = name;
+
+  await updateSlot(req.slot._id.toString(), updateFields);
+
+  const updatedSlot = await getSlotById(req.slot._id);
+  res.status(200).json({ message: "Timeslot updated", slot: updatedSlot });
 });
 
 export default router;

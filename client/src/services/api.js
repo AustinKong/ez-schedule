@@ -133,7 +133,7 @@ export const closeSlot = async (slotId) => {
 };
 
 export const updateTimeslot = async (timeslotId, timeslotData) => {
-  const response = await fetch(`${API_URL}/timeslots/${timeslotId}`, {
+  const response = await fetch(`${API_URL}/slots/${timeslotId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -146,7 +146,7 @@ export const updateTimeslot = async (timeslotId, timeslotData) => {
 };
 
 export const deleteTimeslot = async (timeslotId) => {
-  const response = await fetch(`${API_URL}/timeslots/${timeslotId}`, {
+  const response = await fetch(`${API_URL}/slots/${timeslotId}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -157,7 +157,7 @@ export const deleteTimeslot = async (timeslotId) => {
 };
 
 export const getGroupByTimeslot = async (timeslotId) => {
-  const response = await fetch(`${API_URL}/timeslots/${timeslotId}/group`, {
+  const response = await fetch(`${API_URL}/slots/${timeslotId}/group`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
@@ -168,7 +168,7 @@ export const getGroupByTimeslot = async (timeslotId) => {
 
 // Queue management endpoints
 export const fetchQueueByTimeslot = async (timeslotId) => {
-  const response = await fetch(`${API_URL}/timeslots/${timeslotId}/queue`, {
+  const response = await fetch(`${API_URL}/slots/${timeslotId}/queue`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },

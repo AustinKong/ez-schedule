@@ -1,10 +1,11 @@
 import { Box, VStack, Link as ChakraLink, Icon } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
 import { FiTag, FiUser, FiCompass } from "react-icons/fi";
+import { FiUsers, FiCalendar } from "react-icons/fi";
 
 const links = [
-  { to: "/dashboard", label: "Dashboard", icon: FiCompass },
-  { to: "/my-slots", label: "My Slots", icon: FiTag },
+  { to: "/manager/groups", label: "Groups", icon: FiUsers },
+  { to: "/manager/timeslots", label: "Timeslots", icon: FiCalendar },
   { to: "/queue", label: "Queue", icon: FiUser },
 ];
 

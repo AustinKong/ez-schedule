@@ -21,8 +21,14 @@ function App() {
           <Route path="groups/:id/edit" element={<GroupForm isEdit={true} />} />
           <Route path="groups" element={<GroupsPage />} />
 
-          <Route path="timeslots/new" element={<TimeSlotForm />} />
-          <Route path="timeslots/:id/edit" element={<TimeSlotForm />} />
+          <Route
+            path="timeslots/new"
+            element={<TimeSlotForm isEdit={false} />}
+          />
+          <Route
+            path="timeslots/:id/edit"
+            element={<TimeSlotForm isEdit={true} />}
+          />
           <Route path="timeslots" element={<TimeSlotsPage />} />
 
           <Route path="" element={<ManagerMainPage />} />

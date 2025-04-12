@@ -72,12 +72,13 @@ const TimeSlotsPage = () => {
                 </Badge>
                 <IconButton
                   as={Link}
-                  to={`/manager/timeslots/${slot._id}`}
-                  icon={<FiEdit />}
+                  to={`/manager/timeslots/${slot._id}/edit`}
                   aria-label="Edit slot"
                   size="sm"
                   variant="ghost"
-                />
+                >
+                  <FiEdit />
+                </IconButton>
               </HStack>
             </HStack>
           </Box>
