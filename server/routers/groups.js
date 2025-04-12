@@ -2,11 +2,11 @@ import express from 'express';
 
 import {
 	createGroup,
-	getGroupById,
+    getGroupById,
 	getGroupByName,
-    getGroupsManagedByManagerId,
-    getGroupsEnrolledByUserId,
-	addMultipleMemberUsersToGroup,
+    getGroupsManagedByHostId,
+    getGroupsContainingParticipantId,
+    addMultipleMemberParticipantsToGroup,
     getAllGroups,
 	updateGroup,
 } from '../database/groupDb.js';
@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
 //POST /api/groups/createGroup - Create a Group
 router.post('/createGroup', async (req, res) => {
 	try {
-		const { name, description, maxUsers, memberUsers } = req.body;
+		const { name, description, maxUsers, memberParticipants } = req.body;
 		const userId = req.user.userId;
 
 		if (!name) {
