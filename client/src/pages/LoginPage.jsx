@@ -40,10 +40,11 @@ function LoginPage() {
       });
 
       if (response.ok) {
-        const { token, userId } = await response.json();
+        const { token, userId, userRole } = await response.json();
         localStorage.setItem("token", token);
         localStorage.setItem("userId", userId);
-        navigate("/questions");
+        if (userRole === "manager") navigate("/manager");
+        else if (userRole === "user") navigate("/user");
       } else {
         toaster.create({
           title: "Login Failed",

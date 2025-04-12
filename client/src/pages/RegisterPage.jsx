@@ -5,22 +5,22 @@ import {
   VStack,
   Input,
   Button,
+  HStack,
   Text,
   Link as ChakraLink,
+  RadioGroup,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { Toaster, toaster } from "@/components/ui/toaster";
-import zxcvbn from "zxcvbn";
-import {
-  PasswordInput,
-  PasswordStrengthMeter,
-} from "@/components/ui/password-input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Link, useNavigate } from "react-router-dom";
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 function RegisterPage() {
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [userType, setUserType] = useState("participant");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const navigate = useNavigate();
@@ -30,7 +30,8 @@ function RegisterPage() {
       !email ||
       !isValidEmail(email) ||
       !password ||
-      password !== repeatPassword
+      password !== repeatPassword ||
+      !username
     ) {
       toaster.create({
         title: "Invalid Input",
@@ -44,7 +45,7 @@ function RegisterPage() {
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, username, userType }),
       });
 
       if (response.ok) {
@@ -108,6 +109,17 @@ function RegisterPage() {
             )}
           </Box>
 
+          <Box width="full">
+            <Text fontWeight="semibold" mb={1}>
+              Username
+            </Text>
+            <Input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </Box>
+
           {/* Password */}
           <Box width="full">
             <Text fontWeight="semibold" mb={1}>
@@ -135,7 +147,38 @@ function RegisterPage() {
             )}
           </Box>
 
-          <PasswordStrengthMeter value={zxcvbn(password).score} width="full" />
+          <Box width="full">
+            <Text fontWeight="semibold" mb={1}>
+              Who are you?
+            </Text>
+            <RadioGroup.Root
+              value={userType}
+              onValueChange={(e) => setUserType(e.value)}
+            >
+              <HStack justifyContent="space-between" w="full">
+                <RadioGroup.Item value="participant" id="participant">
+                  <RadioGroup.ItemHiddenInput />
+                  <RadioGroup.ItemIndicator />
+                  <RadioGroup.ItemText
+                    fontWeight="normal"
+                    color={userType === "participant" ? "fg.text" : "fg.muted"}
+                  >
+                    I want to attend a consultation (student)
+                  </RadioGroup.ItemText>
+                </RadioGroup.Item>
+                <RadioGroup.Item value="host" id="host">
+                  <RadioGroup.ItemHiddenInput />
+                  <RadioGroup.ItemIndicator />
+                  <RadioGroup.ItemText
+                    fontWeight="normal"
+                    color={userType === "host" ? "fg.text" : "fg.muted"}
+                  >
+                    I want to host a consultation (lecturer)
+                  </RadioGroup.ItemText>
+                </RadioGroup.Item>
+              </HStack>
+            </RadioGroup.Root>
+          </Box>
 
           <Button
             colorScheme="blue"
