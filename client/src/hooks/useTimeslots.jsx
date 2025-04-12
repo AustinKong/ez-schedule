@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { 
-  fetchHostTimeslots, // Changed from fetchTimeslotsByGroup
+import { useState, useEffect } from "react";
+import {
+  fetchHostTimeslots,
   fetchTimeslot,
   createTimeslot,
-  updateTimeslot 
-} from '../services/api';
+  updateTimeslot,
+} from "../services/api";
 
 export const useTimeslots = () => {
   const [timeslots, setTimeslots] = useState([]);
@@ -14,7 +14,6 @@ export const useTimeslots = () => {
   const loadTimeslots = async () => {
     try {
       setLoading(true);
-      // Use the host-specific endpoint that doesn't require group ID
       const data = await fetchHostTimeslots();
       setTimeslots(data);
       setError(null);
@@ -27,31 +26,38 @@ export const useTimeslots = () => {
 
   const getTimeslot = async (id) => {
     try {
-      setLoading(true);
-      // Use direct timeslot endpoint instead of group-based
       const data = await fetchTimeslot(id);
       setError(null);
       return data;
     } catch (err) {
       setError(err.message);
       return null;
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const addTimeslot = async (timeslotData) => {
+    try {
+      const newTimeslot = await createTimeslot(timeslotData);
+      setTimeslots((prev) => [...prev, newTimeslot]);
+      setError(null);
+      return newTimeslot;
+    } catch (err) {
+      setError(err.message);
+      return null;
     }
   };
 
   const editTimeslot = async (id, timeslotData) => {
     try {
-      setLoading(true);
       const updatedTimeslot = await updateTimeslot(id, timeslotData);
-      setTimeslots(timeslots.map(t => t.id === id ? updatedTimeslot : t));
+      setTimeslots((prev) =>
+        prev.map((t) => (t._id === id ? updatedTimeslot : t))
+      );
       setError(null);
       return updatedTimeslot;
     } catch (err) {
       setError(err.message);
       return null;
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -59,14 +65,13 @@ export const useTimeslots = () => {
     loadTimeslots();
   }, []);
 
-  return { timeslots, loading, error, loadTimeslots, getTimeslot, addTimeslot, editTimeslot };
-};
-
-export const fetchHostTimeslots = async () => {
-  const response = await fetch('/api/slots/host', {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`
-    }
-  });
-  return handleResponse(response);
+  return {
+    timeslots,
+    loading,
+    error,
+    loadTimeslots,
+    getTimeslot,
+    addTimeslot,
+    editTimeslot,
+  };
 };

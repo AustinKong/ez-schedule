@@ -18,7 +18,7 @@ export async function getGroupById(groupId) {
   const db = await connectDb();
   try {
     return db.collection("groups").findOne({
-      _id: ObjectId.createFromHexString(userId),
+      _id: ObjectId.createFromHexString(groupId),
     });
   } catch (error) {
     console.error("Error fetching group:", error);
@@ -72,12 +72,10 @@ export async function getGroupsEnrolledByUserId(userId) {
 
   try {
     // First, verify the user's role is 'user'
-    const user = await db
-      .collection("users")
-      .findOne({
-        _id: new ObjectId.createFromHexString(userId),
-        userRole: "user",
-      });
+    const user = await db.collection("users").findOne({
+      _id: new ObjectId.createFromHexString(userId),
+      userRole: "user",
+    });
     if (!user) {
       console.log("No user found with the specified ID and role 'user'.");
       return [];
@@ -158,6 +156,19 @@ export async function updateGroup(groupId, groupData) {
       );
   } catch (error) {
     console.error("(groupDb.js) Error updating group:", error);
+    throw error;
+  }
+}
+
+export async function deleteGroup(groupId) {
+  const db = await connectDb();
+  try {
+    const result = await db.collection("groups").deleteOne({
+      _id: ObjectId.createFromHexString(groupId),
+    });
+    return result;
+  } catch (error) {
+    console.error("Error deleting group:", error);
     throw error;
   }
 }
