@@ -7,7 +7,6 @@ import {
   getAllGroups,
   updateGroup,
   deleteGroup,
-  getGroupsEnrolledByUserId,
   joinGroup,
   leaveGroup,
 } from "../database/groupDb.js";
