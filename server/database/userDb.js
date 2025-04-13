@@ -37,29 +37,6 @@ export async function updateUser(userId, userData) {
     );
 }
 
-// Function to fetch all hosts
-export async function getAllHosts() {
-  const db = await connectDb();
-  try {
-    return await db.collection("users").find({ userRole: "host" }).toArray();
-  } catch (error) {
-    console.error("Error fetching all managers:", error);
-  }
-}
-
-// Function to fetch all participants
-export async function getAllParticipants() {
-  const db = await connectDb();
-  try {
-    return await db
-      .collection("users")
-      .find({ userRole: "participant" })
-      .toArray();
-  } catch (error) {
-    console.error("Error fetching all users:", error);
-  }
-}
-
 // Shared function to create a participant/host
 export async function createUser({ email, password, username, userType }) {
   const db = await connectDb();

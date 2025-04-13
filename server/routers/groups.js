@@ -75,10 +75,10 @@ router.get("/:groupId", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const userId = req.user.userId;
-    if (req.user.userRole === "manager") {
+    if (req.user.userRole === "host") {
       const groups = await getAllGroups(userId); //only getting groups specific to the user
       res.json(groups);
-    } else if (req.user.userRole === "user") {
+    } else if (req.user.userRole === "participant") {
       const groups = await getGroupsEnrolledByUserId(userId); //only getting groups specific to the user
       res.json(groups);
     }
