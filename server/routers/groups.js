@@ -1,17 +1,57 @@
 import express from "express";
 
 import {
-	createGroup,
-    getGroupById,
-	getGroupByName,
-    getGroupsManagedByHostId,
-    getGroupsContainingParticipantId,
-    addMultipleMemberParticipantsToGroup,
-    getAllGroups,
-	updateGroup,
-} from '../database/groupDb.js';
+  createGroup,
+  getGroupByName,
+  getGroupById,
+  getAllGroups,
+  updateGroup,
+  deleteGroup,
+  getGroupsEnrolledByUserId,
+  joinGroup,
+  leaveGroup,
+} from "../database/groupDb.js";
 
 const router = express.Router();
+
+router.post("/:groupId/join", async (req, res) => {
+  const groupId = req.params.groupId;
+  const { password } = req.body;
+
+  const userId = req.user.userId;
+  const group = await getGroupById(groupId);
+  if (!group) {
+    return res.status(404).json({ message: "Group not found." });
+  }
+
+  if (group.password !== password) {
+    return res.status(403).json({ error: "Incorrect password." });
+  }
+
+  try {
+    await joinGroup(groupId, userId, password);
+    res.status(200).json({ message: "Successfully joined the group." });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.post("/:groupId/leave", async (req, res) => {
+  const groupId = req.params.groupId;
+  const userId = req.user.userId;
+
+  try {
+    const group = await getGroupById(groupId);
+    if (!group) {
+      return res.status(404).json({ message: "Group not found." });
+    }
+
+    await leaveGroup(groupId, userId);
+    res.status(200).json({ message: "Successfully left the group." });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
 //GET /api/groups/:groupId - Get a specific group by ID
 router.get("/:groupId", async (req, res) => {
@@ -21,6 +61,9 @@ router.get("/:groupId", async (req, res) => {
     const group = await getGroupById(groupId);
     if (!group) {
       return res.status(404).json({ message: "Group not found." });
+    }
+    if (group.createdBy !== req.user.userId) {
+      delete group.password;
     }
     res.json(group);
   } catch (error) {
@@ -32,23 +75,27 @@ router.get("/:groupId", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const userId = req.user.userId;
-    const groups = await getAllGroups(userId); //only getting groups specific to the user
-    res.json(groups);
+    if (req.user.userRole === "manager") {
+      const groups = await getAllGroups(userId); //only getting groups specific to the user
+      res.json(groups);
+    } else if (req.user.userRole === "user") {
+      const groups = await getGroupsEnrolledByUserId(userId); //only getting groups specific to the user
+      res.json(groups);
+    }
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
 });
 
 //POST /api/groups/createGroup - Create a Group
-router.post('/createGroup', async (req, res) => {
-	try {
-		const { name, description, maxUsers, memberParticipants } = req.body;
-		const userId = req.user.userId;
+router.post("/createGroup", async (req, res) => {
+  try {
+    const { name, description, maxUsers, memberParticipants, password } =
+      req.body;
+    const userId = req.user.userId;
 
     if (!name) {
       return res.status(400).send("Name of group is required.");
-      //OR
-      // return res.status(400).json({message: "Name of group is required."});
     }
 
     const existingGroup = await getGroupByName(name);
@@ -58,16 +105,22 @@ router.post('/createGroup', async (req, res) => {
         .send("Name of group already exist. Choose a different name."); //or can use res.status(400).json()
     }
 
+    function generate6DigitCode() {
+      return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
     await createGroup({
       name,
       description,
       maxUsers,
       userId,
+      password: password || generate6DigitCode(),
     });
 
     return res.status(201).json({ message: "Group created successfully" });
   } catch (error) {
-    return res.status(500).send({ error: error.message });
+    console.error("(groups.js) Create group error:", error);
+    return res.status(500).json({ error: "Failed to create group" });
   }
 });
 

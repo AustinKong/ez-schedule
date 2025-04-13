@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+<<<<<<< HEAD
 	createSlot,
 	getSlotById,
 	addEntryToSlot,
@@ -8,6 +9,17 @@ import {
 	getSlotsByHost,
 	updateSlot,
 } from '../database/slotDb.js';
+=======
+  createSlot,
+  getSlotById,
+  addEntryToSlot,
+  removeEntryFromSlot,
+  advanceSlotQueue,
+  getSlotsByHost,
+  updateSlot,
+  closeSlot,
+} from "../database/slotDb.js";
+>>>>>>> e07c57fa21e0230ed63f601d4639e46553cb227d
 
 import { createEntry, getEntryById, updateEntryStatus } from '../database/entryDb.js';
 

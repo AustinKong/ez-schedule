@@ -59,6 +59,40 @@ export const deleteGroup = async (id) => {
   return response.json();
 };
 
+export const fetchGroupById = async (id) => {
+  const response = await fetch(`${API_URL}/groups/${id}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  if (!response.ok) throw new Error("Failed to fetch group by ID");
+  return response.json();
+};
+
+export const joinGroup = async (groupId, password) => {
+  const response = await fetch(`${API_URL}/groups/${groupId}/join`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify({ password }),
+  });
+  if (!response.ok) throw new Error("Failed to join group");
+  return response.json();
+};
+
+export const leaveGroup = async (groupId) => {
+  const response = await fetch(`${API_URL}/groups/${groupId}/leave`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  if (!response.ok) throw new Error("Failed to leave group");
+  return response.json();
+};
+
 // Timeslot Endpoints
 export const fetchTimeslotsByGroup = async (groupId) => {
   const response = await fetch(`${API_URL}/groups/${groupId}/timeslots`, {
@@ -109,7 +143,8 @@ export const getSlotDetails = async (slotId) => {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
-  // return handleResponse(response);
+  if (!response.ok) throw new Error("Failed to fetch slot details");
+  return response.json();
 };
 
 export const advanceQueue = async (slotId) => {
@@ -230,5 +265,16 @@ export const markUserAsServed = async (timeslotId, userId) => {
     }
   );
   if (!response.ok) throw new Error("Failed to mark user as served");
+  return response.json();
+};
+
+export const joinQueue = async (timeslotId) => {
+  const response = await fetch(`${API_URL}/slots/${timeslotId}/join`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  if (!response.ok) throw new Error("Failed to join queue");
   return response.json();
 };

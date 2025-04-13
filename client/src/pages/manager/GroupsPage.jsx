@@ -9,7 +9,13 @@ import {
   Collapsible,
 } from "@chakra-ui/react";
 import { toaster } from "@/components/ui/toaster";
-import { FiChevronDown, FiChevronUp, FiEdit, FiTrash } from "react-icons/fi";
+import {
+  FiChevronDown,
+  FiChevronUp,
+  FiEdit,
+  FiTrash,
+  FiShare2,
+} from "react-icons/fi";
 import { useGroups } from "@/hooks/useGroups";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -70,6 +76,15 @@ const GroupsPage = () => {
                     onClick={() => handleDelete(group._id)}
                   >
                     <FiTrash />
+                  </IconButton>
+                  <IconButton
+                    aria-label="Share"
+                    size="sm"
+                    variant="ghost"
+                    as={Link}
+                    to={`/manager/groups/${group._id}/share`}
+                  >
+                    <FiShare2 />
                   </IconButton>
                   <Collapsible.Trigger
                     as={IconButton}
