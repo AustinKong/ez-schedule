@@ -171,4 +171,64 @@ router.delete("/:groupId", async (req, res) => {
   }
 });
 
+// GET /api/groups/:name - Fetch a group by name
+router.get("/:name", async (req, res) => {
+    const groupName = req.params.name;
+    try {
+        const group = await getGroupByName(groupName);
+        if (!group) {
+            return res.status(404).json({ message: "Group not found." });
+        }
+        res.json(group);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// GET /api/groups/host/:hostId - Fetch all groups managed by a specific host
+router.get("/host/:hostId", async (req, res) => {
+    const hostId = req.params.hostId;
+    try {
+        const groups = await getGroupsManagedByHostId(hostId);
+        res.json(groups);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// GET /api/groups/participant/:participantId - Fetch all groups containing a specific participant
+router.get("/participant/:participantId", async (req, res) => {
+    const participantId = req.params.participantId;
+    try {
+        const groups = await getGroupsContainingParticipantId(participantId);
+        res.json(groups);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// POST /api/groups/:groupId/addParticipants - Add multiple participants to a group
+router.post("/:groupId/addParticipants", async (req, res) => {
+    const groupId = req.params.groupId;
+    const { participants } = req.body; // Array of user IDs
+
+    if (!participants || !participants.length) {
+        return res.status(400).json({ error: "Participant list cannot be empty." });
+    }
+
+    try {
+        const result = await addMultipleMemberParticipantsToGroup(groupId, participants);
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: "Group not found." });
+        }
+        if (result.modifiedCount === 0) {
+            return res.status(400).json({ message: "No new participants were added (they may already be members)." });
+        }
+        res.status(200).json({ message: "Participants added successfully." });
+    } catch (error) {
+        console.error("Error adding participants:", error);
+        res.status(500).json({ error: "Failed to add participants to group." });
+    }
+});
+
 export default router;
