@@ -30,7 +30,7 @@ const Navbar = () => {
       },
     })
       .then((response) => response.json())
-      .then(({ user }) => {
+      .then((user) => {
         setUser(user);
       });
   }, [userId]);
