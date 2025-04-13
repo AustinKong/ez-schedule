@@ -86,17 +86,6 @@ export async function reopenSlot(slotId) {
 	}
 }
 
-export async function reopenSlot(slotId) {
-	const db = await connectDb();
-	try {
-		return await db
-			.collection('slots')
-			.updateOne({ _id: new ObjectId.createFromHexString(slotId) }, { $set: { isClosed: false } });
-	} catch (error) {
-		console.log('Error reopening slot:', error);
-	}
-}
-
 export async function deleteSlot(slotId) {
 	const db = await connectDb();
 	try {

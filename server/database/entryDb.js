@@ -9,6 +9,7 @@ export async function createEntry(visitorId, entryData) {
 		const result = await db.collection('entries').insertOne({
 			visitor: visitorId,
 			status: 'waiting',
+            createdAt: new Date(),
 			tags: tagArray,
 		});
 		console.log('New entry created: ', result);
