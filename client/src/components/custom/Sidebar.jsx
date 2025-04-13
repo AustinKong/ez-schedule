@@ -2,15 +2,41 @@ import { Box, VStack, Link as ChakraLink, Icon } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
 import { FiTag, FiUser, FiCompass } from "react-icons/fi";
 import { FiUsers, FiCalendar } from "react-icons/fi";
-
-const links = [
-  { to: "/manager/groups", label: "Groups", icon: FiUsers },
-  { to: "/manager/timeslots", label: "Timeslots", icon: FiCalendar },
-  { to: "/queue", label: "Queue", icon: FiUser },
-];
+import { useEffect, useState } from "react";
 
 const Sidebar = () => {
+  const userId = localStorage.getItem("userId");
+  const [user, setUser] = useState(null);
   const location = useLocation();
+
+  useEffect(() => {
+    fetch(`/api/users/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((user) => {
+        setUser(user);
+      });
+  }, [userId]);
+
+  let links = [];
+  if (user?.userRole === "manager") {
+    links = [
+      { to: "/manager/groups", label: "Groups", icon: FiUsers },
+      { to: "/manager/timeslots", label: "Timeslots", icon: FiCalendar },
+      { to: "/queue", label: "Queue", icon: FiUser },
+    ];
+  } else if (user?.userRole === "user") {
+    links = [
+      { to: "/user/groups", label: "Groups", icon: FiUsers },
+      { to: "/user/timeslots", label: "Timeslots", icon: FiCalendar },
+      { to: "/queue", label: "Queue", icon: FiUser },
+    ];
+  }
 
   return (
     <Box p={4} pt={9} borderRight="1px solid gray" height="full">
