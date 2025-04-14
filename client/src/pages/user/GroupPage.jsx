@@ -7,19 +7,29 @@ import {
   Flex,
   Button,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { joinQueue, leaveGroup } from "@/services/api";
 import { formatSlotTime } from "@/utils/dateUtils";
-import { useTimeslots } from "@/hooks/useTimeslots";
+import { fetchTimeslotsByGroup } from "../../services/api";
 import { useParams, useNavigate } from "react-router-dom";
 
 const GroupPage = () => {
-  const { timeslots, loading, loadTimeslots } = useTimeslots();
+  const [timeslots, setTimeslots] = useState([]);
   const { id: groupId } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadTimeslots();
+    const fetchTimeslots = async () => {
+      try {
+        const data = await fetchTimeslotsByGroup(groupId);
+        setTimeslots(data);
+        console.log(data);
+      } catch (err) {
+        console.error("Failed to fetch timeslots", err);
+      }
+    };
+
+    fetchTimeslots();
   }, []);
 
   const handleJoin = async (slotId) => {
@@ -38,14 +48,6 @@ const GroupPage = () => {
       console.error("Failed to leave group", err);
     }
   };
-
-  if (loading) {
-    return (
-      <Flex justify="center" align="center" h="100vh">
-        <Spinner size="xl" />
-      </Flex>
-    );
-  }
 
   return (
     <Box px={6} py={8} maxW="5xl" mx="auto">

@@ -1,22 +1,22 @@
 import { connectDb } from "./utils.js";
 import { ObjectId } from "mongodb";
 
-export async function createEntry(visitorId, entryData) {
+export async function createEntry(visitorId) {
   const db = await connectDb();
 
-	const tagArray = entryData.tags.split(',').map((tag) => tag.trim());
-	try {
-		const result = await db.collection('entries').insertOne({
-			visitor: visitorId,
-			status: 'waiting',
-            createdAt: new Date(),
-			tags: tagArray,
-		});
-		console.log('New entry created: ', result);
-		return result;
-	} catch (err) {
-		console.error('Error creating entry:', err);
-	}
+  // const tagArray = entryData.tags.split(',').map((tag) => tag.trim());
+  try {
+    const result = await db.collection("entries").insertOne({
+      visitor: ObjectId.createFromHexString(visitorId),
+      status: "waiting",
+      createdAt: new Date(),
+      // tags: tagArray,
+    });
+    console.log("New entry created: ", result);
+    return result;
+  } catch (err) {
+    console.error("Error creating entry:", err);
+  }
 }
 
 export async function updateEntryStatus(entryId, status) {

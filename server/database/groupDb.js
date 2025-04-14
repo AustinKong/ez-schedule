@@ -9,7 +9,7 @@ export async function createGroup(groupData) {
     maxUsers: groupData.maxUsers,
     memberParticipants: [],
     createdAt: new Date(),
-    createdBy: groupData.userId, //plan to change this to username (for registering as user, to implement a username also)
+    createdBy: ObjectId.createFromHexString(groupData.userId), //plan to change this to username (for registering as user, to implement a username also)
     password: groupData.password,
   };
   return db.collection("groups").insertOne(group);
@@ -22,7 +22,7 @@ export async function leaveGroup(groupId, userId) {
       .collection("groups")
       .updateOne(
         { _id: ObjectId.createFromHexString(groupId) },
-        { $pull: { memberUsers: ObjectId.createFromHexString(userId) } }
+        { $pull: { memberParticipants: ObjectId.createFromHexString(userId) } }
       );
     return result;
   } catch (error) {
@@ -51,29 +51,16 @@ export async function getGroupByName(groupName) {
   }
 }
 
-// Newly added - assumes Hosts have managedGroups attribute (Array storing GroupIds)
+// Newly modified - fetch groups where createdBy equals hostId
 export async function getGroupsManagedByHostId(hostId) {
   const db = await connectDb();
   try {
-    // First, find the manager to get the list of managed groups
-    const host = await db
-      .collection("users")
-      .findOne({ _id: ObjectId.createFromHexString(hostId) });
-    if (!host || !host.managedGroups) {
-      console.log("No host or no managed groups found for the given ID.");
-      return [];
-    }
-
-    // Now, fetch all groups by the IDs listed in managedGroups
     const groups = await db
       .collection("groups")
       .find({
-        _id: {
-          $in: host.managedGroups.map((id) => ObjectId.createFromHexString(id)),
-        },
+        createdBy: ObjectId.createFromHexString(hostId),
       })
       .toArray();
-
     return groups;
   } catch (error) {
     console.error("Error fetching groups by host ID:", error);
@@ -196,12 +183,14 @@ export async function deleteGroup(groupId) {
 export async function joinGroup(groupId, userId) {
   const db = await connectDb();
   try {
-    const result = await db
-      .collection("groups")
-      .updateOne(
-        { _id: ObjectId.createFromHexString(groupId) },
-        { $addToSet: { memberUsers: ObjectId.createFromHexString(userId) } }
-      );
+    const result = await db.collection("groups").updateOne(
+      { _id: ObjectId.createFromHexString(groupId) },
+      {
+        $addToSet: {
+          memberParticipants: ObjectId.createFromHexString(userId),
+        },
+      }
+    );
     return result;
   } catch (error) {
     console.error("Error joining group:", error);

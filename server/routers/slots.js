@@ -25,7 +25,7 @@ async function loadSlot(req, res, next) {
   if (!slot || slot.isClosed)
     return res.status(404).json({ error: "Slot not found or closed" });
   slot.entries = await Promise.all(
-    slot.entries.map((entryId) => getEntryById(entryId))
+    slot.entries.map((entryId) => getEntryById(entryId.toString()))
   );
   req.slot = slot;
   next();
@@ -76,7 +76,7 @@ router.post("/:slotId/join", loadSlot, async (req, res) => {
     return res.status(400).json({ error: "Already in queue" });
 
   const entry = await createEntry(userId, entryData);
-  await addEntryToSlot(req.slot._id, entry.insertedId);
+  await addEntryToSlot(req.slot._id.toString(), entry.insertedId.toString());
 
   res.status(200).json({ message: "Joined queue" });
 });

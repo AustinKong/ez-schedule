@@ -24,13 +24,13 @@ const Sidebar = () => {
   }, [userId]);
 
   let links = [];
-  if (user?.userRole === "manager") {
+  if (user?.userRole === "host") {
     links = [
       { to: "/manager/groups", label: "Groups", icon: FiUsers },
       { to: "/manager/timeslots", label: "Timeslots", icon: FiCalendar },
       { to: "/queue", label: "Queue", icon: FiUser },
     ];
-  } else if (user?.userRole === "user") {
+  } else if (user?.userRole === "participant") {
     links = [
       { to: "/user/groups", label: "Groups", icon: FiUsers },
       { to: "/user/timeslots", label: "Timeslots", icon: FiCalendar },

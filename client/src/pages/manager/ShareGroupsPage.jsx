@@ -7,6 +7,10 @@ import {
   Center,
   VStack,
   QrCode,
+  Clipboard,
+  IconButton,
+  Input,
+  InputGroup,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -20,7 +24,7 @@ const ShareGroupsPage = () => {
   useEffect(() => {
     const fetchGroup = async () => {
       try {
-        const data = await fetchGroupById(groupId); // should return group object including the share code
+        const data = await fetchGroupById(groupId);
         setGroup(data);
       } catch (err) {
         console.error("Failed to fetch group data", err);
@@ -68,15 +72,42 @@ const ShareGroupsPage = () => {
         </QrCode.Root>
       </Center>
 
-      <VStack spacing={1} align="center">
-        <Text fontSize="sm" color="gray.500">
-          6-digit code:
-        </Text>
-        <Text fontSize="2xl" fontWeight="bold">
-          {group.password}
-        </Text>
+      <VStack spacing={6} align="center">
+        <VStack spacing={1} align="center">
+          <Text fontSize="sm" color="gray.500">
+            6-digit code:
+          </Text>
+          <Text fontSize="2xl" fontWeight="bold">
+            {group.password}
+          </Text>
+        </VStack>
+
+        <CopyJoinUrl joinUrl={joinUrl} />
       </VStack>
     </Box>
+  );
+};
+
+const CopyJoinUrl = ({ joinUrl }) => {
+  return (
+    <Clipboard.Root maxW="300px" value={joinUrl}>
+      <Clipboard.Label textStyle="label">Join URL</Clipboard.Label>
+      <InputGroup endElement={<ClipboardIconButton />}>
+        <Clipboard.Input asChild>
+          <Input />
+        </Clipboard.Input>
+      </InputGroup>
+    </Clipboard.Root>
+  );
+};
+
+const ClipboardIconButton = () => {
+  return (
+    <Clipboard.Trigger asChild>
+      <IconButton variant="surface" size="xs" me="-2">
+        <Clipboard.Indicator />
+      </IconButton>
+    </Clipboard.Trigger>
   );
 };
 

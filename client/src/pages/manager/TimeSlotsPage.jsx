@@ -49,13 +49,7 @@ const TimeSlotsPage = () => {
       <VStack spacing={4} align="stretch">
         {timeslots.length === 0 && <Text>No timeslots found.</Text>}
         {timeslots.map((slot) => (
-          <Box
-            key={slot._id}
-            borderWidth="1px"
-            borderRadius="md"
-            p={4}
-            bg={slot.isClosed ? "gray.100" : "white"}
-          >
+          <Box key={slot._id} borderWidth="1px" borderRadius="md" p={4}>
             <HStack justify="space-between">
               <Box as={Link} to={`/manager/timeslots/${slot._id}`} flex="1">
                 <Heading size="sm">

@@ -16,6 +16,7 @@ export const useTimeslots = () => {
       setLoading(true);
       const data = await fetchHostTimeslots();
       setTimeslots(data);
+      console.log(data);
       setError(null);
     } catch (err) {
       setError(err.message);

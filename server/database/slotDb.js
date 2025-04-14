@@ -18,7 +18,7 @@ export async function createSlot({
       end,
       location,
       description,
-      groupId,
+      groupId: ObjectId.createFromHexString(groupId),
       name,
       entries: [],
       isClosed: false,
@@ -153,8 +153,8 @@ export async function addEntryToSlot(slotId, entryId) {
   return db
     .collection("slots")
     .updateOne(
-      { _id: new ObjectId.createFromHexString(slotId) },
-      { $push: { entries: new ObjectId.createFromHexString(entryId) } }
+      { _id: ObjectId.createFromHexString(slotId) },
+      { $push: { entries: ObjectId.createFromHexString(entryId) } }
     );
 }
 
@@ -174,4 +174,16 @@ export async function advanceSlotQueue(slotId) {
     { _id: new ObjectId.createFromHexString(slotId) },
     { $pop: { entries: -1 } } // removes first entry
   );
+}
+
+export async function getSlotsByGroupId(groupId) {
+  const db = await connectDb();
+  try {
+    return await db
+      .collection("slots")
+      .find({ groupId: ObjectId.createFromHexString(groupId) })
+      .toArray();
+  } catch (error) {
+    console.log("Error fetching slots by group ID:", error);
+  }
 }

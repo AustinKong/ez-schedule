@@ -123,17 +123,17 @@ const QueuePage = () => {
       </Flex>
 
       <Flex gap={4} mb={8} direction={{ base: "column", md: "row" }}>
-        <Box flex={1} bg="gray.50" p={4} borderRadius="md">
+        <Box flex={1} p={4} borderRadius="md">
           <Text fontWeight="semibold">Location:</Text>
           <Text>{slot.location || "Not specified"}</Text>
         </Box>
-        <Box flex={1} bg="gray.50" p={4} borderRadius="md">
+        <Box flex={1} p={4} borderRadius="md">
           <Text fontWeight="semibold">Status:</Text>
           <Text>{isSlotActive(slot) ? "Active" : "Closed"}</Text>
         </Box>
       </Flex>
 
-      <Box bg="white" borderRadius="lg" boxShadow="md" mb={6}>
+      <Box borderRadius="lg" boxShadow="md" mb={6}>
         <Flex direction={{ base: "column", md: "row" }} p={6} gap={6}>
           <Box>
             <Heading size="md" mb={2}>
@@ -146,13 +146,7 @@ const QueuePage = () => {
             </Text>
           </Box>
 
-          <Box
-            bg="gray.100"
-            borderRadius="lg"
-            p={6}
-            textAlign="center"
-            minW="200px"
-          >
+          <Box borderRadius="lg" p={6} textAlign="center" minW="200px">
             <Text fontSize="4xl" fontWeight="bold" color="blue.600" mb={2}>
               {queueData.currentNumber || "No one"}
             </Text>
@@ -167,7 +161,6 @@ const QueuePage = () => {
 
         <HStack
           spacing={4}
-          bg="gray.50"
           px={6}
           py={4}
           justify="center"

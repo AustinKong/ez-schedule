@@ -35,10 +35,10 @@ const JoinGroupsPage = () => {
   };
 
   useEffect(() => {
-    fetchGroupById(code)
+    fetchGroupById(id)
       .then((groupData) => {
         if (groupData) {
-          setGroup(groupData[0]);
+          setGroup(groupData);
         } else {
           setError("Invalid group code");
         }
@@ -46,7 +46,7 @@ const JoinGroupsPage = () => {
       .catch((err) => {
         setError(err.message || "Failed to fetch group data");
       });
-  }, []);
+  }, [id]);
 
   return (
     <Flex align="center" justify="center">
@@ -65,7 +65,7 @@ const JoinGroupsPage = () => {
             )}
           </VStack>
         )}
-        <VStack spacing={4} align="stretch">
+        <VStack spacing={4} align="stretch" mt={4}>
           <Field.Root required>
             <Field.Label>
               6-digit Code <Field.RequiredIndicator />

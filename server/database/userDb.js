@@ -58,7 +58,6 @@ export async function createUser({ email, password, username, userType }) {
         username,
         userRole: "participant",
         createdAt: new Date(),
-        managedGroups: [], // Initializing managedGroups to an empty array
       };
     }
     return await db.collection("users").insertOne(userData);
