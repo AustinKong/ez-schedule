@@ -1,11 +1,10 @@
 // src/pages/manager/TimeslotDetailsPage.jsx
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTimeslots } from "../../hooks/useTimeslots";
 import QueueManagement from "../user/QueuePage";
 import { isWithinInterval, format, parseISO } from "date-fns";
-import { TimeslotStatusBadge} from "../../components/ui/TimeslotStatusBadge";
-import { TimeslotStats} from "../../components/ui/TimeslotStats";
-// import { TimeslotStatusBadge, TimeslotStats } from "../components/ui";
+import { TimeslotStatusBadge } from "../../components/ui/TimeslotStatusBadge";
+import { TimeslotStats } from "../../components/ui/TimeslotStats";
 import { useEffect, useState } from "react";
 
 const TimeslotDetailsPage = () => {
@@ -94,7 +93,17 @@ const TimeslotDetailsPage = () => {
         </div>
 
         {isActive ? (
-          <QueueManagement groupId={timeslot.groupId} />
+          <>
+            <QueueManagement groupId={timeslot.groupId} />
+            <div className="mt-6 text-center">
+              <Link
+                to={`/user/slots/${id}/preconsultation`}
+                className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Complete Pre-Consultation Form
+              </Link>
+            </div>
+          </>
         ) : (
           <div className="bg-gray-50 p-4 rounded-lg text-center">
             <h2 className="text-xl font-semibold mb-2">
