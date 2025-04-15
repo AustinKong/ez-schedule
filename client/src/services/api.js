@@ -312,3 +312,23 @@ export const submitPreConsultation = async (slotId, formData) => {
   });
   return handleResponse(response);
 };
+
+//added in
+export const fetchSubmissionDetails = async (submissionId) => {
+  const response = await fetch(`/api/preconsultations/${submissionId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+  return handleResponse(response);
+};
+
+//added in
+export const checkExistingSubmission = async (slotId) => {
+  const response = await fetch(`/api/preconsultations/slot/${slotId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+  return handleResponse(response);
+};

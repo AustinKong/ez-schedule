@@ -23,32 +23,31 @@ const TimeslotUserDetailsPage = () => {
       : "N/A";
   };
 
-  useEffect(() => {
+useEffect(() => {
     const loadData = async () => {
       try {
-        // Load timeslot data
         const timeslotData = await getTimeslot(id);
         setTimeslot(timeslotData);
         
-        // Check for existing submission
-        const submissions = await fetchSubmissions();
-        const hasSubmission = submissions.some(
-          sub => sub.slot._id === id && sub.status !== 'canceled'
-        );
-        setSubmissionExists(hasSubmission);
+        const response = await fetch(`/api/preconsultations/slot/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (response.ok) {
+          const submission = await response.json();
+          setSubmissionExists(!!submission);
+        }
       } catch (error) {
         console.error("Failed to load data:", error);
-        navigate("/manager");
       } finally {
         setLoading(false);
       }
     };
-
     loadData();
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, [id, getTimeslot, navigate]);
-
+  }, [id]);
+  
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen">

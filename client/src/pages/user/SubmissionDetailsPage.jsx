@@ -64,19 +64,22 @@ const SubmissionDetailsPage = () => {
               <Th>Objectives</Th>
               <Td whiteSpace="pre-wrap">{submission.objectives}</Td>
             </Tr>
-            {submission.documents && (
-              <Tr>
+            {submission.attachments?.length > 0 && (
+            <Tr>
                 <Th>Documents</Th>
                 <Td>
-                  <Link 
-                    href={submission.documents.url} 
+                {submission.attachments.map((file, index) => (
+                    <Link 
+                    key={index}
+                    href={`/api/files/${file.path}`} 
                     isExternal
                     color="blue.500"
-                  >
-                    Download File
-                  </Link>
+                    >
+                    {file.originalname}
+                    </Link>
+                ))}
                 </Td>
-              </Tr>
+            </Tr>
             )}
           </Tbody>
         </Table>

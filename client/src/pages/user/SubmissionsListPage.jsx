@@ -17,12 +17,26 @@ const SubmissionsListPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
+useEffect(() => {
     const loadSubmissions = async () => {
       try {
-        const data = await fetchSubmissions();
-        setSubmissions(data);
-        setFilteredSubmissions(data);
+        const response = await fetch('/api/preconsultations/user', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          const formattedData = data.map(sub => ({
+            ...sub,
+            concerns: sub.text?.concerns || '',
+            objectives: sub.text?.objectives || '',
+            createdAt: sub.createdAt,
+            status: sub.status || 'pending'
+          }));
+          setSubmissions(formattedData);
+        }
       } catch (err) {
         setError('Failed to load submissions');
       } finally {
@@ -36,7 +50,6 @@ const SubmissionsListPage = () => {
     const filterAndSortSubmissions = () => {
       let result = [...submissions];
 
-      // Filtering
       if (searchQuery) {
         const lowerQuery = searchQuery.toLowerCase();
         result = result.filter(sub => 

@@ -43,12 +43,34 @@ const PreConsultationForm = () => {
     loadSlotData();
   }, [slotId, navigate]);
 
-  const handleSubmit = async (values, { setSubmitting }) => {
+const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      await submitPreConsultation(slotId, values);
+      const formData = new FormData();
+      
+      formData.append('slotId', slotId);
+      formData.append('text', JSON.stringify({
+        concerns: values.concerns,
+        objectives: values.objectives
+      }));
+      
+      if (values.documents) {
+        formData.append('attachments', values.documents);
+      }
+  
+      const response = await fetch('/api/preconsultations', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: formData
+      });
+  
+      if (!response.ok) throw new Error('Submission failed');
+      
       navigate(`/user/slots/${slotId}/confirmation`);
     } catch (error) {
-      console.error('Submission failed:', error);
+      console.error('Submission error:', error);
+      setError(error.message || 'Failed to submit form');
     } finally {
       setSubmitting(false);
     }
