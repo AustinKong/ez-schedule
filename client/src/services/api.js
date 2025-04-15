@@ -315,3 +315,13 @@ export const fetchSubmissionDetails = async (slotId) => {
   const data = await res.json();
   return data;
 };
+
+//added in
+export const checkExistingSubmission = async (slotId) => {
+  const response = await fetch(`/api/preconsultations/slot/${slotId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  return handleResponse(response);
+};

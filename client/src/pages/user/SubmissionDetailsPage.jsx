@@ -83,17 +83,20 @@ const SubmissionDetailsPage = () => {
               </ChakraTable.Cell>
             </ChakraTable.Row>
 
-            {submission.documents && (
+            {submission.documents?.length > 0 && (
               <ChakraTable.Row>
                 <ChakraTable.Cell as="th">Documents</ChakraTable.Cell>
                 <ChakraTable.Cell>
-                  <Link
-                    href={submission.documents.url}
-                    isExternal
-                    color="blue.500"
-                  >
-                    Download File
-                  </Link>
+                  {submission.documents.map((file, index) => (
+                    <Link
+                      key={index}
+                      href={`/api/files/${file.path}`}
+                      isExternal
+                      color="blue.500"
+                    >
+                      {file.originalname}
+                    </Link>
+                  ))}
                 </ChakraTable.Cell>
               </ChakraTable.Row>
             )}
