@@ -69,7 +69,7 @@ router.get("/:slotId", loadSlot, (req, res) => {
 
 router.post(
   "/:slotId/preconsultation",
-  upload.single("documents"),
+  upload.array("documents"), // Accepts multiple files with field name 'documents'
   async (req, res) => {
     const { slotId } = req.params;
     const { concerns, objectives } = req.body;
@@ -80,20 +80,22 @@ router.post(
     }
 
     try {
-      const attachment = req.file
-        ? {
-            name: req.file.originalname,
-            mimetype: req.file.mimetype,
-            buffer: req.file.buffer.toString("base64"), // or save to S3/gridFS instead
-          }
-        : null;
+      console.log(req.files);
+      // Convert uploaded files to base64 attachments
+      const attachments = req.files?.length
+        ? req.files.map((file) => ({
+            name: file.originalname,
+            mimetype: file.mimetype,
+            buffer: file.buffer.toString("base64"),
+          }))
+        : [];
 
       const result = await createPreconsultForm({
         slotId,
         createdBy: userId,
         concerns,
         objectives,
-        attachments: attachment,
+        attachments, // this is now an array
       });
 
       res.status(201).json({ success: true, id: result.insertedId });

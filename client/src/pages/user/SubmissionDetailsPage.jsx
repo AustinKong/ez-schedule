@@ -23,6 +23,7 @@ const SubmissionDetailsPage = () => {
       try {
         const data = await fetchSubmissionDetails(id);
         setSubmission(data);
+        console.log(data);
       } catch (error) {
         console.error("Failed to load submission:", error);
       } finally {
@@ -90,7 +91,7 @@ const SubmissionDetailsPage = () => {
                   {submission.documents.map((file, index) => (
                     <Link
                       key={index}
-                      href={`/api/files/${file.path}`}
+                      href={`/api/preconsultation/${file.path}`}
                       isExternal
                       color="blue.500"
                     >

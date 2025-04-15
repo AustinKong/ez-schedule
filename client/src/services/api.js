@@ -283,16 +283,22 @@ export const joinQueue = async (timeslotId) => {
 //added in
 export const submitPreConsultation = async (slotId, formData) => {
   const formPayload = new FormData();
+
   formPayload.append("concerns", formData.concerns);
   formPayload.append("objectives", formData.objectives);
-  if (formData.documents) {
-    formPayload.append("documents", formData.documents);
+
+  // Append each file individually
+  if (formData.documents && formData.documents.length > 0) {
+    for (const file of formData.documents) {
+      formPayload.append("documents", file);
+    }
   }
 
   await fetch(`/api/slots/${slotId}/preconsultation`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
+      // ❌ DO NOT set Content-Type manually for FormData – let the browser handle it
     },
     body: formPayload,
   });

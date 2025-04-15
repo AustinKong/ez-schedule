@@ -33,11 +33,14 @@ router.get("/slot/:slotId", requireAuth, async (req, res) => {
       slot,
     };
 
-    if (form.attachments) {
-      response.documents = {
-        name: form.attachments.name,
-        url: `/api/preconsultation/${form._id}/attachment`,
-      };
+    // ✅ Convert each attachment into frontend-expected format
+    if (Array.isArray(form.attachments) && form.attachments.length > 0) {
+      response.documents = form.attachments.map((file, index) => ({
+        originalname: file.name,
+        path: `${form._id}/${index}`,
+      }));
+    } else {
+      response.documents = [];
     }
 
     res.json(response);
@@ -47,32 +50,22 @@ router.get("/slot/:slotId", requireAuth, async (req, res) => {
   }
 });
 
-router.get("/:formId/attachment", async (req, res) => {
-  const formId = req.params.formId;
+router.get("/:formId/:fileIndex", async (req, res) => {
+  const { formId, fileIndex } = req.params;
 
   try {
     const form = await getPreconsultFormById(formId);
-    console.log(form);
 
-    if (
-      !form ||
-      !form.attachments ||
-      !form.attachments.buffer ||
-      !form.attachments.name ||
-      !form.attachments.mimetype
-    ) {
-      return res.status(404).json({ error: "No attachment found." });
+    const file = form?.attachments?.[fileIndex];
+    if (!file) {
+      return res.status(404).json({ error: "File not found" });
     }
 
-    const fileBuffer = Buffer.from(form.attachments.buffer, "base64");
+    const buffer = Buffer.from(file.buffer, "base64");
 
-    res.setHeader("Content-Type", form.attachments.mimetype);
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="${form.attachments.name}"`
-    );
-
-    res.send(fileBuffer);
+    res.setHeader("Content-Disposition", `attachment; filename="${file.name}"`);
+    res.setHeader("Content-Type", file.mimetype);
+    res.send(buffer);
   } catch (err) {
     console.error("Error serving base64 file:", err);
     res.status(500).json({ error: "Internal server error" });

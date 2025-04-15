@@ -43,7 +43,7 @@ const PreconsultFormPage = () => {
   }, [slotId, navigate]);
 
   const handleFileChange = (e) => {
-    setDocuments(e.target.files[0]);
+    setDocuments(e.target.files);
   };
 
   const validate = () => {
@@ -129,11 +129,15 @@ const PreconsultFormPage = () => {
 
         <Field.Root>
           <Field.Label>Supporting Documents (Optional)</Field.Label>
-          <Input type="file" onChange={handleFileChange} />
-          {documents && (
-            <Text fontSize="sm" color="gray.600" mt={1}>
-              Attached: {documents.name}
-            </Text>
+          <Input type="file" multiple onChange={handleFileChange} />
+          {documents && documents.length > 0 && (
+            <Box>
+              {Array.from(documents).map((file, index) => (
+                <Text key={index} fontSize="sm" color="gray.600" mt={1}>
+                  Attached: {file.name}
+                </Text>
+              ))}
+            </Box>
           )}
         </Field.Root>
 
