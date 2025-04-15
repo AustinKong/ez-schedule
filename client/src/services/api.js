@@ -294,3 +294,21 @@ export const createPreconsultForm = async ({ slotId, text, attachments }) => {
   if (!response.ok) throw new Error("Failed to submit preconsult form");
   return response.json();
 };
+//added in
+export const submitPreConsultation = async (slotId, formData) => {
+  const formPayload = new FormData();
+  formPayload.append('concerns', formData.concerns);
+  formPayload.append('objectives', formData.objectives);
+  if (formData.documents) {
+    formPayload.append('documents', formData.documents);
+  }
+
+  const response = await fetch(`/api/slots/${slotId}/preconsultation`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    },
+    body: formPayload
+  });
+  return handleResponse(response);
+};

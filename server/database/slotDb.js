@@ -171,7 +171,7 @@ export async function removeEntryFromSlot(slotId, entryId) {
 export async function advanceSlotQueue(slotId) {
   const db = await connectDb();
   return db.collection("slots").updateOne(
-    { _id: new ObjectId.createFromHexString(slotId) },
+    { _id: ObjectId.createFromHexString(slotId) },
     { $pop: { entries: -1 } } // removes first entry
   );
 }
