@@ -100,7 +100,7 @@ export const fetchTimeslotsByGroup = async (groupId) => {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
-  console.log(response)
+  console.log(response);
   if (!response.ok) throw new Error("Failed to fetch timeslots");
   return response.json();
 };
@@ -280,35 +280,38 @@ export const joinQueue = async (timeslotId) => {
   return response.json();
 };
 
-// Preconsult Form Endpoint
-export const createPreconsultForm = async ({ slotId, text, attachments }) => {
-  const response = await fetch(`${API_URL}/preconsultForm`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-    body: JSON.stringify({ slotId, text, attachments }),
-  });
-
-  if (!response.ok) throw new Error("Failed to submit preconsult form");
-  return response.json();
-};
 //added in
 export const submitPreConsultation = async (slotId, formData) => {
   const formPayload = new FormData();
-  formPayload.append('concerns', formData.concerns);
-  formPayload.append('objectives', formData.objectives);
+  formPayload.append("concerns", formData.concerns);
+  formPayload.append("objectives", formData.objectives);
   if (formData.documents) {
-    formPayload.append('documents', formData.documents);
+    formPayload.append("documents", formData.documents);
   }
 
-  const response = await fetch(`/api/slots/${slotId}/preconsultation`, {
-    method: 'POST',
+  await fetch(`/api/slots/${slotId}/preconsultation`, {
+    method: "POST",
     headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
-    body: formPayload
+    body: formPayload,
   });
-  return handleResponse(response);
+};
+
+export const fetchSubmissions = async (slotId) => {};
+
+export const fetchSubmissionDetails = async (slotId) => {
+  const res = await fetch(`/api/preconsultation/slot/${slotId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch submission details");
+  }
+
+  const data = await res.json();
+  return data;
 };

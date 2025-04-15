@@ -16,13 +16,12 @@ import UserGroupPage from "./pages/user/GroupPage";
 import UserGroupsPage from "./pages/user/GroupsPage";
 import JoinGroupsPage from "./pages/user/JoinGroupsPage";
 import PreconsultFormPage from "./pages/user/PreconsultForm";
-import Timetable from "./pages/user/TimeTable";
+// import Timetable from "./pages/user/TimeTable";
 import TimeSlotsPage from "./pages/user/TimeSlotsUserPage";
 import TimeSlotUserDetailsPage from "./pages/user/TimeslotUserDetailsPage";
-import PreConsultationForm from "./pages/user/PreConsultationForm";
 import ConsultationConfirmation from "./pages/user/ConsultationConfirmation";
-import SubmissionsListPage from './pages/user/SubmissionsListPage';
-import SubmissionDetailsPage from './pages/user/SubmissionDetailsPage';
+import SubmissionsListPage from "./pages/user/SubmissionsListPage";
+import SubmissionDetailsPage from "./pages/user/SubmissionDetailsPage";
 
 function App() {
   return (
@@ -35,9 +34,15 @@ function App() {
           <Route path="groups/:id/share" element={<ShareGroupsPage />} />
           <Route path="groups" element={<GroupsPage />} />
 
-          <Route path="timeslots/new" element={<TimeSlotForm isEdit={false} />} />
+          <Route
+            path="timeslots/new"
+            element={<TimeSlotForm isEdit={false} />}
+          />
           <Route path="timeslots/:id" element={<QueuePage />} />
-          <Route path="timeslots/:id/edit" element={<TimeSlotForm isEdit={true} />} />
+          <Route
+            path="timeslots/:id/edit"
+            element={<TimeSlotForm isEdit={true} />}
+          />
           <Route path="timeslots" element={<ManagerTimeSlotsPage />} />
         </Route>
 
@@ -46,16 +51,24 @@ function App() {
           <Route path="groups" element={<UserGroupsPage />} />
           <Route path="groups/:id" element={<UserGroupPage />} />
           <Route path="groups/:id/join" element={<JoinGroupsPage />} />
-          <Route path="preconsultForm/new" element={<PreconsultFormPage />} />
-          
+
           {/* Timeslot Routes */}
           <Route path="timeslots" element={<TimeSlotsPage />} />
-          <Route path="timeslots/:slotId" element={<TimeSlotUserDetailsPage />} />
-          <Route path="timeslots/:slotId/preconsultation" element={<PreConsultationForm />} />
-          <Route path="timeslots/:slotId/confirmation" element={<ConsultationConfirmation />} />
+          <Route
+            path="timeslots/:slotId"
+            element={<TimeSlotUserDetailsPage />}
+          />
+          <Route
+            path="timeslots/:slotId/preconsultation"
+            element={<PreconsultFormPage />}
+          />
+          <Route
+            path="timeslots/:slotId/confirmation"
+            element={<ConsultationConfirmation />}
+          />
           <Route path="submissions" element={<SubmissionsListPage />} />
           <Route path="submissions/:id" element={<SubmissionDetailsPage />} />
-          <Route path="timetable" element={<Timetable />} />
+          {/* <Route path="timetable" element={<Timetable />} /> */}
           <Route path="" element={<></>} />
         </Route>
 

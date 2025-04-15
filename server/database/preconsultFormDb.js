@@ -1,13 +1,20 @@
 import { connectDb } from "./utils.js";
 import { ObjectId } from "mongodb";
 
-export async function createPreconsultForm({ slotId, createdBy, text, attachments }) {
+export async function createPreconsultForm({
+  slotId,
+  createdBy,
+  objectives,
+  concerns,
+  attachments,
+}) {
   const db = await connectDb();
   try {
     return await db.collection("preconsultForms").insertOne({
       slotId: ObjectId.createFromHexString(slotId),
       createdBy: ObjectId.createFromHexString(createdBy),
-      text,
+      concerns,
+      objectives,
       attachments,
       createdAt: new Date(),
     });
@@ -19,10 +26,12 @@ export async function createPreconsultForm({ slotId, createdBy, text, attachment
 export async function updatePreconsultForm(formId, updateFields) {
   const db = await connectDb();
   try {
-    return await db.collection("preconsultForms").updateOne(
-      { _id: ObjectId.createFromHexString(formId) },
-      { $set: updateFields }
-    );
+    return await db
+      .collection("preconsultForms")
+      .updateOne(
+        { _id: ObjectId.createFromHexString(formId) },
+        { $set: updateFields }
+      );
   } catch (error) {
     console.error("Error updating preconsult form:", error);
   }
@@ -54,12 +63,10 @@ export async function getPreconsultFormsBySlot(slotId) {
 export async function getPreconsultFormBySlotAndParticipant(slotId, userId) {
   const db = await connectDb();
   try {
-    return await db
-      .collection("preconsultForms")
-      .findOne({
-        slotId: ObjectId.createFromHexString(slotId),
-        createdBy: ObjectId.createFromHexString(userId),
-      });
+    return await db.collection("preconsultForms").findOne({
+      slotId: ObjectId.createFromHexString(slotId),
+      createdBy: ObjectId.createFromHexString(userId),
+    });
   } catch (error) {
     console.error("Error fetching preconsult form by slot and user:", error);
   }

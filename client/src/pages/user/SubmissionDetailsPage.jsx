@@ -1,11 +1,17 @@
 // src/pages/user/SubmissionDetailsPage.jsx
-import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { 
-  Box, Heading, Text, Spinner, Link, Badge, Stack, 
-  Table, Thead, Tbody, Tr, Th, Td 
-} from '@chakra-ui/react';
-import { fetchSubmissionDetails } from '../../services/api';
+import { useParams, Link as RouterLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+  Box,
+  Heading,
+  Text,
+  Spinner,
+  Link,
+  Badge,
+  Stack,
+  Table as ChakraTable, // renamed to avoid naming conflicts if needed
+} from "@chakra-ui/react";
+import { fetchSubmissionDetails } from "../../services/api";
 
 const SubmissionDetailsPage = () => {
   const { id } = useParams();
@@ -18,7 +24,7 @@ const SubmissionDetailsPage = () => {
         const data = await fetchSubmissionDetails(id);
         setSubmission(data);
       } catch (error) {
-        console.error('Failed to load submission:', error);
+        console.error("Failed to load submission:", error);
       } finally {
         setLoading(false);
       }
@@ -33,7 +39,7 @@ const SubmissionDetailsPage = () => {
     <Box p={6} maxW="7xl" mx="auto">
       <Stack spacing={6}>
         <Heading size="lg">Submission Details</Heading>
-        
+
         <Box>
           <Badge colorScheme="blue" fontSize="md" mb={2}>
             Status: {submission.status}
@@ -43,45 +49,58 @@ const SubmissionDetailsPage = () => {
           </Text>
         </Box>
 
-        <Table variant="simple">
-          <Tbody>
-            <Tr>
-              <Th width="200px">Consultation Date</Th>
-              <Td>{new Date(submission.slot.start).toLocaleDateString()}</Td>
-            </Tr>
-            <Tr>
-              <Th>Timeslot</Th>
-              <Td>
-                {new Date(submission.slot.start).toLocaleTimeString()} -{' '}
+        <ChakraTable.Root variant="simple">
+          {/* Header can be added if needed */}
+          <ChakraTable.Body>
+            <ChakraTable.Row>
+              <ChakraTable.Cell as="th" width="200px">
+                Consultation Date
+              </ChakraTable.Cell>
+              <ChakraTable.Cell>
+                {new Date(submission.slot.start).toLocaleDateString()}
+              </ChakraTable.Cell>
+            </ChakraTable.Row>
+
+            <ChakraTable.Row>
+              <ChakraTable.Cell as="th">Timeslot</ChakraTable.Cell>
+              <ChakraTable.Cell>
+                {new Date(submission.slot.start).toLocaleTimeString()} -{" "}
                 {new Date(submission.slot.end).toLocaleTimeString()}
-              </Td>
-            </Tr>
-            <Tr>
-              <Th>Main Concerns</Th>
-              <Td whiteSpace="pre-wrap">{submission.concerns}</Td>
-            </Tr>
-            <Tr>
-              <Th>Objectives</Th>
-              <Td whiteSpace="pre-wrap">{submission.objectives}</Td>
-            </Tr>
+              </ChakraTable.Cell>
+            </ChakraTable.Row>
+
+            <ChakraTable.Row>
+              <ChakraTable.Cell as="th">Main Concerns</ChakraTable.Cell>
+              <ChakraTable.Cell whiteSpace="pre-wrap">
+                {submission.concerns}
+              </ChakraTable.Cell>
+            </ChakraTable.Row>
+
+            <ChakraTable.Row>
+              <ChakraTable.Cell as="th">Objectives</ChakraTable.Cell>
+              <ChakraTable.Cell whiteSpace="pre-wrap">
+                {submission.objectives}
+              </ChakraTable.Cell>
+            </ChakraTable.Row>
+
             {submission.documents && (
-              <Tr>
-                <Th>Documents</Th>
-                <Td>
-                  <Link 
-                    href={submission.documents.url} 
+              <ChakraTable.Row>
+                <ChakraTable.Cell as="th">Documents</ChakraTable.Cell>
+                <ChakraTable.Cell>
+                  <Link
+                    href={submission.documents.url}
                     isExternal
                     color="blue.500"
                   >
                     Download File
                   </Link>
-                </Td>
-              </Tr>
+                </ChakraTable.Cell>
+              </ChakraTable.Row>
             )}
-          </Tbody>
-        </Table>
+          </ChakraTable.Body>
+        </ChakraTable.Root>
 
-        <Link to="/user/submissions" color="blue.500">
+        <Link as={RouterLink} to="/user/submissions" color="blue.500">
           &larr; Back to All Submissions
         </Link>
       </Stack>

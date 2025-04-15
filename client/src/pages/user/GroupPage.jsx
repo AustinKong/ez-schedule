@@ -75,6 +75,15 @@ const GroupPage = () => {
               >
                 {slot.isClosed ? "Closed" : "Join Queue"}
               </Button>
+              <Button
+                mt={4}
+                ml={4}
+                onClick={() =>
+                  navigate(`/user/timeslots/${slot._id}/preconsultation`)
+                }
+              >
+                Fill Pre-Consultation Form
+              </Button>
             </Box>
           ))
         )}

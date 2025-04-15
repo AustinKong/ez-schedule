@@ -6,140 +6,158 @@ import {
   VStack,
   Button,
   HStack,
-  Field,
   Text,
-  Select,
+  Checkbox,
+  Field,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { createPreconsultForm, fetchTimeslotsByGroup, fetchGroups } from "@/services/api";
-import { createListCollection } from "@chakra-ui/react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getSlotDetails, submitPreConsultation } from "@/services/api";
+import { formatSlotTime } from "@/utils/dateUtils";
 
 const PreconsultFormPage = () => {
   const navigate = useNavigate();
-  const [text, setText] = useState("");
-  const [attachments, setAttachments] = useState([]);
-  const [slotId, setSlotId] = useState("");
-  const [timeslots, setTimeslots] = useState([]);
+  const { slotId } = useParams();
+
+  const [concerns, setConcerns] = useState("");
+  const [objectives, setObjectives] = useState("");
+  const [documents, setDocuments] = useState(null);
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [slot, setSlot] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    const loadAllTimeslots = async () => {
+    const loadSlotData = async () => {
       try {
-        const groups = await fetchGroups();
-        const allSlots = [];
-        for (const group of groups) {
-          const slots = await fetchTimeslotsByGroup(group._id);
-          console.log(slots)
-          allSlots.push(...slots);
-        }
-        setTimeslots(allSlots);
-      } catch (err) {
-        console.error("Failed to load timeslots", err);
+        const data = await getSlotDetails(slotId);
+        setSlot(data);
+      } catch (error) {
+        console.error("Failed to load slot details:", error);
+        navigate("/user/slots");
+      } finally {
+        setLoading(false);
       }
     };
-    loadAllTimeslots();
-  }, []);
-
-  const timeslotCollection = createListCollection({
-    items: timeslots.map((slot) => ({
-      label: `${slot.name} (${new Date(slot.start).toLocaleString()})`,
-      value: slot._id,
-    })),
-  });
+    loadSlotData();
+  }, [slotId, navigate]);
 
   const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    const readers = files.map(
-      (file) =>
-        new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.readAsDataURL(file);
-        })
-    );
-    Promise.all(readers).then((base64s) => setAttachments(base64s));
+    setDocuments(e.target.files[0]);
+  };
+
+  const validate = () => {
+    const errs = {};
+    if (!concerns.trim()) errs.concerns = "Please describe your concerns";
+    if (!objectives.trim()) errs.objectives = "Please state your objectives";
+    if (!agreeTerms) errs.agreeTerms = "You must accept the terms";
+    return errs;
   };
 
   const handleSubmit = async () => {
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
     try {
-      await createPreconsultForm({
-        slotId: slotId[0],
-        text,
-        attachments,
+      await submitPreConsultation(slotId, {
+        concerns,
+        objectives,
+        documents,
+        agreeTerms,
       });
-      navigate(`/user/slots/${slotId}`);
-    } catch (err) {
-      console.error("Error submitting preconsult form", err);
+      navigate(`/user/slots/${slotId}/confirmation`);
+    } catch (error) {
+      console.error("Submission failed:", error);
     }
   };
 
-  return (
-    <Box>
-      <Heading size="lg" mb={4}>Pre-consultation Form</Heading>
-      <VStack spacing={4} align="stretch">
-        <Field.Root required>
-          <Select.Root
-            collection={timeslotCollection}
-            value={slotId}
-            onValueChange={(e) => setSlotId(e.value)}
-          >
-            <Select.HiddenSelect />
-            <Select.Label required>Select consultation slot</Select.Label>
-            <Select.Control>
-              <Select.Trigger>
-                <Select.ValueText placeholder="Choose a consultation" />
-              </Select.Trigger>
-              <Select.IndicatorGroup>
-                <Select.Indicator />
-              </Select.IndicatorGroup>
-            </Select.Control>
-            <Select.Positioner>
-              <Select.Content>
-                {timeslotCollection.items.map((item) => (
-                  <Select.Item key={item.value} item={item}>
-                    {item.label}
-                    <Select.ItemIndicator />
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select.Positioner>
-          </Select.Root>
-        </Field.Root>
+  if (loading) return <Text>Loading consultation details...</Text>;
+  if (!slot) return <Text>Consultation slot not found</Text>;
 
+  return (
+    <Box maxW="2xl" mx="auto" p={6} borderRadius="md" boxShadow="md">
+      <Heading size="lg" mb={4}>
+        Pre-Consultation Form
+      </Heading>
+
+      <Box mb={6} p={4} borderRadius="md">
+        <Text fontWeight="semibold">Selected Consultation Slot</Text>
+        <Text>{slot.name}</Text>
+        <Text>
+          {formatSlotTime(slot.start)} - {formatSlotTime(slot.end)}
+        </Text>
+        <Text>Location: {slot.location}</Text>
+      </Box>
+
+      <VStack spacing={5} align="stretch">
         <Field.Root required>
           <Field.Label>
-            Description <Field.RequiredIndicator />
+            Main Concerns <Field.RequiredIndicator />
           </Field.Label>
           <Textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Briefly describe your consultation request"
-            rows={6}
+            value={concerns}
+            onChange={(e) => setConcerns(e.target.value)}
+            placeholder="Describe your main concerns for this consultation..."
+            rows={4}
           />
-        </Field.Root>
-
-        <Field.Root>
-          <Field.Label>Attachments (optional)</Field.Label>
-          <Input
-            type="file"
-            accept="image/*,application/pdf"
-            multiple
-            onChange={handleFileChange}
-          />
-          {attachments.length > 0 && (
-            <Text fontSize="sm" color="gray.600">
-              {attachments.length} file(s) attached
+          {errors.concerns && (
+            <Text color="red.500" fontSize="sm">
+              {errors.concerns}
             </Text>
           )}
         </Field.Root>
 
-        <HStack justify="flex-end" pt={2}>
-          <Button
-            onClick={handleSubmit}
-            isDisabled={!text.trim() || !slotId}
-            colorScheme="blue"
+        <Field.Root required>
+          <Field.Label>
+            Consultation Objectives <Field.RequiredIndicator />
+          </Field.Label>
+          <Textarea
+            value={objectives}
+            onChange={(e) => setObjectives(e.target.value)}
+            placeholder="What do you hope to achieve from this consultation?"
+            rows={4}
+          />
+          {errors.objectives && (
+            <Text color="red.500" fontSize="sm">
+              {errors.objectives}
+            </Text>
+          )}
+        </Field.Root>
+
+        <Field.Root>
+          <Field.Label>Supporting Documents (Optional)</Field.Label>
+          <Input type="file" onChange={handleFileChange} />
+          {documents && (
+            <Text fontSize="sm" color="gray.600" mt={1}>
+              Attached: {documents.name}
+            </Text>
+          )}
+        </Field.Root>
+
+        <Field.Root required>
+          <Checkbox.Root
+            checked={agreeTerms}
+            onCheckedChange={(e) => setAgreeTerms(!!e.checked)}
           >
-            Submit
+            <Checkbox.HiddenInput />
+            <Checkbox.Control />
+            <Checkbox.Label>
+              I confirm that the information provided is accurate and complete
+            </Checkbox.Label>
+          </Checkbox.Root>
+          {errors.agreeTerms && (
+            <Text color="red.500" fontSize="sm">
+              {errors.agreeTerms}
+            </Text>
+          )}
+        </Field.Root>
+
+        <HStack justify="flex-end" pt={4}>
+          <Button onClick={handleSubmit} colorScheme="blue">
+            Submit Pre-Consultation Form
           </Button>
         </HStack>
       </VStack>

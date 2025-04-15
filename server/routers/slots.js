@@ -9,12 +9,16 @@ import {
   updateSlot,
   closeSlot,
 } from "../database/slotDb.js";
+import multer from "multer";
+import { createPreconsultForm } from "../database/preconsultFormDb.js";
 
 import {
   createEntry,
   getEntryById,
   updateEntryStatus,
 } from "../database/entryDb.js";
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
 
@@ -62,6 +66,43 @@ router.get("/host", async (req, res) => {
 router.get("/:slotId", loadSlot, (req, res) => {
   res.json(req.slot);
 });
+
+router.post(
+  "/:slotId/preconsultation",
+  upload.single("documents"),
+  async (req, res) => {
+    const { slotId } = req.params;
+    const { concerns, objectives } = req.body;
+    const userId = req.user.userId;
+
+    if (!concerns || !objectives) {
+      return res.status(400).json({ error: "Missing required fields." });
+    }
+
+    try {
+      const attachment = req.file
+        ? {
+            name: req.file.originalname,
+            mimetype: req.file.mimetype,
+            buffer: req.file.buffer.toString("base64"), // or save to S3/gridFS instead
+          }
+        : null;
+
+      const result = await createPreconsultForm({
+        slotId,
+        createdBy: userId,
+        concerns,
+        objectives,
+        attachments: attachment,
+      });
+
+      res.status(201).json({ success: true, id: result.insertedId });
+    } catch (err) {
+      console.error("Failed to create preconsultation form:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+);
 
 // POST /api/slots/:slotId/join - Join a queue
 router.post("/:slotId/join", loadSlot, async (req, res) => {

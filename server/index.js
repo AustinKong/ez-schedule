@@ -10,7 +10,7 @@ import authRouter from "./routers/auth.js";
 import slotRouter from "./routers/slots.js";
 import userRouter from "./routers/users.js";
 import groupRouter from "./routers/groups.js";
-import preconsultFormRouter from "./routers/preconsultForm.js";
+import preconsultFormRouter from "./routers/preconsultationForms.js";
 
 const app = express();
 
@@ -22,7 +22,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/slots", requireAuth, slotRouter);
 app.use("/api/users", userRouter);
 app.use("/api/groups", requireAuth, groupRouter);
-app.use("/api/preconsultForm", requireAuth, preconsultFormRouter);
+app.use("/api/preconsultation", preconsultFormRouter);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
