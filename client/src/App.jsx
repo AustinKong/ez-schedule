@@ -15,6 +15,7 @@ import ShareGroupsPage from "./pages/manager/ShareGroupsPage";
 import UserGroupPage from "./pages/user/GroupPage";
 import UserGroupsPage from "./pages/user/GroupsPage";
 import JoinGroupsPage from "./pages/user/JoinGroupsPage";
+import PreconsultFormPage from "./pages/user/PreconsultForm";
 import Timetable from "./pages/user/TimeTable";
 import TimeSlotsPage from "./pages/user/TimeSlotsUserPage";
 import TimeSlotUserDetailsPage from "./pages/user/TimeslotUserDetailsPage";
@@ -45,6 +46,7 @@ function App() {
           <Route path="groups" element={<UserGroupsPage />} />
           <Route path="groups/:id" element={<UserGroupPage />} />
           <Route path="groups/:id/join" element={<JoinGroupsPage />} />
+          <Route path="preconsultForm/new" element={<PreconsultFormPage />} />
           
           {/* Timeslot Routes */}
           <Route path="timeslots" element={<TimeSlotsPage />} />

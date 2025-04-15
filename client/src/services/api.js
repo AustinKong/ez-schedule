@@ -100,6 +100,7 @@ export const fetchTimeslotsByGroup = async (groupId) => {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
+  console.log(response)
   if (!response.ok) throw new Error("Failed to fetch timeslots");
   return response.json();
 };
@@ -279,6 +280,20 @@ export const joinQueue = async (timeslotId) => {
   return response.json();
 };
 
+// Preconsult Form Endpoint
+export const createPreconsultForm = async ({ slotId, text, attachments }) => {
+  const response = await fetch(`${API_URL}/preconsultForm`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify({ slotId, text, attachments }),
+  });
+
+  if (!response.ok) throw new Error("Failed to submit preconsult form");
+  return response.json();
+};
 //added in
 export const submitPreConsultation = async (slotId, formData) => {
   const formPayload = new FormData();
@@ -294,28 +309,6 @@ export const submitPreConsultation = async (slotId, formData) => {
       Authorization: `Bearer ${localStorage.getItem('token')}`
     },
     body: formPayload
-  });
-  return handleResponse(response);
-};
-
-export const fetchSubmissions = async () => {
-  try {
-    const response = await fetch('/api/submissions', {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    return await handleResponse(response);
-  } catch (error) {
-    throw new Error('Failed to fetch submissions: ' + error.message);
-  }
-};
-
-export const fetchSubmissionDetails = async (submissionId) => {
-  const response = await fetch(`/api/submissions/${submissionId}`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`
-    }
   });
   return handleResponse(response);
 };
