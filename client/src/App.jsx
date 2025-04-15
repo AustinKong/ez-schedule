@@ -16,6 +16,9 @@ import ShareGroupsPage from "./pages/manager/ShareGroupsPage";
 import UserGroupPage from "./pages/user/GroupPage";
 import UserGroupsPage from "./pages/user/GroupsPage";
 import JoinGroupsPage from "./pages/user/JoinGroupsPage";
+import Timetable from "./pages/user/TimeTable";
+import TimeSlotsPage from "./pages/user/TimeSlotsUserPage";
+import TimeSlotUserDetailsPage from "./pages/user/TimeslotUserDetailsPage";
 
 function App() {
   return (
@@ -37,14 +40,15 @@ function App() {
             element={<TimeSlotForm isEdit={true} />}
           />
           <Route path="timeslots" element={<ManagerTimeSlotsPage />} />
-
-          <Route path="" element={<></>} />
         </Route>
 
         <Route element={<Layout />} path="user">
           <Route path="groups" element={<UserGroupsPage />} />
           <Route path="groups/:id" element={<UserGroupPage />} />
           <Route path="groups/:id/join" element={<JoinGroupsPage />} />
+          <Route path="timeslots" element={<TimeSlotsPage />} />
+          <Route path="timeslots/details" element={<TimeSlotUserDetailsPage />} />
+
 
           <Route path="" element={<></>} />
         </Route>

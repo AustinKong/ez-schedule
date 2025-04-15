@@ -1,7 +1,7 @@
 // src/pages/manager/TimeslotDetailsPage.jsx
 import { useParams, useNavigate } from "react-router-dom";
 import { useTimeslots } from "../../hooks/useTimeslots";
-import QueueManagement from "../manager/QueueManagement";
+import QueueManagement from "../manager/QueuePage";
 import { isWithinInterval, format, parseISO } from "date-fns";
 import { TimeslotStatusBadge, TimeslotStats } from "../ui";
 import { useEffect, useState } from "react";

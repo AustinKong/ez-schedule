@@ -48,7 +48,7 @@ import {
           {timeslots.map((slot) => (
             <Box key={slot._id} borderWidth="1px" borderRadius="md" p={4}>
               <HStack justify="space-between">
-                <Box as={Link} to={`/manager/timeslots/${slot._id}`} flex="1">
+                <Box as={Link} to={`/user/timeslots/${slot._id}`} flex="1">
                   <Heading size="sm">
                     {format(new Date(slot.start), "d MMM yyyy, h:mm a")} –{" "}
                     {format(new Date(slot.end), "h:mm a")}
@@ -63,7 +63,7 @@ import {
                   </Badge>
                   <IconButton
                     as={Link}
-                    to={`/manager/timeslots/${slot._id}/edit`}
+                    to={`/user/timeslots/${slot._id}/edit`}
                     aria-label="Edit slot"
                     size="sm"
                     variant="ghost"

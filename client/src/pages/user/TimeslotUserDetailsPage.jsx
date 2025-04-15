@@ -1,9 +1,11 @@
 // src/pages/manager/TimeslotDetailsPage.jsx
 import { useParams, useNavigate } from "react-router-dom";
 import { useTimeslots } from "../../hooks/useTimeslots";
-import QueueManagement from "../manager/QueueManagement";
+import QueueManagement from "../user/QueuePage";
 import { isWithinInterval, format, parseISO } from "date-fns";
-import { TimeslotStatusBadge, TimeslotStats } from "../ui";
+import { TimeslotStatusBadge} from "../../components/ui/TimeslotStatusBadge";
+import { TimeslotStats} from "../../components/ui/TimeslotStats";
+// import { TimeslotStatusBadge, TimeslotStats } from "../components/ui";
 import { useEffect, useState } from "react";
 
 const TimeslotDetailsPage = () => {
