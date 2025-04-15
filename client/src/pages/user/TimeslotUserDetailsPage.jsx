@@ -1,4 +1,3 @@
-// src/pages/manager/TimeslotDetailsPage.jsx
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTimeslots } from "../../hooks/useTimeslots";
 import QueueManagement from "../user/QueuePage";
@@ -6,12 +5,15 @@ import { isWithinInterval, format, parseISO } from "date-fns";
 import { TimeslotStatusBadge } from "../../components/ui/TimeslotStatusBadge";
 import { TimeslotStats } from "../../components/ui/TimeslotStats";
 import { useEffect, useState } from "react";
+import { Badge } from "@chakra-ui/react";
+import { fetchSubmissions } from "../../services/api";
 
-const TimeslotDetailsPage = () => {
+const TimeslotUserDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { getTimeslot } = useTimeslots();
   const [timeslot, setTimeslot] = useState(null);
+  const [submissionExists, setSubmissionExists] = useState(false);
   const [loading, setLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -24,10 +26,18 @@ const TimeslotDetailsPage = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const data = await getTimeslot(id);
-        setTimeslot(data);
+        // Load timeslot data
+        const timeslotData = await getTimeslot(id);
+        setTimeslot(timeslotData);
+        
+        // Check for existing submission
+        const submissions = await fetchSubmissions();
+        const hasSubmission = submissions.some(
+          sub => sub.slot._id === id && sub.status !== 'canceled'
+        );
+        setSubmissionExists(hasSubmission);
       } catch (error) {
-        console.error("Failed to load timeslot:", error);
+        console.error("Failed to load data:", error);
         navigate("/manager");
       } finally {
         setLoading(false);
@@ -65,10 +75,22 @@ const TimeslotDetailsPage = () => {
             <h1 className="text-2xl font-bold text-gray-900">
               {timeslot.name}
             </h1>
-            <TimeslotStatusBadge
-              status={isActive ? "active" : "ended"}
-              className="mt-2"
-            />
+            <div className="mt-2 space-y-2">
+              <TimeslotStatusBadge
+                status={isActive ? "active" : "ended"}
+              />
+              {submissionExists && (
+                <Badge 
+                  colorScheme="green" 
+                  fontSize="md" 
+                  px={2} 
+                  py={1} 
+                  borderRadius="md"
+                >
+                  Pre-Consultation Submitted
+                </Badge>
+              )}
+            </div>
           </div>
           <div className="text-right">
             <p className="text-sm text-gray-500">
@@ -95,13 +117,23 @@ const TimeslotDetailsPage = () => {
         {isActive ? (
           <>
             <QueueManagement groupId={timeslot.groupId} />
-            <div className="mt-6 text-center">
-              <Link
-                to={`/user/slots/${id}/preconsultation`}
-                className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Complete Pre-Consultation Form
-              </Link>
+            <div className="mt-6 text-center space-y-4">
+              {!submissionExists && (
+                <Link
+                  to={`/user/slots/${id}/preconsultation`}
+                  className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Complete Pre-Consultation Form
+                </Link>
+              )}
+              {submissionExists && (
+                <Link
+                  to={`/user/submissions`}
+                  className="inline-block bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  View All Submissions
+                </Link>
+              )}
             </div>
           </>
         ) : (
@@ -119,4 +151,4 @@ const TimeslotDetailsPage = () => {
   );
 };
 
-export default TimeslotDetailsPage;
+export default TimeslotUserDetailsPage;

@@ -297,3 +297,25 @@ export const submitPreConsultation = async (slotId, formData) => {
   });
   return handleResponse(response);
 };
+
+export const fetchSubmissions = async () => {
+  try {
+    const response = await fetch('/api/submissions', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    return await handleResponse(response);
+  } catch (error) {
+    throw new Error('Failed to fetch submissions: ' + error.message);
+  }
+};
+
+export const fetchSubmissionDetails = async (submissionId) => {
+  const response = await fetch(`/api/submissions/${submissionId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+  return handleResponse(response);
+};

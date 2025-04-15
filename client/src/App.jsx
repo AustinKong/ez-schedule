@@ -20,6 +20,8 @@ import TimeSlotsPage from "./pages/user/TimeSlotsUserPage";
 import TimeSlotUserDetailsPage from "./pages/user/TimeslotUserDetailsPage";
 import PreConsultationForm from "./pages/user/PreConsultationForm";
 import ConsultationConfirmation from "./pages/user/ConsultationConfirmation";
+import SubmissionsListPage from './pages/user/SubmissionsListPage';
+import SubmissionDetailsPage from './pages/user/SubmissionDetailsPage';
 
 function App() {
   return (
@@ -49,7 +51,8 @@ function App() {
           <Route path="timeslots/:slotId" element={<TimeSlotUserDetailsPage />} />
           <Route path="timeslots/:slotId/preconsultation" element={<PreConsultationForm />} />
           <Route path="timeslots/:slotId/confirmation" element={<ConsultationConfirmation />} />
-
+          <Route path="submissions" element={<SubmissionsListPage />} />
+          <Route path="submissions/:id" element={<SubmissionDetailsPage />} />
           <Route path="timetable" element={<Timetable />} />
           <Route path="" element={<></>} />
         </Route>

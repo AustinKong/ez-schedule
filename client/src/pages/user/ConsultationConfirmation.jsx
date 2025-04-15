@@ -23,8 +23,16 @@ const ConsultationConfirmation = () => {
           >
             Back to My Consultations
           </Link>
+          <Link 
+            to="/user/submissions"
+            className="inline-block bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded mt-4"
+            >
+            View All Submissions
+            </Link>
         </div>
       </div>
     </div>
   );
 };
+
+export default ConsultationConfirmation;
