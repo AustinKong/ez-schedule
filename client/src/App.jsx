@@ -16,6 +16,7 @@ import ShareGroupsPage from "./pages/manager/ShareGroupsPage";
 import UserGroupPage from "./pages/user/GroupPage";
 import UserGroupsPage from "./pages/user/GroupsPage";
 import JoinGroupsPage from "./pages/user/JoinGroupsPage";
+import PreconsultFormPage from "./pages/user/PreconsultForm";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
           <Route path="groups" element={<UserGroupsPage />} />
           <Route path="groups/:id" element={<UserGroupPage />} />
           <Route path="groups/:id/join" element={<JoinGroupsPage />} />
+          <Route path="preconsultForm/new" element={<PreconsultFormPage />} />
 
           <Route path="" element={<></>} />
         </Route>

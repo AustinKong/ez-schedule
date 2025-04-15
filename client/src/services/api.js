@@ -100,6 +100,7 @@ export const fetchTimeslotsByGroup = async (groupId) => {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
+  console.log(response)
   if (!response.ok) throw new Error("Failed to fetch timeslots");
   return response.json();
 };
@@ -276,5 +277,20 @@ export const joinQueue = async (timeslotId) => {
     },
   });
   if (!response.ok) throw new Error("Failed to join queue");
+  return response.json();
+};
+
+// Preconsult Form Endpoint
+export const createPreconsultForm = async ({ slotId, text, attachments }) => {
+  const response = await fetch(`${API_URL}/preconsultForm`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify({ slotId, text, attachments }),
+  });
+
+  if (!response.ok) throw new Error("Failed to submit preconsult form");
   return response.json();
 };

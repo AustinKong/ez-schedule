@@ -1,6 +1,6 @@
 import { Box, VStack, Link as ChakraLink, Icon } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
-import { FiTag, FiUser, FiCompass } from "react-icons/fi";
+import { FiTag, FiUser, FiCompass, FiFolder } from "react-icons/fi";
 import { FiUsers, FiCalendar } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
@@ -35,6 +35,7 @@ const Sidebar = () => {
       { to: "/user/groups", label: "Groups", icon: FiUsers },
       { to: "/user/timeslots", label: "Timeslots", icon: FiCalendar },
       { to: "/queue", label: "Queue", icon: FiUser },
+      { to: "/user/preconsultForm/new", label: "Preconsult Form", icon: FiFolder },
     ];
   }
 
