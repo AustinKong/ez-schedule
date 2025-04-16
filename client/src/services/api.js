@@ -59,15 +59,16 @@ export const deleteGroup = async (id) => {
   return response.json();
 };
 
-export const fetchGroupById = async (id) => {
-  const response = await fetch(`${API_URL}/groups/${id}`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
-  if (!response.ok) throw new Error("Failed to fetch group by ID");
-  return response.json();
-};
+//do not use this already we use fetchGroup instead
+// export const fetchGroupById = async (id) => {
+//   const response = await fetch(`${API_URL}/groups/${id}`, {
+//     headers: {
+//       Authorization: `Bearer ${localStorage.getItem("token")}`,
+//     },
+//   });
+//   if (!response.ok) throw new Error("Failed to fetch group by ID");
+//   return response.json();
+// };
 
 export const joinGroup = async (groupId, password) => {
   const response = await fetch(`${API_URL}/groups/${groupId}/join`, {

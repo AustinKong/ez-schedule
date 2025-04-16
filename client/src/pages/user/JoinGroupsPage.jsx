@@ -9,8 +9,7 @@ import {
   Field,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { joinGroup } from "@/services/api";
-import { fetchGroupById } from "../../services/api";
+import { joinGroup, fetchGroup } from "@/services/api";  // Updated import
 import { useNavigate, useParams } from "react-router-dom";
 
 const JoinGroupsPage = () => {
@@ -35,7 +34,7 @@ const JoinGroupsPage = () => {
   };
 
   useEffect(() => {
-    fetchGroupById(id)
+    fetchGroup(id)  // Changed to fetchGroup
       .then((groupData) => {
         if (groupData) {
           setGroup(groupData);

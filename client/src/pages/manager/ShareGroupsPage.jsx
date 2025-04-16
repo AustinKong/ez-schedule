@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { fetchGroupById } from "@/services/api";
+import { fetchGroup } from "@/services/api";  // Changed import
 
 const ShareGroupsPage = () => {
   const { id: groupId } = useParams();
@@ -22,9 +22,9 @@ const ShareGroupsPage = () => {
   const [group, setGroup] = useState(null);
 
   useEffect(() => {
-    const fetchGroup = async () => {
+    const loadGroup = async () => {  // Renamed function to avoid name conflict
       try {
-        const data = await fetchGroupById(groupId);
+        const data = await fetchGroup(groupId);  // Changed to fetchGroup
         setGroup(data);
       } catch (err) {
         console.error("Failed to fetch group data", err);
@@ -33,7 +33,7 @@ const ShareGroupsPage = () => {
       }
     };
 
-    fetchGroup();
+    loadGroup();
   }, [groupId]);
 
   const joinUrl = `${window.location.origin}/user/groups/${groupId}/join`;
