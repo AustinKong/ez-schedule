@@ -9,9 +9,13 @@ export async function findUserByEmail(email) {
 export async function findUserById(userId) {
   const db = await connectDb();
   try {
+    // console.log("(userDb.js) userId:", userId, "typeof:", typeof userId); //debug
+    const resolvedId = typeof userId === "string" ? ObjectId.createFromHexString(userId) : userId;
+
     return db
       .collection("users")
-      .findOne({ _id: ObjectId.createFromHexString(userId) });
+      // .findOne({ _id: ObjectId.createFromHexString(userId) });
+      .findOne({ _id: resolvedId });
   } catch (error) {
     console.error("Error fetching user:", error);
     return null; // Handle invalid ObjectId errors

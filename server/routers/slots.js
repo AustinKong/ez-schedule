@@ -12,6 +12,9 @@ import {
 import multer from "multer";
 import { createPreconsultForm } from "../database/preconsultFormDb.js";
 
+import { findUserById } from "../database/userDb.js";
+import { sendQueueEmail } from "../utils/mailer.js";
+
 import {
   createEntry,
   getEntryById,
@@ -113,7 +116,7 @@ router.post("/:slotId/join", loadSlot, async (req, res) => {
 
   // Check if already in queue
   const alreadyInQueue = req.slot.entries.some(
-    (entry) => entry.visitor === userId
+    (entry) => entry.participant === userId
   );
   if (alreadyInQueue)
     return res.status(400).json({ error: "Already in queue" });
@@ -129,7 +132,7 @@ router.post("/:slotId/leave", loadSlot, async (req, res) => {
   const userId = req.user.userId;
 
   const matchingEntryId = req.slot.entries.find(
-    (entry) => entry.visitor === userId
+    (entry) => entry.participant === userId
   )?._id;
   if (!matchingEntryId)
     return res.status(400).json({ error: "You are not in the queue" });
@@ -146,13 +149,39 @@ router.post("/:slotId/advance", loadSlot, async (req, res) => {
     return res.status(403).json({ error: "Only host can advance queue" });
   }
 
-  const nextEntryId = req.slot.entries[0]._id;
-  if (!nextEntryId) return res.status(400).json({ error: "Queue is empty" });
+  const entries = req.slot.entries;
 
-  await updateEntryStatus(nextEntryId, "notified");
-  await advanceSlotQueue(req.slot._id); // removes first entry
+  if (!entries.length) {
+    return res.status(400).json({ error: "Queue is empty" });
+  }
 
-  res.status(200).json({ message: "Advanced queue" });
+  const nextEntry = entries[0];
+  const nextNextEntry = entries[1];
+
+  try {
+    // Update status of current user and remove from queue
+    await updateEntryStatus(nextEntry._id, "notified");
+    await advanceSlotQueue(req.slot._id); //removes first entry
+
+    // Send email to current user
+    const nextUser = await findUserById(nextEntry.participant);
+    if (nextUser && nextUser.email) {
+      await sendQueueEmail(nextUser.email, "next");
+    }
+
+    // Send email to next-next user if exists
+    if (nextNextEntry) {
+      const nextNextUser = await findUserById(nextNextEntry.participant);
+      if (nextNextUser && nextNextUser.email) {
+        await sendQueueEmail(nextNextUser.email, "next-next");
+      }
+    }
+
+    res.status(200).json({ message: "Advanced queue and sent notifications" });
+  } catch (error) {
+    console.error("Error advancing queue:", error);
+    res.status(500).json({ error: "Failed to advance queue" });
+  }
 });
 
 // POST /api/slots/:slotId/close - Host closes the slot
@@ -174,7 +203,7 @@ router.get("/:slotId/position", loadSlot, (req, res) => {
   const userId = req.user.userId;
 
   const index = req.slot.entries.findIndex(
-    (entry) => entry.visitor?.toString() === userId
+    (entry) => entry.participant?.toString() === userId
   );
 
   if (index === -1) {

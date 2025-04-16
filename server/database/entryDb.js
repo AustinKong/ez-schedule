@@ -1,13 +1,13 @@
 import { connectDb } from "./utils.js";
 import { ObjectId } from "mongodb";
 
-export async function createEntry(visitorId) {
+export async function createEntry(participantId) {
   const db = await connectDb();
 
   // const tagArray = entryData.tags.split(',').map((tag) => tag.trim());
   try {
     const result = await db.collection("entries").insertOne({
-      visitor: ObjectId.createFromHexString(visitorId),
+      participant: ObjectId.createFromHexString(participantId),
       status: "waiting",
       createdAt: new Date(),
       // tags: tagArray,
@@ -22,10 +22,14 @@ export async function createEntry(visitorId) {
 export async function updateEntryStatus(entryId, status) {
   const db = await connectDb();
   try {
+    // console.log("(entryDb.js) entryId:", entryId, "typeof:", typeof entryId); //debug
+    const resolvedId = typeof entryId === "string" ? ObjectId.createFromHexString(entryId) : entryId;
+
     const result = await db
       .collection("entries")
       .updateOne(
-        { _id: ObjectId.createFromHexString(entryId) },
+        // { _id: ObjectId.createFromHexString(entryId) },
+        { _id: resolvedId },
         { $set: { status } }
       );
     console.log(`Status updated to '${status}' for entry ID: ${entryId}`);

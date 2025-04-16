@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export async function sendResetEmail(to, token) {
+export async function sendResetPasswordEmail(to, token) {
 //   const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${token}`;
   const resetLink = `http://localhost:${process.env.PORT}/reset-password?token=${token}`;
 
@@ -29,4 +29,26 @@ export async function sendResetEmail(to, token) {
 
   await transporter.sendMail(mailOptions);
 //   console.log("3 SENDING EMAIL TO:", to); //debug
+}
+
+
+export async function sendQueueEmail(to, position) {
+  let subject, html;
+
+  if (position === "next") {
+    subject = "You're up for consultation!";
+    html = `<p>Hi there, it's your turn now for the consultation.</p>`;
+  } else if (position === "next-next") {
+    subject = "Get ready - you're next!";
+    html = `<p>Your consultation session is coming up. You're next in line. Make your way to the consultation room or be ready to join the link provided by your host.</p>`;
+  }
+
+  const mailOptions = {
+    from: `"EZ Schedule" <${process.env.EMAIL_USER}>`,
+    to,
+    subject,
+    html,
+  };
+
+  await transporter.sendMail(mailOptions);
 }

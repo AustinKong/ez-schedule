@@ -7,7 +7,7 @@ import {
   updateUser,
   getUserByUsername,
 } from "../database/userDb.js";
-import { sendResetEmail } from "../utils/mailer.js";
+import { sendResetPasswordEmail } from "../utils/mailer.js";
 
 const router = Router();
 
@@ -87,7 +87,7 @@ router.post("/forgot-password", async (req, res) => {
       expiresIn: "1h",
     });
 
-    await sendResetEmail(user.email, token);
+    await sendResetPasswordEmail(user.email, token);
     res
       .status(200)
       .json({ message: "If email exists, a reset link has been sent." });
