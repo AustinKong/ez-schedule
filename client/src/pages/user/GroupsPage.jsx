@@ -1,3 +1,4 @@
+// THIS PAGE IS A LIST OF GROUPS
 import { Box, Flex, Heading, Text, VStack } from "@chakra-ui/react";
 import { useGroups } from "@/hooks/useGroups";
 import { Link } from "react-router-dom";

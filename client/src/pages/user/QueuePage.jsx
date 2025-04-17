@@ -1,101 +1,128 @@
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
   Flex,
   Heading,
   Text,
   Button,
-  HStack,
-  VStack,
+  Separator,
+  Badge,
   Spinner,
-  Table,
+  VStack,
+  HStack,
 } from "@chakra-ui/react";
-
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { getSlotDetails, advanceQueue, closeSlot } from "@/services/api";
-import { useQueue } from "@/hooks/useQueue";
-import { formatSlotTime, isSlotActive } from "@/utils/dateUtils";
+import { getSlotDetails, joinQueue, fetchQueueByTimeslot } from "../../services/api";
+import { formatSlotTime, isSlotActive } from "../../utils/dateUtils";
+import { useAuth } from "../../contexts/AuthContext";
+import { toaster } from "../../components/ui/toaster";
 
 const QueuePage = () => {
   const { id: slotId } = useParams();
   const navigate = useNavigate();
-
+  const { user } = useAuth() || {};
+  
+  // Manage all state locally
+  const [queue, setQueue] = useState([]);
   const [slot, setSlot] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isJoining, setIsJoining] = useState(false);
+  const [userPosition, setUserPosition] = useState(null);
+  const [userQueueNumber, setUserQueueNumber] = useState(null);
+  const [hasJoined, setHasJoined] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [queueStatus, setQueueStatus] = useState("inactive");
+  const [waitingCount, setWaitingCount] = useState(0);
+  const [currentQueueNumber, setCurrentQueueNumber] = useState("No one");
 
-  const { queue, loadQueue } = useQueue(slotId);
-
-  const [queueData, setQueueData] = useState({
-    date: "",
-    startTime: "",
-    endTime: "",
-    currentNumber: null,
-    currentUser: null,
-    waitingCount: 0,
-    waitingUsers: [],
-  });
-
+  // Load slot details and queue data
   useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
+    const fetchData = async () => {
       try {
+        setLoading(true);
+        // Fetch slot details
         const slotData = await getSlotDetails(slotId);
         setSlot(slotData);
-        await loadQueue();
+        
+        // Determine queue status based on slot data
+        const status = slotData.isClosed ? "closed" : isSlotActive(slotData) ? "active" : "inactive";
+        setQueueStatus(status);
+        
+        // Fetch queue data
+        await fetchQueueData();
       } catch (error) {
-        console.error("Failed to load queue data:", error);
+        console.error("Failed to load data:", error);
+        toaster.error("Failed to load slot details");
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
-    loadData();
-    const interval = setInterval(() => loadQueue(), 30000);
+    fetchData();
+    
+    // Set up polling to refresh queue data
+    const interval = setInterval(() => {
+      fetchQueueData();
+    }, 30000); // Refresh every 30 seconds
+    
     return () => clearInterval(interval);
   }, [slotId]);
 
-  useEffect(() => {
-    if (slot && queue) {
-      const currentUser = queue[0];
-      setQueueData({
-        date: formatSlotTime(slot.start),
-        startTime: slot.start,
-        endTime: slot.end,
-        currentNumber: currentUser?.queueNumber || null,
-        currentUser,
-        waitingCount: queue.length,
-        waitingUsers: queue,
-      });
-    }
-  }, [queue, slot]);
-
-  const handleCallNext = async () => {
+  // Separate function to fetch queue data using the existing API function
+  const fetchQueueData = async () => {
     try {
-      await advanceQueue(slotId);
-      await loadQueue();
+      // Use the existing API function from services/api.js
+      const queueData = await fetchQueueByTimeslot(slotId);
+      setQueue(queueData);
+      setWaitingCount(queueData.length);
+      
+      // Set current queue number
+      if (queueData.length > 0) {
+        setCurrentQueueNumber(queueData[0].queueNumber || "No one");
+      } else {
+        setCurrentQueueNumber("No one");
+      }
+      
+      // Check if current user is in queue
+      if (user && queueData.length > 0) {
+        const userInQueue = queueData.find(entry => entry.userId === user.id);
+        setHasJoined(!!userInQueue);
+        
+        if (userInQueue) {
+          // Find position (how many people in front)
+          const position = queueData.findIndex(entry => entry.userId === user.id);
+          setUserPosition(position);
+          setUserQueueNumber(userInQueue.queueNumber);
+        } else {
+          setUserPosition(null);
+          setUserQueueNumber(null);
+        }
+      }
     } catch (error) {
-      console.error("Failed to advance queue:", error);
+      console.error("Failed to fetch queue data:", error);
     }
   };
 
-  const handleCloseSlot = async () => {
+  const handleJoinQueue = async () => {
+    if (!user) {
+      toaster.error("Please log in to join the queue");
+      navigate("/auth/login");
+      return;
+    }
+
+    setIsJoining(true);
     try {
-      await closeSlot(slotId);
-      await loadQueue();
-      navigate("/manager/slots");
+      await joinQueue(slotId);
+      await fetchQueueData();
+      toaster.success("Successfully joined the queue");
     } catch (error) {
-      console.error("Failed to close slot:", error);
+      console.error("Failed to join queue:", error);
+      toaster.error("Failed to join queue");
+    } finally {
+      setIsJoining(false);
     }
   };
 
-  const formatDate = (dateString) => new Date(dateString).toLocaleDateString();
-  const formatTime = (dateString) =>
-    new Date(dateString).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-  if (isLoading) {
+  if (loading && !slot) {
     return (
       <Flex justify="center" align="center" h="100vh">
         <Spinner size="xl" />
@@ -105,116 +132,155 @@ const QueuePage = () => {
 
   if (!slot) {
     return (
-      <Box textAlign="center" py={8}>
-        <Text fontSize="lg">Slot not found or unauthorized</Text>
+      <Box textAlign="center" p={8}>
+        <Text>Slot not found or you don't have access to view it.</Text>
+        <Button mt={4} onClick={() => navigate("/user/groups")}>
+          Back to Groups
+        </Button>
       </Box>
     );
   }
 
   return (
-    <Box px={6} py={8} maxW="6xl" mx="auto">
-      <Flex justify="space-between" mb={6} align="center">
-        <Box>
-          <Heading size="lg">{slot.name}</Heading>
-          <Text color="gray.600">
-            {formatSlotTime(slot.start)} - {formatSlotTime(slot.end)}
-          </Text>
+    <Box px={6} py={8} maxW="1000px" mx="auto">
+      <Heading as="h1" size="lg" mb={2}>
+        {slot.name}
+      </Heading>
+      <Text color="gray.600" mb={6}>
+        {formatSlotTime(slot.start)} - {formatSlotTime(slot.end)}
+      </Text>
+
+      <Flex 
+        gap={4} 
+        mb={8} 
+        direction={{ base: "column", md: "row" }}
+      >
+        <Box flex={1} p={4} borderRadius="md" bg="gray.50">
+          <Text fontWeight="semibold" color="gray.800">Location:</Text>
+          <Text color="gray.800">{slot.location || "Not specified"}</Text>
+        </Box>
+        <Box flex={1} p={4} borderRadius="md" bg="gray.50">
+          <Text fontWeight="semibold" color="gray.800">Status:</Text>
+          <Badge 
+            colorScheme={queueStatus === "active" ? "green" : queueStatus === "closed" ? "red" : "yellow"}
+          >
+            {queueStatus === "active" ? "Active" : queueStatus === "closed" ? "Closed" : "Inactive"}
+          </Badge>
         </Box>
       </Flex>
 
-      <Flex gap={4} mb={8} direction={{ base: "column", md: "row" }}>
-        <Box flex={1} p={4} borderRadius="md">
-          <Text fontWeight="semibold">Location:</Text>
-          <Text>{slot.location || "Not specified"}</Text>
+      <Box 
+        borderWidth="1px" 
+        borderRadius="lg" 
+        overflow="hidden" 
+        boxShadow="md"
+      >
+        <Box bg="blue.50" p={6}>
+          <Heading size="md" mb={4} textAlign="center" color="gray.800">
+            Queue Information
+          </Heading>
+          
+          <Flex 
+            direction={{ base: "column", md: "row" }} 
+            justify="space-between" 
+            align="center" 
+            gap={6}
+          >
+            <VStack align="flex-start" spacing={2}>
+              <Text color="gray.600">Date:</Text>
+              <Text fontWeight="medium" color="gray.800">
+                {new Date(slot.start).toLocaleDateString()}
+              </Text>
+              
+              <Text color="gray.600" mt={2}>Timeslot:</Text>
+              <Text 
+                fontWeight="medium" 
+                color="white"
+                bg="black"
+                px={2}
+                py={1}
+                borderRadius="md"
+              >
+                {new Date(slot.start).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
+                {new Date(slot.end).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+              </Text>
+            </VStack>
+            
+            <VStack align="center" spacing={2}>
+              <Text color="gray.600">Current Queue Number</Text>
+              <Text 
+                fontSize="4xl" 
+                fontWeight="bold" 
+                color="blue.600"
+              >
+                {currentQueueNumber}
+              </Text>
+              <Text color="gray.600" mt={2}>
+                {waitingCount} users waiting
+              </Text>
+            </VStack>
+          </Flex>
         </Box>
-        <Box flex={1} p={4} borderRadius="md">
-          <Text fontWeight="semibold">Status:</Text>
-          <Text>{isSlotActive(slot) ? "Active" : "Closed"}</Text>
+        
+        <Separator />
+        
+        <Box p={6} bg="white">
+          <VStack spacing={6}>
+            <HStack spacing={12} w="full" justify="center">
+              <VStack align="center">
+                <Text color="gray.600">Your Queue Number</Text>
+                <Text 
+                  fontSize="2xl" 
+                  fontWeight="bold" 
+                  color={hasJoined ? "green.500" : "gray.800"}
+                >
+                  {userQueueNumber || "-"}
+                </Text>
+              </VStack>
+              
+              <VStack align="center">
+                <Text color="gray.600">People in Front of You</Text>
+                <Text 
+                  fontSize="2xl" 
+                  fontWeight="bold" 
+                  color={hasJoined ? "blue.500" : "gray.800"}
+                >
+                  {hasJoined ? userPosition : "-"}
+                </Text>
+              </VStack>
+            </HStack>
+            
+            {/* Remove the Join Queue button from here */}
+          </VStack>
         </Box>
-      </Flex>
-
-      <Box borderRadius="lg" boxShadow="md" mb={6}>
-        <Flex direction={{ base: "column", md: "row" }} p={6} gap={6}>
-          <Box>
-            <Heading size="md" mb={2}>
-              Queue Information
-            </Heading>
-            <Text>Date: {formatDate(queueData.date)}</Text>
-            <Text>
-              Timeslot: {formatTime(queueData.startTime)} -{" "}
-              {formatTime(queueData.endTime)}
-            </Text>
-          </Box>
-
-          <Box borderRadius="lg" p={6} textAlign="center" minW="200px">
-            <Text fontSize="4xl" fontWeight="bold" color="blue.600" mb={2}>
-              {queueData.currentNumber || "No one"}
-            </Text>
-            <Text color="gray.600" mb={4}>
-              Current Queue Number
-            </Text>
-            <Text fontSize="lg" fontWeight="medium">
-              {queueData.waitingCount} users waiting
-            </Text>
-          </Box>
-        </Flex>
-
-        <HStack
-          spacing={4}
-          px={6}
-          py={4}
-          justify="center"
-          borderTop="1px solid"
-          borderColor="gray.200"
-        >
-          {!slot.isClosed && (
-            <Button
-              colorScheme="blue"
-              onClick={handleCallNext}
-              isDisabled={queueData.waitingCount === 0}
-            >
-              Call Next
-            </Button>
-          )}
-          {!slot.isClosed && queueData.currentUser && (
-            <Button colorScheme="red" onClick={handleCloseSlot}>
-              End Session
-            </Button>
-          )}
+      </Box>
+      
+      {/* Add both buttons side by side here */}
+      <Box textAlign="center" mt={6}>
+        <HStack spacing={4} justify="center">
+          <Button
+            variant="outline"
+            isLoading={isJoining}
+            loadingText="Joining..."
+            onClick={handleJoinQueue}
+            isDisabled={hasJoined || queueStatus !== "active"}
+          >
+            {hasJoined ? "Already in Queue" : "Join Queue"}
+          </Button>
+          
+          <Button variant="outline" onClick={() => navigate("/user/groups")}>
+            Back to Groups
+          </Button>
         </HStack>
-
-        {queueData.waitingUsers.length > 0 && (
-          <Box px={6} py={4}>
-            <Heading size="sm" mb={4}>
-              Waiting Users
-            </Heading>
-            <Table.Root>
-              <Table.Header>
-                <Table.Row>
-                  <Table.ColumnHeader>Queue #</Table.ColumnHeader>
-                  <Table.ColumnHeader>Name</Table.ColumnHeader>
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
-                {queueData.waitingUsers.map((user) => (
-                  <Table.Row key={user.id}>
-                    <Table.Cell>{user.queueNumber}</Table.Cell>
-                    <Table.Cell>{user.name}</Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table.Root>
-          </Box>
+        
+        {queueStatus !== "active" && (
+          <Text color="red.500" mt={4} textAlign="center">
+            {queueStatus === "closed" 
+              ? "This slot is closed and not accepting new entries." 
+              : "This slot is not active yet."}
+          </Text>
         )}
       </Box>
-
-      {!slot.isClosed && (
-        <Box textAlign="center">
-          <Button colorScheme="red" size="lg" onClick={handleCloseSlot}>
-            Close Slot Early
-          </Button>
-        </Box>
-      )}
     </Box>
   );
 };
