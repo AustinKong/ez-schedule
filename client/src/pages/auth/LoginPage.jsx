@@ -116,10 +116,20 @@ function LoginPage() {
             colorScheme="blue"
             width="full"
             onClick={handleLogin}
-            disabled={!email || !isValidEmail(email) || !password}
+            //disabled={!email || !isValidEmail(email) || !password}
             mt={2}
           >
             Login
+          </Button>
+                <Button
+            variant="link"
+            colorScheme="blue"
+            width="full"
+            mt={1}
+            as={Link}
+            to="/forget-password"
+          >
+            Forgot password?
           </Button>
         </VStack>
 
