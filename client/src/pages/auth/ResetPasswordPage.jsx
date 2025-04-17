@@ -10,16 +10,19 @@ import {
 import { useState } from "react";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { PasswordInput } from "@/components/ui/password-input";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 const isValidPassword = (pw) => pw && pw.length >= 6; // Example minimum
 
 function ResetPasswordPage() {
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { token } = useParams(); // Assume reset token comes from URL
+  // const { token } = useParams(); // Assume reset token comes from URL
+
 
   const handleReset = async () => {
     if (!isValidPassword(password) || password !== repeatPassword) {
