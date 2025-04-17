@@ -121,6 +121,16 @@ function LoginPage() {
           >
             Login
           </Button>
+          <Button
+            variant="link"
+            colorScheme="blue"
+            width="full"
+            mt={1}
+            as={Link}
+            to="/forgetpassword"
+          >
+            Forgot password?
+          </Button>
         </VStack>
 
         <Text fontSize="sm">
