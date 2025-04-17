@@ -54,7 +54,7 @@ function App() {
           <Route path="groups" element={<UserGroupsPage />} />
           <Route path="groups/:id" element={<UserGroupPage />} />
           <Route path="groups/:id/join" element={<JoinGroupsPage />} />
-
+          <Route path="preconsultForm/new" element={<PreconsultFormPage/>} />
           {/* Timeslot Routes */}
           <Route path="timeslots" element={<TimeSlotsPage />} />
           <Route path="timeslots/all" element={<Timetable />} />
