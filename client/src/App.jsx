@@ -17,12 +17,13 @@ import UserGroupPage from "./pages/user/GroupPage";
 import UserGroupsPage from "./pages/user/GroupsPage";
 import JoinGroupsPage from "./pages/user/JoinGroupsPage";
 import PreconsultFormPage from "./pages/user/PreconsultForm";
-// import Timetable from "./pages/user/TimeTable";
+import Timetable from "./pages/user/TimeTable";
 import TimeSlotsPage from "./pages/user/TimeSlotsUserPage";
 import TimeSlotUserDetailsPage from "./pages/user/TimeslotUserDetailsPage";
 import ConsultationConfirmation from "./pages/user/ConsultationConfirmation";
 import SubmissionsListPage from "./pages/user/SubmissionsListPage";
 import SubmissionDetailsPage from "./pages/user/SubmissionDetailsPage";
+
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
 
           {/* Timeslot Routes */}
           <Route path="timeslots" element={<TimeSlotsPage />} />
+          <Route path="timeslots/all" element={<Timetable />} />
           <Route
             path="timeslots/:slotId"
             element={<TimeSlotUserDetailsPage />}
