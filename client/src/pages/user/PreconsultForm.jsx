@@ -68,7 +68,7 @@ const PreconsultFormPage = () => {
         documents,
         agreeTerms,
       });
-      navigate(`/user/slots/${slotId}/confirmation`);
+      navigate(`/user/timeslots/${slotId}/confirmation`);
     } catch (error) {
       console.error("Submission failed:", error);
     }

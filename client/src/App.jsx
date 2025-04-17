@@ -56,7 +56,7 @@ function App() {
           {/* Timeslot Routes */}
           <Route path="timeslots" element={<TimeSlotsPage />} />
           <Route
-            path="timeslots/:slotId"
+            path="timeslots/:id"
             element={<TimeSlotUserDetailsPage />}
           />
           <Route

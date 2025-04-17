@@ -1,37 +1,39 @@
 // src/components/user/ConsultationConfirmation.jsx
-import { Link, useParams } from 'react-router-dom';
+import { Link as RouterLink, useParams } from 'react-router-dom';
+import {
+  Box,
+  Button,
+  Center,
+  Heading,
+  Stack,
+  Text,
+} from '@chakra-ui/react';
 
 const ConsultationConfirmation = () => {
   const { slotId } = useParams();
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 text-center">
-      <div className="bg-white shadow rounded-lg p-6">
-        <h1 className="text-2xl font-bold mb-4 text-green-600">Submission Successful!</h1>
-        <p className="mb-4">Your pre-consultation form has been submitted successfully.</p>
-        <div className="space-y-2">
-          <Link 
-            to={`/user/slots/${slotId}`}
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-          >
+    <Center py={8}>
+      <Box p={6} textAlign="center">
+        <Heading size="md" color="green.600" mb={4}>
+          Submission Successful!
+        </Heading>
+        <Text mb={6}>
+          Your pre-consultation form has been submitted successfully.
+        </Text>
+        <Stack spacing={3}>
+          <Button as={RouterLink} to={`/user/timeslots/${slotId}`} colorScheme="blue">
             View Consultation Details
-          </Link>
-          <br />
-          <Link 
-            to="/user/slots"
-            className="inline-block bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
-          >
+          </Button>
+          <Button as={RouterLink} to="/user/timeslots" colorScheme="gray">
             Back to My Consultations
-          </Link>
-          <Link 
-            to="/user/submissions"
-            className="inline-block bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded mt-4"
-            >
+          </Button>
+          <Button as={RouterLink} to="/user/submissions" colorScheme="gray">
             View All Submissions
-            </Link>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </Stack>
+      </Box>
+    </Center>
   );
 };
 

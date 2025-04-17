@@ -1,16 +1,26 @@
-import { useParams, useNavigate, Link } from "react-router-dom";
+// src/components/user/TimeslotUserDetailsPage.jsx
+import { useParams, useNavigate, Link as RouterLink } from "react-router-dom";
 import { useTimeslots } from "../../hooks/useTimeslots";
 import QueueManagement from "../user/QueuePage";
 import { isWithinInterval, format, parseISO } from "date-fns";
 import { TimeslotStatusBadge } from "../../components/ui/TimeslotStatusBadge";
 import { TimeslotStats } from "../../components/ui/TimeslotStats";
 import { useEffect, useState } from "react";
-import { Badge } from "@chakra-ui/react";
-import { fetchSubmissions } from "../../services/api";
+import {
+  Badge,
+  Box,
+  Button,
+  Center,
+  Flex,
+  Grid,
+  Heading,
+  Spinner,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 
 const TimeslotUserDetailsPage = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { getTimeslot } = useTimeslots();
   const [timeslot, setTimeslot] = useState(null);
   const [submissionExists, setSubmissionExists] = useState(false);
@@ -23,18 +33,18 @@ const TimeslotUserDetailsPage = () => {
       : "N/A";
   };
 
-useEffect(() => {
+  useEffect(() => {
     const loadData = async () => {
       try {
         const timeslotData = await getTimeslot(id);
         setTimeslot(timeslotData);
-        
+
         const response = await fetch(`/api/preconsultations/slot/${id}`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         });
-        
+
         if (response.ok) {
           const submission = await response.json();
           setSubmissionExists(!!submission);
@@ -47,106 +57,107 @@ useEffect(() => {
     };
     loadData();
   }, [id]);
-  
+
   if (loading)
     return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
-      </div>
+      <Center h="100vh">
+        <Spinner size="xl" />
+      </Center>
     );
+
   if (!timeslot)
     return (
-      <div className="flex justify-center items-center h-screen">
-        Timeslot not found
-      </div>
+      <Center h="100vh">
+        <Text>Timeslot not found</Text>
+      </Center>
     );
 
   const isActive = isWithinInterval(currentTime, {
-    start: parseISO(timeslot.startTime),
-    end: parseISO(timeslot.endTime),
+    start: parseISO(timeslot.start),
+    end: parseISO(timeslot.end),
   });
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="bg-white shadow rounded-lg p-6 mb-6">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+    <Box maxW="4xl" mx="auto" px={4} py={8}>
+      <Box p={6} mb={6}>
+        <Flex justify="space-between" align="flex-start" mb={4}>
+          <Box>
+            <Heading size="md">
               {timeslot.name}
-            </h1>
-            <div className="mt-2 space-y-2">
-              <TimeslotStatusBadge
-                status={isActive ? "active" : "ended"}
-              />
+            </Heading>
+            <Stack mt={2} spacing={2}>
+              <TimeslotStatusBadge status={isActive ? "active" : "ended"} />
               {submissionExists && (
-                <Badge 
-                  colorScheme="green" 
-                  fontSize="md" 
-                  px={2} 
-                  py={1} 
-                  borderRadius="md"
-                >
+                <Badge colorScheme="green" px={2} py={1} borderRadius="md">
                   Pre-Consultation Submitted
                 </Badge>
               )}
-            </div>
-          </div>
-          <div className="text-right">
-            <p className="text-sm text-gray-500">
+            </Stack>
+          </Box>
+          <Box textAlign="right">
+            <Text fontSize="sm" color="gray.500">
               Location: {timeslot.location}
-            </p>
-            <p className="text-sm text-gray-500">SGT Timezone</p>
-          </div>
-        </div>
+            </Text>
+            <Text fontSize="sm" color="gray.500">
+              SGT Timezone
+            </Text>
+          </Box>
+        </Flex>
 
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div>
-            <p className="text-gray-600">
-              <span className="font-medium">Starts:</span>{" "}
+        <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={4} mb={6}>
+          <Box>
+            <Text color="gray.600">
+              <Text as="span" fontWeight="medium">
+                Starts:
+              </Text>{" "}
               {formatConsultationTime(timeslot.startTime)}
-            </p>
-            <p className="text-gray-600">
-              <span className="font-medium">Ends:</span>{" "}
+            </Text>
+            <Text color="gray.600">
+              <Text as="span" fontWeight="medium">
+                Ends:
+              </Text>{" "}
               {formatConsultationTime(timeslot.endTime)}
-            </p>
-          </div>
+            </Text>
+          </Box>
           <TimeslotStats timeslot={timeslot} />
-        </div>
+        </Grid>
 
         {isActive ? (
           <>
             <QueueManagement groupId={timeslot.groupId} />
-            <div className="mt-6 text-center space-y-4">
+            <Stack mt={6} spacing={4} align="center">
               {!submissionExists && (
-                <Link
+                <Button
+                  as={RouterLink}
                   to={`/user/slots/${id}/preconsultation`}
-                  className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  colorScheme="blue"
                 >
                   Complete Pre-Consultation Form
-                </Link>
+                </Button>
               )}
               {submissionExists && (
-                <Link
-                  to={`/user/submissions`}
-                  className="inline-block bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                <Button
+                  as={RouterLink}
+                  to="/user/submissions"
+                  colorScheme="gray"
                 >
                   View All Submissions
-                </Link>
+                </Button>
               )}
-            </div>
+            </Stack>
           </>
         ) : (
-          <div className="bg-gray-50 p-4 rounded-lg text-center">
-            <h2 className="text-xl font-semibold mb-2">
+          <Box p={4} borderRadius="md" textAlign="center">
+            <Heading size="sm" mb={2}>
               Consultation Session Has Ended
-            </h2>
-            <p className="text-gray-600">
-              {formatConsultationTime(timeslot.endTime)} - Singapore Time
-            </p>
-          </div>
+            </Heading>
+            <Text color="gray.600">
+              {formatConsultationTime(timeslot.endTime)} – Singapore Time
+            </Text>
+          </Box>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 
