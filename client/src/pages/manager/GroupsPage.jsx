@@ -107,7 +107,6 @@ const GroupsPage = () => {
                   <Text>ID: {group._id}</Text>
                   <Text>Created at: {group.createdAt}</Text>
                   <Text>Description: {group.description}</Text>
-                  <Text>Max users: {group.maxUsers}</Text>
                 </Box>
               </Collapsible.Content>
             </Box>
