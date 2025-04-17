@@ -28,6 +28,8 @@ const router = express.Router();
 // Middleware to ensure slot exists
 async function loadSlot(req, res, next) {
   const slotId = req.params.slotId;
+  // console.log("(slots.js) slotId", slotId); //debug
+
   const slot = await getSlotById(slotId);
   if (!slot || slot.isClosed)
     return res.status(404).json({ error: "Slot not found or closed" });
@@ -62,6 +64,15 @@ router.post("/", async (req, res) => {
 router.get("/host", async (req, res) => {
   const hostId = req.user.userId;
   const slots = await getSlotsByHost(hostId);
+  res.json(slots);
+});
+
+// GET /api/slots/available?host=hostId - Get all slots available for a host
+router.get("/available", async (req, res) => {
+  const { host } = req.query;
+  if (!host) return res.status(400).json({ error: "Missing host ID" });
+
+  const slots = await getSlotsByHost(host);
   res.json(slots);
 });
 
@@ -216,14 +227,6 @@ router.get("/:slotId/position", loadSlot, (req, res) => {
   });
 });
 
-// GET /api/slots/available?host=hostId - Get all slots available for a host
-router.get("/available", async (req, res) => {
-  const { host } = req.query;
-  if (!host) return res.status(400).json({ error: "Missing host ID" });
-
-  const slots = await getSlotsByHost(host);
-  res.json(slots);
-});
 
 router.put("/:slotId", loadSlot, async (req, res) => {
   if (req.slot.host !== req.user.userId) {

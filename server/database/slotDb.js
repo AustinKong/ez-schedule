@@ -46,9 +46,14 @@ export async function updateSlot(slotId, updateFields) {
 export async function getSlotById(slotId) {
   const db = await connectDb();
   try {
+    // console.log("(slotDb.js) slotId:", slotId, "typeof:", typeof slotId); //debug
+    const resolvedId = typeof slotId === "string" ? ObjectId.createFromHexString(slotId) : slotId;
+
+
     return await db
       .collection("slots")
-      .findOne({ _id: ObjectId.createFromHexString(slotId) });
+      .findOne({ _id: resolvedId });
+      // .findOne({ _id: ObjectId.createFromHexString(slotId) });
   } catch (error) {
     console.log("Error fetching slot by ID:", error);
   }
@@ -57,10 +62,13 @@ export async function getSlotById(slotId) {
 export async function closeSlot(slotId) {
   const db = await connectDb();
   try {
+    // console.log("(slotDb.js) slotId:", slotId, "typeof:", typeof slotId); //debug
+    const resolvedId = typeof slotId === "string" ? ObjectId.createFromHexString(slotId) : slotId;
+
     return await db
       .collection("slots")
       .updateOne(
-        { _id: ObjectId.createFromHexString(slotId) },
+        { _id: resolvedId },
         { $set: { isClosed: true } }
       );
   } catch (error) {
@@ -70,10 +78,18 @@ export async function closeSlot(slotId) {
 
 export async function getSlotsByHost(hostId) {
   const db = await connectDb();
+  const now = new Date(); // current timestamp
+  // console.log("(slotDb.js) now: ", now); //debug
+
+
   try {
     return await db
       .collection("slots")
-      .find({ host: hostId })
+      .find({ 
+        host: hostId,
+        end: { $gt: now }, // filter out only slots that haven't ended
+        isClosed: false    // filter out manually closed slots
+      })
       .sort({ start: 1 })
       .toArray();
   } catch (error) {
