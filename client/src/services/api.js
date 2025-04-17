@@ -305,10 +305,8 @@ export const submitPreConsultation = async (slotId, formData) => {
   });
 };
 
-export const fetchSubmissions = async (slotId) => {};
-
-export const fetchSubmissionDetails = async (slotId) => {
-  const res = await fetch(`/api/preconsultations/slot/${slotId}`, {
+export const fetchSubmissionDetails = async (formId) => {
+  const res = await fetch(`/api/preconsultations/${formId}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,

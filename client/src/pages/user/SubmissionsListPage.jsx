@@ -12,7 +12,6 @@ import {
   Flex,
   Table,
 } from "@chakra-ui/react";
-import { fetchSubmissions } from "../../services/api";
 import { format, parseISO } from "date-fns";
 
 const SubmissionsListPage = () => {
@@ -23,23 +22,23 @@ const SubmissionsListPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-useEffect(() => {
+  useEffect(() => {
     const loadSubmissions = async () => {
       try {
-        const response = await fetch('/api/preconsultations/user', {
+        const response = await fetch("/api/preconsultations/user", {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         });
-        
+
         if (response.ok) {
           const data = await response.json();
-          const formattedData = data.map(sub => ({
+          const formattedData = data.map((sub) => ({
             ...sub,
-            concerns: sub.text?.concerns || '',
-            objectives: sub.text?.objectives || '',
+            concerns: sub.concerns || "",
+            objectives: sub.objectives || "",
             createdAt: sub.createdAt,
-            status: sub.status || 'pending'
+            status: sub.status || "pending",
           }));
           setSubmissions(formattedData);
         }
@@ -93,14 +92,14 @@ useEffect(() => {
             onChange={(e) => setSearchQuery(e.target.value)}
             size="md"
           />
-          <Select
+          {/* <Select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
             width={["100%", "200px"]}
           >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
-          </Select>
+          </Select> */}
         </Flex>
         <Text fontSize="sm" color="gray.500">
           Showing {filteredSubmissions.length} submissions
@@ -115,7 +114,7 @@ useEffect(() => {
         <Text>No submissions found matching your criteria</Text>
       ) : (
         <Table.Root variant="striped" size="md">
-          <Table.Header bg="gray.50">
+          <Table.Header>
             <Table.Row>
               <Table.ColumnHeader>Date Submitted</Table.ColumnHeader>
               <Table.ColumnHeader>Consultation Time</Table.ColumnHeader>

@@ -82,3 +82,15 @@ export async function deletePreconsultForm(formId) {
     console.error("Error deleting preconsult form:", error);
   }
 }
+
+export async function getPreconsultFormByParticipantId(userId) {
+  const db = await connectDb();
+  try {
+    return await db
+      .collection("preconsultForms")
+      .find({ createdBy: ObjectId.createFromHexString(userId) })
+      .toArray();
+  } catch (error) {
+    console.error("Error fetching preconsult form by user ID:", error);
+  }
+}

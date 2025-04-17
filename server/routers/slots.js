@@ -116,7 +116,7 @@ router.post("/:slotId/join", loadSlot, async (req, res) => {
 
   // Check if already in queue
   const alreadyInQueue = req.slot.entries.some(
-    (entry) => entry.participant.toString() === userId
+    (entry) => entry?.participant.toString() === userId
   );
   if (alreadyInQueue)
     return res.status(400).json({ error: "Already in queue" });
