@@ -59,7 +59,7 @@ function App() {
           <Route path="timeslots" element={<TimeSlotsPage />} />
           <Route path="timeslots/all" element={<Timetable />} />
           <Route
-            path="timeslots/:slotId"
+            path="timeslots/:id"
             element={<TimeSlotUserDetailsPage />}
           />
           <Route

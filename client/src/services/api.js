@@ -308,7 +308,7 @@ export const submitPreConsultation = async (slotId, formData) => {
 export const fetchSubmissions = async (slotId) => {};
 
 export const fetchSubmissionDetails = async (slotId) => {
-  const res = await fetch(`/api/preconsultation/slot/${slotId}`, {
+  const res = await fetch(`/api/preconsultations/slot/${slotId}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
