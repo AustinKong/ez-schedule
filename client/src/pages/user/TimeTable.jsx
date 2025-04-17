@@ -105,22 +105,34 @@ const Timetable = () => {
   useEffect(() => {
     const fetchTimeslots = async () => {
       try {
-        if (groups.length > 0) { // Check if groups has data
+        if (groups.length > 0) {
           let groupsWithSlots = [];
           for (const group of groups) {
             console.log("groupid", group._id);
-            const response = await fetchTimeslotsByGroup(group._id);
-            groupsWithSlots.push({ ...group, timeslots: response });
+            try {
+              const response = await fetchTimeslotsByGroup(group._id);
+              groupsWithSlots.push({ ...group, timeslots: response });
+            } catch (innerError) {
+              if (innerError.response && innerError.response.status === 404) {
+                console.warn(`No timeslots found for group ${group._id}`);
+                groupsWithSlots.push({ ...group, timeslots: [] }); // Treat 404 as empty
+              } else {
+                console.error(`Error fetching timeslots for group ${group._id}:`, innerError);
+                // Optionally, you might want to handle other errors differently,
+                // perhaps by not including this group in the final state or showing an error message.
+                groupsWithSlots.push({ ...group, timeslots: [] }); // Or handle differently
+              }
+            }
           }
-          setGroupsWT(groupsWithSlots); // Update groups with timeslots
+          setGroupsWT(groupsWithSlots);
         }
       } catch (error) {
-        console.error('Error fetching timeslots:', error);
+        console.error('Error during groups processing:', error);
       }
     };
   
     fetchTimeslots();
-  }, [groups])
+  }, [groups]);
 
   // updates timeslots with more readable details for timetable processing later
   // assigns random colours
@@ -227,15 +239,15 @@ const Timetable = () => {
   }, [displayedWeek]);
 
   // dropdown options for groups
-  useEffect(() => {
-    if (groups && groups.length > 0) {
-      setGroupOptions(groups.map(group => ({ value: group._id, label: group.name })));
-    } else {
-      setGroupOptions([]);
-      setSelectedGroup(null);
-      setCurrSlotIndex(0);
-    }
-  }, [groups]);
+  // useEffect(() => {
+  //   if (groups && groups.length > 0) {
+  //     setGroupOptions(groups.map(group => ({ value: group._id, label: group.name })));
+  //   } else {
+  //     setGroupOptions([]);
+  //     setSelectedGroup(null);
+  //     setCurrSlotIndex(0);
+  //   }
+  // }, [groups]);
 
   // handle group changes
   const handleGroupChange = (event) => {
@@ -283,10 +295,13 @@ const Timetable = () => {
     }
   };
 
-  const collection = useMemo(() => ({
-    getKey: (group) => group._id,
-    items: groups,
-  }), [groups]);
+  const collections = createListCollection({
+    items: groups.map((group) => ({
+      label: group.name,
+      value: group._id,
+    })),
+  })
+
 
   const frameworks = createListCollection({
     items: [
@@ -298,17 +313,22 @@ const Timetable = () => {
   })
 
   useEffect(() => {
-    console.log("Collections:", collection);
+    console.log("Collections:", collections);
     console.log("frameworks:", frameworks);
   }, [groups]);
 
   return (
     <Box>
-      <Select.Root collection={frameworks}>
+      <Select.Root 
+        collection={collections}
+        value={selectedGroup || undefined}
+        onValueChange={(e) => setSelectedGroup(e.value)}
+      >
             <Select.HiddenSelect />
+            <Select.Label required>Groups</Select.Label>
             <Select.Control>
               <Select.Trigger>
-                <Select.ValueText placeholder="Select framework" />
+                <Select.ValueText placeholder="Select group" />
               </Select.Trigger>
               <Select.IndicatorGroup>
                 <Select.Indicator />
@@ -317,9 +337,9 @@ const Timetable = () => {
             <Portal>
               <Select.Positioner>
                 <Select.Content>
-                  {frameworks.items.map((framework) => (
-                    <Select.Item item={framework} key={framework.value}>
-                      {framework.label}
+                  {collections.items.map((collection) => (
+                    <Select.Item item={collection} key={collection.value}>
+                      {collection.label}
                       <Select.ItemIndicator />
                     </Select.Item>
                   ))}
