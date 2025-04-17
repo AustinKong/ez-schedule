@@ -10,7 +10,7 @@ import GroupsPage from "./pages/manager/GroupsPage";
 import GroupForm from "./pages/manager/GroupForm";
 import ManagerTimeSlotsPage from "./pages/manager/TimeSlotsPage";
 import TimeSlotForm from "./pages/manager/TimeSlotForm";
-import QueuePage from "./pages/manager/QueuePage";
+import ManagerQueuePage from "./pages/manager/QueuePage";
 import ShareGroupsPage from "./pages/manager/ShareGroupsPage";
 
 // User routes
@@ -24,6 +24,7 @@ import TimeSlotUserDetailsPage from "./pages/user/TimeslotUserDetailsPage";
 import ConsultationConfirmation from "./pages/user/ConsultationConfirmation";
 import SubmissionsListPage from "./pages/user/SubmissionsListPage";
 import SubmissionDetailsPage from "./pages/user/SubmissionDetailsPage";
+import UserQueuePage from "./pages/user/QueuePage";
 
 
 function App() {
@@ -41,7 +42,7 @@ function App() {
             path="timeslots/new"
             element={<TimeSlotForm isEdit={false} />}
           />
-          <Route path="timeslots/:id" element={<QueuePage />} />
+          <Route path="timeslots/:id" element={<ManagerQueuePage />} />
           <Route
             path="timeslots/:id/edit"
             element={<TimeSlotForm isEdit={true} />}
@@ -57,6 +58,7 @@ function App() {
           <Route path="preconsultForm/new" element={<PreconsultFormPage/>} />
           {/* Timeslot Routes */}
           <Route path="timeslots" element={<TimeSlotsPage />} />
+          <Route path="/user/timeslots/:id/queue" element={<UserQueuePage />} />
           <Route path="timeslots/all" element={<Timetable />} />
           <Route
             path="timeslots/:id"
