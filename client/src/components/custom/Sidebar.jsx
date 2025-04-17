@@ -33,7 +33,7 @@ const Sidebar = () => {
   } else if (user?.userRole === "participant") {
     links = [
       { to: "/user/groups", label: "Groups", icon: FiUsers },
-      { to: "/user/timeslots", label: "Timeslots", icon: FiCalendar },
+      { to: "/user/timeslots/all", label: "Timeslots", icon: FiCalendar },
       { to: "/queue", label: "Queue", icon: FiUser },
       { to: "/user/preconsultForm/new", label: "Preconsult Form", icon: FiFolder },
     ];
