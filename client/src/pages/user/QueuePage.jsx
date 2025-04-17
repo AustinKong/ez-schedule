@@ -12,15 +12,13 @@ import {
   VStack,
   HStack,
 } from "@chakra-ui/react";
-import { getSlotDetails, joinQueue, fetchQueueByTimeslot } from "../../services/api";
+import { getSlotDetails, joinQueue, fetchQueueByTimeslot, fetchTimeslot } from "../../services/api";
 import { formatSlotTime, isSlotActive } from "../../utils/dateUtils";
-import { useAuth } from "../../contexts/AuthContext";
 import { toaster } from "../../components/ui/toaster";
 
 const QueuePage = () => {
   const { id: slotId } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth() || {};
   
   // Manage all state locally
   const [queue, setQueue] = useState([]);
@@ -69,9 +67,21 @@ const QueuePage = () => {
 
   // Separate function to fetch queue data using the existing API function
   const fetchQueueData = async () => {
+    const userId = localStorage.getItem("userId");
+    const response = await fetch(`/api/users/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      }
+    });
+    if (!response.ok) {
+      navigate("/user/login");
+    }
+    const user = await response.json();
+
     try {
       // Use the existing API function from services/api.js
-      const queueData = await fetchQueueByTimeslot(slotId);
+      const timeslotData = await fetchTimeslot(slotId);
+      const queueData = timeslotData.entries;
       setQueue(queueData);
       setWaitingCount(queueData.length);
       
@@ -103,12 +113,6 @@ const QueuePage = () => {
   };
 
   const handleJoinQueue = async () => {
-    if (!user) {
-      toaster.error("Please log in to join the queue");
-      navigate("/auth/login");
-      return;
-    }
-
     setIsJoining(true);
     try {
       await joinQueue(slotId);

@@ -13,7 +13,7 @@ export async function createSlot({
   const db = await connectDb();
   try {
     return await db.collection("slots").insertOne({
-      host,
+      host: ObjectId.createFromHexString(host),
       start,
       end,
       location,
@@ -80,13 +80,13 @@ export async function getSlotsByHost(hostId) {
   const db = await connectDb();
   const now = new Date(); // current timestamp
   // console.log("(slotDb.js) now: ", now); //debug
-
+  console.log(hostId)
 
   try {
     return await db
       .collection("slots")
       .find({ 
-        host: hostId,
+        host: ObjectId.createFromHexString(hostId),
         end: { $gt: now }, // filter out only slots that haven't ended
         isClosed: false    // filter out manually closed slots
       })
