@@ -64,7 +64,11 @@ const QueuePage = () => {
         currentNumber: currentUser?.queueNumber || null,
         currentUser,
         waitingCount: queue.length,
-        waitingUsers: queue,
+        waitingUsers: queue.map(entry => ({
+          id: entry._id,
+          name: entry.participant.username,
+          queueNumber: entry.queueNumber,
+        })),
       });
     }
   }, [queue, slot]);

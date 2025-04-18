@@ -1,8 +1,10 @@
-import { Grid, Box, Button, Text, Flex, IconButton, Select, Portal, createListCollection} from '@chakra-ui/react';
-import { MdArrowBack, MdArrowForward } from 'react-icons/md';
+import { Grid, Box, Button, Text, Flex, IconButton, Select, Portal, createListCollection, Pagination, ButtonGroup } from '@chakra-ui/react';
+import { HiChevronLeft, HiChevronRight } from "react-icons/hi"
+import { MdArrowBack, MdArrowForward, MdZoomInMap } from 'react-icons/md';
 import React, { useState, useEffect, useMemo } from 'react';
 import { fetchGroups, fetchTimeslotsByGroup } from "../../services/api";
 import { useNavigate } from "react-router-dom";
+import { set } from 'date-fns';
 
 // Sample course data (replace with your actual data)
 const timeslots = [
@@ -14,41 +16,49 @@ const timeslots = [
 { id: 'CS2040-WED-800', day: 'THU', start: 8, end: 9, name: 'CS2040-2', type: 'LEC', details: 'E-Learning'}, // Another collision on WED
 ];
 
-const daysOfWeek = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+const daysOfWeek = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 const hourHeight = 100; // px per hour
 const gapAlign = 0;
 const shrinkFactor = 1;
 
 const Timetable = () => {
+  // for data
   const [groups, setGroups] = useState([]);
   const [groupsWT, setGroupsWT] = useState([]);
   const [updatedTimeslots, setUpdatedTimeslots] = useState([]);
+
+  // for layout
   const [dayLayouts, setDayLayouts] = useState({});
   const [firstTime, setFirstTime] = useState(1);
   const [lastTime, setlastTime] = useState(24);
-  const [currSlotIndex, setCurrSlotIndex] = useState(0); // To track the current timeslot within the selected group for the current week
-  const [selectedGroup, setSelectedGroup] = useState(null);
-  const [groupOptions, setGroupOptions] = useState([]); // For the dropdown options
 
-  const [weekRange, setWeekRange] = useState('');
+  // for pagination
+  const [slotIndex, setSlotIndex] = useState(0);
+  const [selectedGroup, setSelectedGroup] = useState(undefined);
+  const [slotWeekNumbers, setSlotWeekNumbers] = useState([]);
+
+  // for week display
   const navigate = useNavigate();
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
 
   const getWeekNumber = (dateString) => {
     const date = new Date(dateString);
-    date.setDate(date.getDate() + 4 - (date.getDay() || 7));
-    const yearStart = new Date(date.getFullYear(), 0, 1);
-    const weekNumber = Math.ceil(((date - yearStart) / 86400000) / 7);
-    return weekNumber;
+    const startOfYear = new Date(date.getFullYear(), 0, 1);
+    const timeDifference = date - startOfYear;
+    const dayOfYear = Math.ceil(timeDifference / (1000 * 60 * 60 * 24)) + 1;
+    return Math.ceil(dayOfYear / 7);
   };
 
   const getMaxWeeksInYear = (year) => {
-    const date = new Date(year, 11, 31);
-    return getWeekNumber(date.toISOString());
+    const firstDayOfYear = new Date(year, 0, 1);
+    const lastDayOfYear = new Date(year, 11, 31);
+    const millisecondsInDay = 24 * 60 * 60 * 1000;
+    const daysInYear = Math.ceil((lastDayOfYear - firstDayOfYear) / millisecondsInDay) + 1;
+    return Math.floor(daysInYear / 7);
   };
 
-  const getWeekRange = (weekNumber, year = new Date().getFullYear()) => {
+  const getWeekRange = (weekNumber, year) => {
     const simple = new Date(year, 0, 1 + (weekNumber - 1) * 7);
     const dow = simple.getDay();
     const ISOweekStart = simple;
@@ -67,10 +77,9 @@ const Timetable = () => {
     return `${formatDate(ISOweekStart)} - ${formatDate(ISOweekEnd)}`;
   };
 
-  const currentWeek = getWeekNumber(currentDate.toISOString());
-
-  const [displayedWeek, setDisplayedWeek] = useState(currentWeek);
+  const [displayedWeek, setDisplayedWeek] = useState(getWeekNumber(new Date()));
   const [displayedYear, setDisplayedYear] = useState(currentYear);
+  const [weekRange, setWeekRange] = useState(getWeekRange(displayedWeek, displayedYear));
 
   const colourPalette = useMemo(() => [
     '#FC8181',
@@ -97,37 +106,20 @@ const Timetable = () => {
     getGroups();
   }, [])
 
-  useEffect(() => {
-    console.log("Group updated:", groups);
-  }, [groups]);
-
   // fetch timeslots for each group, and save the timeslots in each course
   useEffect(() => {
     const fetchTimeslots = async () => {
-      try {
-        if (groups.length > 0) {
-          let groupsWithSlots = [];
-          for (const group of groups) {
-            console.log("groupid", group._id);
-            try {
-              const response = await fetchTimeslotsByGroup(group._id);
-              groupsWithSlots.push({ ...group, timeslots: response });
-            } catch (innerError) {
-              if (innerError.response && innerError.response.status === 404) {
-                console.warn(`No timeslots found for group ${group._id}`);
-                groupsWithSlots.push({ ...group, timeslots: [] }); // Treat 404 as empty
-              } else {
-                console.error(`Error fetching timeslots for group ${group._id}:`, innerError);
-                // Optionally, you might want to handle other errors differently,
-                // perhaps by not including this group in the final state or showing an error message.
-                groupsWithSlots.push({ ...group, timeslots: [] }); // Or handle differently
-              }
-            }
+      if (groups.length > 0) {
+        let groupsWithSlots = [];
+        for (const group of groups) {
+          try {
+            const response = await fetchTimeslotsByGroup(group._id);
+            groupsWithSlots.push({ ...group, timeslots: response });
+          } catch (innerError) {
+            console.error(`Error fetching timeslots for group ${group._id}:`, innerError);
           }
-          setGroupsWT(groupsWithSlots);
         }
-      } catch (error) {
-        console.error('Error during groups processing:', error);
+        setGroupsWT(groupsWithSlots);
       }
     };
   
@@ -141,7 +133,7 @@ const Timetable = () => {
       const updatedTimeslots = groupsWT.flatMap(group =>
         group.timeslots ? group.timeslots.map(timeslot => ({
           ...timeslot,
-          day: daysOfWeek[new Date(timeslot.start).getDay()],
+          day: daysOfWeek[new Date(timeslot.start).getDay() - 1],
           startHours: new Date(timeslot.start).getHours() + (new Date(timeslot.start).getMinutes() / 60),
           endHours: new Date(timeslot.end).getHours() + (new Date(timeslot.end).getMinutes() / 60),
           week: getWeekNumber(timeslot.start),
@@ -153,6 +145,10 @@ const Timetable = () => {
   
     assignExtraDetails();
   }, [groupsWT, colourPalette]);
+
+  // useEffect(() => {
+  //   console.log("Updated Timeslots updated:", updatedTimeslots);
+  // }, [updatedTimeslots]);
 
   // find the earliestTime and latestTime from the list of timeslots
   useEffect(() => {
@@ -170,8 +166,7 @@ const Timetable = () => {
           .map(timeslot2 => timeslot2.endHours));
         setlastTime(latestTime);
       };
-      
-      console.log("Times", firstTime, lastTime);
+
       findEarliestTime();
       findLatestTime();
     }
@@ -191,7 +186,6 @@ const Timetable = () => {
           coursesOnDay.forEach(timeslot => {
             slots.push({ timeslot, start: timeslot.startHours, end: timeslot.endHours, collisions: 1, leftOffset: 0 });
           });
-          console.log("slots", slots);
 
           for (let i = 0; i < slots.length; i++) {
             let currentCollisions = 1;
@@ -233,29 +227,6 @@ const Timetable = () => {
     return ['1fr', ...daysOfWeek.map(day => `${dayLayouts[day]?.columnUnits || 1}fr`)].join(' ');
   }, [dayLayouts, daysOfWeek]);
 
-  // sets the week to current week
-  useEffect(() => {
-    setWeekRange(getWeekRange(displayedWeek));
-  }, [displayedWeek]);
-
-  // dropdown options for groups
-  // useEffect(() => {
-  //   if (groups && groups.length > 0) {
-  //     setGroupOptions(groups.map(group => ({ value: group._id, label: group.name })));
-  //   } else {
-  //     setGroupOptions([]);
-  //     setSelectedGroup(null);
-  //     setCurrSlotIndex(0);
-  //   }
-  // }, [groups]);
-
-  // handle group changes
-  const handleGroupChange = (event) => {
-    const groupId = event.target.value;
-    setSelectedGroup(groupId === 'all' ? null : groupId);
-    setCurrSlotIndex(0);
-  };
-
   const getTopPosition = (start) => {
     const startIndex = timeSlots.indexOf(Math.floor(start));
     const minuteOffset = (start % 1) * 60;
@@ -265,7 +236,6 @@ const Timetable = () => {
 
   const getHeight = (start, end) => {
     const hourDifference = end - start;
-    console.log("hourDifference", hourDifference);
     return `${hourDifference * hourHeight + (hourDifference - 1) * gapAlign - 4 * shrinkFactor}px`;
   };
 
@@ -278,22 +248,57 @@ const Timetable = () => {
 
   const handlePrevWeek = () => {
     if (displayedWeek > 1) {
-      setDisplayedWeek(prevWeek => prevWeek - 1);
+      console.log("Minus 1 week");
+      setDisplayedWeek(currWeek => currWeek - 1);
     } else {
-      setDisplayedYear(prevYear => prevYear - 1);
-      setDisplayedWeek(getMaxWeeksInYear(displayedYear - 1));
+      setDisplayedYear(currYear => {
+        const previousYear = currYear - 1;
+        setDisplayedWeek(getMaxWeeksInYear(previousYear));
+        return previousYear;
+      });
     }
   };
 
   const handleNextWeek = () => {
-    console.log("displayedWeek", getMaxWeeksInYear(displayedYear));
     if (displayedWeek < 52) {
-      setDisplayedWeek(prevWeek => prevWeek + 1);
+      setDisplayedWeek(currWeek => currWeek + 1);
     } else {
-      setDisplayedYear(prevYear => prevYear + 1);
+      setDisplayedYear(currYear => currYear + 1);
       setDisplayedWeek(1);
     }
   };
+
+  const handlePreviousTimeslot = () => {
+    setSlotIndex(slotIndex - 1);
+  }
+
+  const handleNextTimeslot = () => {
+    setSlotIndex(slotIndex + 1);
+  }
+
+  useEffect(() => {
+    if (slotWeekNumbers.length > 0) {
+      setDisplayedWeek(slotWeekNumbers[slotIndex]);
+    }
+  }, [slotIndex, slotWeekNumbers]);
+
+  const handleDropdownChange = (e) => {
+    setSelectedGroup(e.value);
+    setSlotIndex(0);
+  }
+
+  // extract all the week numbers from timeslots based on selectedgroup
+  useEffect(() => {
+    const weeks = [];
+    if (selectedGroup) {
+      updatedTimeslots.forEach(timeslot => {
+        if (timeslot.groupId === selectedGroup[0]) {
+          weeks.push(timeslot.week);
+        }
+      })
+    }
+    setSlotWeekNumbers(weeks);
+  }, [selectedGroup])
 
   const collections = createListCollection({
     items: groups.map((group) => ({
@@ -302,51 +307,79 @@ const Timetable = () => {
     })),
   })
 
-
-  const frameworks = createListCollection({
-    items: [
-      { label: "React.js", value: "react" },
-      { label: "Vue.js", value: "vue" },
-      { label: "Angular", value: "angular" },
-      { label: "Svelte", value: "svelte" },
-    ],
-  })
+  useEffect(() => {
+    setWeekRange(getWeekRange(displayedWeek, displayedYear));
+  }, [displayedWeek, displayedYear])
 
   useEffect(() => {
-    console.log("Collections:", collections);
-    console.log("frameworks:", frameworks);
-  }, [groups]);
+    console.log("displayedWeek(UseEffect)", displayedWeek);
+  }, [displayedWeek]);
+
+  useEffect(() => {
+    console.log("displayedYear(UseEffect)", displayedYear);
+  }, [displayedYear]);
+
+  useEffect(() => {
+    console.log("timeslots", updatedTimeslots);
+  }, [updatedTimeslots]);
 
   return (
     <Box>
-      <Select.Root 
-        collection={collections}
-        value={selectedGroup || undefined}
-        onValueChange={(e) => setSelectedGroup(e.value)}
-      >
-            <Select.HiddenSelect />
-            <Select.Label required>Groups</Select.Label>
-            <Select.Control>
-              <Select.Trigger>
-                <Select.ValueText placeholder="Select group" />
-              </Select.Trigger>
-              <Select.IndicatorGroup>
-                <Select.Indicator />
-              </Select.IndicatorGroup>
-            </Select.Control>
-            <Portal>
-              <Select.Positioner>
-                <Select.Content>
-                  {collections.items.map((collection) => (
-                    <Select.Item item={collection} key={collection.value}>
-                      {collection.label}
-                      <Select.ItemIndicator />
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Positioner>
-            </Portal>
-          </Select.Root>
+      <Flex justifyContent="center" alignItems="center" mb={4} display="flex" flexDirection="row">
+        <Select.Root 
+          collection={collections}
+          value={selectedGroup || undefined}
+          onValueChange={handleDropdownChange}
+          alignItems="center"
+          gap={2}
+          width="40%"
+          paddingBottom={5}
+        >
+        <Select.HiddenSelect />
+          <Select.Label required>Groups</Select.Label>
+          <Select.Control style={{ width: `80%` }}> 
+            <Select.Trigger>
+              <Select.ValueText placeholder="Select group" />
+            </Select.Trigger>
+            <Select.IndicatorGroup>
+              <Select.Indicator />
+            </Select.IndicatorGroup>
+          </Select.Control>
+          <Portal>
+            <Select.Positioner>
+              <Select.Content>
+                {collections.items.map((collection) => (
+                  <Select.Item item={collection} key={collection.value}>
+                    {collection.label}
+                    <Select.ItemIndicator />
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select.Positioner>
+          </Portal>
+        </Select.Root>
+        
+        {slotWeekNumbers.length > 0 ? (
+          <Pagination.Root count={slotWeekNumbers.length} pageSize={1} defaultPage={1} page={slotIndex + 1}>
+          <ButtonGroup gap="4" size="sm" variant="ghost">
+            <Pagination.PrevTrigger asChild onClick={handlePreviousTimeslot}>
+              <IconButton>
+                <HiChevronLeft />
+              </IconButton>
+            </Pagination.PrevTrigger>
+            <Pagination.PageText />
+            <Pagination.NextTrigger asChild onClick={handleNextTimeslot}>
+              <IconButton>
+                <HiChevronRight />
+              </IconButton>
+            </Pagination.NextTrigger>
+          </ButtonGroup>
+        </Pagination.Root>
+        ) : (
+          <p>No timeslots found</p>
+        )}
+      </Flex>
+        
 
       <Flex justifyContent="space-between" alignItems="center" mb={4}>
         <IconButton aria-label="Previous Week" onClick={handlePrevWeek}>
@@ -414,17 +447,20 @@ const Timetable = () => {
 
         {/* Render timeslot Blocks */}
         {Object.keys(dayLayouts).length > 0 && updatedTimeslots
+        .filter(timeslot => {
+          const date = new Date(timeslot.start).getFullYear();
+          return date === displayedYear
+        })
         .filter(timeslot => timeslot.week === displayedWeek)
         .map((timeslot) => {
           const dayIndex = daysOfWeek.indexOf(timeslot.day);
-          console.log("slotsInWeekInGrid", updatedTimeslots);
           const layoutForDay = dayLayouts[timeslot.day]?.slots.find(slot => slot.timeslot._id === timeslot._id);
 
           if (layoutForDay) {
             const gridColumnStart = dayIndex + 2;
             const topPosition = getTopPosition(timeslot.startHours);
             const blockHeight = getHeight(timeslot.startHours, timeslot.endHours);
-            const leftOffsetPercentage = 100* layoutForDay.leftOffset;
+            const leftOffsetPercentage = 100 * layoutForDay.leftOffset;
             const widthPercentage = 100 * layoutForDay.width;
             return (
               <Button

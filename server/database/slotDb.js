@@ -79,8 +79,6 @@ export async function closeSlot(slotId) {
 export async function getSlotsByHost(hostId) {
   const db = await connectDb();
   const now = new Date(); // current timestamp
-  // console.log("(slotDb.js) now: ", now); //debug
-  console.log(hostId)
 
   try {
     return await db

@@ -101,9 +101,19 @@ export const fetchTimeslotsByGroup = async (groupId) => {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
-  console.log(response);
-  if (!response.ok) throw new Error("Failed to fetch timeslots");
-  return response.json();
+  if (!response.ok) {
+    if (response.status === 404) {
+      // Specifically handle the 404 Not Found error
+      console.warn(`No timeslots found for group ${groupId}`);
+      return [];
+    } else {
+      // Handle other non-2xx HTTP errors
+      const errorData = await response.json();
+      throw new Error(`Failed to fetch timeslots: ${response.status} - ${errorData?.message || response.statusText}`);
+    }
+  } else {
+    return response.json();
+  }
 };
 
 export const fetchTimeslot = async (timeslotId) => {
@@ -330,3 +340,4 @@ export const checkExistingSubmission = async (slotId) => {
   });
   return handleResponse(response);
 };
+
