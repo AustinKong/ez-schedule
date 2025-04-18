@@ -8,7 +8,6 @@ import {
   Spinner, 
   Flex,
   Alert,
-  AlertIcon
 } from "@chakra-ui/react";
 import { useTimeslots } from "@/hooks/useTimeslots";
 import { format, parseISO } from "date-fns";
@@ -48,7 +47,6 @@ const UserNotificationsPage = () => {
       <VStack spacing={4} align="stretch">
         {userNotifications.length === 0 && (
           <Alert status="info" borderRadius="md">
-            <AlertIcon />
             No queue position notifications
           </Alert>
         )}

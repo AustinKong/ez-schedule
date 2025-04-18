@@ -24,7 +24,6 @@ const shrinkFactor = 1;
 const Timetable = () => {
   // for data
   const [groups, setGroups] = useState([]);
-  const [groupsWT, setGroupsWT] = useState([]);
   const [updatedTimeslots, setUpdatedTimeslots] = useState([]);
 
   // for layout
@@ -38,9 +37,10 @@ const Timetable = () => {
   const [slotWeekNumbers, setSlotWeekNumbers] = useState([]);
 
   // for week display
-  const navigate = useNavigate();
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
+
+  const navigate = useNavigate();
 
   const getWeekNumber = (dateString) => {
     const date = new Date(dateString);

@@ -8,7 +8,6 @@ import {
   Spinner, 
   Flex,
   Alert,
-  AlertIcon
 } from "@chakra-ui/react";
 import { useTimeslots } from "@/hooks/useTimeslots";
 import { format, parseISO, differenceInMinutes } from "date-fns";
@@ -47,7 +46,6 @@ const ManagerNotificationsPage = () => {
       
       {queueNotifications.length === 0 && (
         <Alert status="info" borderRadius="md">
-          <AlertIcon />
           No active queue notifications
         </Alert>
       )}
