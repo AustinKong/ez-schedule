@@ -107,44 +107,38 @@ const Timetable = () => {
   }, [])
 
   // fetch timeslots for each group, and save the timeslots in each course
+  // updates timeslots with more readable details for timetable processing later
+  // assigns random colours
   useEffect(() => {
     const fetchTimeslots = async () => {
       if (groups.length > 0) {
-        let groupsWithSlots = [];
-        for (const group of groups) {
-          try {
-            const response = await fetchTimeslotsByGroup(group._id);
-            groupsWithSlots.push({ ...group, timeslots: response });
-          } catch (innerError) {
-            console.error(`Error fetching timeslots for group ${group._id}:`, innerError);
-          }
-        }
-        setGroupsWT(groupsWithSlots);
+        const allTimeslotsWithDetails = await Promise.all(
+          groups.map(async (group) => {
+            try {
+              const response = await fetchTimeslotsByGroup(group._id);
+              return response.map(timeslot => ({
+                ...timeslot,
+                groupName: group.name,
+                day: daysOfWeek[new Date(timeslot.start).getDay() - 1],
+                startHours: new Date(timeslot.start).getHours() + (new Date(timeslot.start).getMinutes() / 60),
+                endHours: new Date(timeslot.end).getHours() + (new Date(timeslot.end).getMinutes() / 60),
+                week: getWeekNumber(timeslot.start),
+                colour: timeslot.colour || colourPalette[Math.floor(Math.random() * colourPalette.length)],
+              }));
+            } catch (innerError) {
+              console.error(`Error fetching timeslots for group ${group._id}:`, innerError);
+              return []; // Return an empty array for failed group fetches
+            }
+          })
+        ).then(results => results.flat()); // Flatten the array of arrays into a single array of timeslots
+  
+        setUpdatedTimeslots(allTimeslotsWithDetails);
       }
     };
   
     fetchTimeslots();
-  }, [groups]);
+  }, [groups, colourPalette]);
 
-  // updates timeslots with more readable details for timetable processing later
-  // assigns random colours
-  useEffect(() => {
-    const assignExtraDetails = () => {
-      const updatedTimeslots = groupsWT.flatMap(group =>
-        group.timeslots ? group.timeslots.map(timeslot => ({
-          ...timeslot,
-          day: daysOfWeek[new Date(timeslot.start).getDay() - 1],
-          startHours: new Date(timeslot.start).getHours() + (new Date(timeslot.start).getMinutes() / 60),
-          endHours: new Date(timeslot.end).getHours() + (new Date(timeslot.end).getMinutes() / 60),
-          week: getWeekNumber(timeslot.start),
-          colour: timeslot.colour || colourPalette[Math.floor(Math.random() * colourPalette.length)],
-        })) : []
-      );
-      setUpdatedTimeslots(updatedTimeslots);
-    };
-  
-    assignExtraDetails();
-  }, [groupsWT, colourPalette]);
 
   // useEffect(() => {
   //   console.log("Updated Timeslots updated:", updatedTimeslots);
@@ -260,6 +254,7 @@ const Timetable = () => {
   };
 
   const handleNextWeek = () => {
+    console.log("pressed next week");
     if (displayedWeek < 52) {
       setDisplayedWeek(currWeek => currWeek + 1);
     } else {
@@ -457,6 +452,8 @@ const Timetable = () => {
                   left: `${leftOffsetPercentage}%`,
                   width: `calc(${widthPercentage}%)`,
                   height: blockHeight,
+                  overflowWrap:'break-word', // Allows text to wrap onto the next line
+                  whiteSpace: 'normal',      // Allows line breaks within the text
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'scale(0.95)';
@@ -477,21 +474,21 @@ const Timetable = () => {
                 gridColumnStart={gridColumnStart}
                 gridColumnEnd={gridColumnStart + 1}
                 onClick={() => handleOnClick(timeslot._id)}
-                justifyContent={"flex-start"}
               >
-                <Box
+                <Flex
                   display="flex"
                   flexDirection="column"
-                  alignItems="flex-start" // Align text to the left within the vertical stack
-                  justifyContent="flex-start"
+                  left={0}
+                  width={`200%`}
                   height="100%" // Make the container take full height of the button
-                  padding="10px"
+                  paddingTop={`10px`}
+                  textAlign="left"
+                  lineHeight={1}
                 >
-                  <Text fontWeight="bold" fontSize="s">{timeslot.name}</Text>
-                  <Text fontSize="xs">{timeslot.type}</Text>
-                  <Text fontSize="xs">{timeslot.details}</Text>
-                  <Text fontSize="xs">{timeslot.weeks}</Text>
-                </Box>
+                  <Text fontSize="100%" paddingBottom={'5%'}>{timeslot.name}</Text>
+                  <Text fontSize="75%" fontStyle="italic">{timeslot.groupName}</Text>
+
+                </Flex>
               </Button>
             );
           }
