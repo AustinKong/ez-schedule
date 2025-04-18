@@ -221,7 +221,7 @@ const QueuePage = () => {
                   fontWeight="bold" 
                   color={hasJoined ? "blue.600" : "green.600"}
                 >
-                  {hasJoined ? userPosition + 1 : "Your Turn"}
+                  {hasJoined ? userPosition + 1 : "-"}
                 </Text>
               </VStack>
               
