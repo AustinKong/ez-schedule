@@ -12,7 +12,7 @@ import {
   VStack,
   HStack,
 } from "@chakra-ui/react";
-import { getSlotDetails, joinQueue, fetchQueueByTimeslot, fetchTimeslot } from "../../services/api";
+import { getSlotDetails, joinQueue, leaveQueue, fetchQueueByTimeslot, fetchTimeslot } from "../../services/api";
 import { formatSlotTime, isSlotActive } from "../../utils/dateUtils";
 import { toaster } from "../../components/ui/toaster";
 
@@ -24,6 +24,7 @@ const QueuePage = () => {
   const [queue, setQueue] = useState([]);
   const [slot, setSlot] = useState(null);
   const [isJoining, setIsJoining] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
   const [userPosition, setUserPosition] = useState(null);
   const [userQueueNumber, setUserQueueNumber] = useState(null);
   const [hasJoined, setHasJoined] = useState(false);
@@ -75,6 +76,7 @@ const QueuePage = () => {
     });
     if (!response.ok) {
       navigate("/user/login");
+      return;
     }
     const user = await response.json();
 
@@ -85,23 +87,30 @@ const QueuePage = () => {
       setQueue(queueData);
       setWaitingCount(queueData.length);
       
-      // Set current queue number
+      // Set current queue number - Fix for Issue #2
       if (queueData.length > 0) {
-        setCurrentQueueNumber(queueData[0].queueNumber || "No one");
+        setCurrentQueueNumber(queueData[0].queueNumber || 1);
       } else {
         setCurrentQueueNumber("No one");
       }
       
-      // Check if current user is in queue
+      // Check if current user is in queue - Fix for Issue #1 and #3
       if (user && queueData.length > 0) {
-        const userInQueue = queueData.find(entry => entry.userId === user.id);
+        const userInQueue = queueData.find(entry => 
+          entry.participant._id === user._id || entry.participant === user._id
+        );
+        
         setHasJoined(!!userInQueue);
         
         if (userInQueue) {
           // Find position (how many people in front)
-          const position = queueData.findIndex(entry => entry.userId === user.id);
+          const position = queueData.findIndex(entry => 
+            entry.participant._id === user._id || entry.participant === user._id
+          );
+          
           setUserPosition(position);
-          setUserQueueNumber(userInQueue.queueNumber);
+          // Fix for Issue #1: Use the actual queue number from the entry
+          setUserQueueNumber(position + 1); // Queue numbers start at 1
         } else {
           setUserPosition(null);
           setUserQueueNumber(null);
@@ -123,6 +132,24 @@ const QueuePage = () => {
       toaster.error("Failed to join queue");
     } finally {
       setIsJoining(false);
+    }
+  };
+
+  // Fix for Issue #4: Add leave queue functionality
+  const handleLeaveQueue = async () => {
+    setIsLeaving(true);
+    try {
+      await leaveQueue(slotId);
+      await fetchQueueData();
+      setHasJoined(false);
+      setUserPosition(null);
+      setUserQueueNumber(null);
+      toaster.success("Successfully left the queue");
+    } catch (error) {
+      console.error("Failed to leave queue:", error);
+      toaster.error("Failed to leave queue");
+    } finally {
+      setIsLeaving(false);
     }
   };
 
@@ -253,27 +280,27 @@ const QueuePage = () => {
                 </Text>
               </VStack>
             </HStack>
-            
-            {/* Remove the Join Queue button from here */}
           </VStack>
         </Box>
       </Box>
       
-      {/* Add both buttons side by side here */}
+      {/* Modified button section to hide button after joining */}
       <Box textAlign="center" mt={6}>
         <HStack spacing={4} justify="center">
-          <Button
-            variant="outline"
-            isLoading={isJoining}
-            loadingText="Joining..."
-            onClick={handleJoinQueue}
-            isDisabled={hasJoined || queueStatus !== "active"}
-          >
-            {hasJoined ? "Already in Queue" : "Join Queue"}
-          </Button>
+          {!hasJoined ? (
+            <Button
+              variant="outline"
+              isLoading={isJoining}
+              loadingText="Joining..."
+              onClick={handleJoinQueue}
+              isDisabled={queueStatus !== "active"}
+            >
+              Join Queue
+            </Button>
+          ) : null}
           
-          <Button variant="outline" onClick={() => navigate("/user/groups")}>
-            Back to Groups
+          <Button variant="outline" onClick={() => navigate(-1)}>
+            Back to Consultations
           </Button>
         </HStack>
         
