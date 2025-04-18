@@ -384,14 +384,29 @@ const Timetable = () => {
         {/* Time Slot Rows */}
         {timeSlots.map((hour) => (
           <React.Fragment key={hour}>
-            <Box p={2} textAlign="right" borderRight="1px solid black">
-              <Text>{`${hour}00`}</Text>
+            {/* LEFT TIME LABEL */}
+            <Box
+              minH={`${hourHeight}px`}
+              height={`${hourHeight}px`}
+              borderRight="1px solid black"
+              display="flex"
+              alignItems="start"
+              justifyContent="flex-end"
+              pr={2}
+              pt="-1px"
+            >
+              <Text fontSize="sm" lineHeight="1">
+                {`${hour.toString().padStart(2, '0')}00`}
+              </Text>
             </Box>
+
+            {/* MAIN GRID ROW */}
             {daysOfWeek.map((day) => (
               <Box
                 key={`${day}-${hour}`}
                 border="1px solid #e0e0e0"
                 minH={`${hourHeight}px`}
+                height={`${hourHeight}px`}
               />
             ))}
           </React.Fragment>
