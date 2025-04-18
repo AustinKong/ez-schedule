@@ -124,7 +124,7 @@ router.post("/reset-password", async (req, res) => {
     res.status(200).json({ message: "Password has been reset successfully." });
   } catch (err) {
     console.error("Reset error:", err);
-    res.status(400).json({ error: "Invalid or expired token." });
+    res.status(400).json({ error: err.message || "Invalid or expired token." });
   }
 });
 
