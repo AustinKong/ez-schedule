@@ -12,6 +12,7 @@ import ManagerTimeSlotsPage from "./pages/manager/TimeSlotsPage";
 import TimeSlotForm from "./pages/manager/TimeSlotForm";
 import ManagerQueuePage from "./pages/manager/QueuePage";
 import ShareGroupsPage from "./pages/manager/ShareGroupsPage";
+import ManagerNotificationsPage from "./pages/manager/ManagerNotificationsPage";
 
 // User routes
 import UserGroupPage from "./pages/user/GroupPage";
@@ -25,6 +26,7 @@ import ConsultationConfirmation from "./pages/user/ConsultationConfirmation";
 import SubmissionsListPage from "./pages/user/SubmissionsListPage";
 import SubmissionDetailsPage from "./pages/user/SubmissionDetailsPage";
 import UserQueuePage from "./pages/user/QueuePage";
+import UserNotificationsPage from "./pages/user/UserNotificationsPage";
 
 
 function App() {
@@ -48,6 +50,7 @@ function App() {
             element={<TimeSlotForm isEdit={true} />}
           />
           <Route path="timeslots" element={<ManagerTimeSlotsPage />} />
+          <Route path="notifications" element={<ManagerNotificationsPage />} />
         </Route>
 
         {/* User Routes */}
@@ -74,6 +77,7 @@ function App() {
           />
           <Route path="submissions" element={<SubmissionsListPage />} />
           <Route path="submissions/:id" element={<SubmissionDetailsPage />} />
+          <Route path="notifications" element={<UserNotificationsPage />} />
           {/* <Route path="timetable" element={<Timetable />} /> */}
           <Route path="" element={<></>} />
         </Route>
