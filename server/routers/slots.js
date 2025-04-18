@@ -36,6 +36,13 @@ async function loadSlot(req, res, next) {
   slot.entries = await Promise.all(
     slot.entries.map((entryId) => getEntryById(entryId.toString()))
   );
+  await Promise.all(
+    slot.entries.map(async (entry) => {
+      const user = await findUserById(entry.participant);
+      entry.participant = user;
+      entry.queueNumber = slot.entries.findIndex((e) => e._id.toString() === entry._id.toString()) + 1;
+    })
+  )
   req.slot = slot;
   next();
 }
@@ -156,7 +163,7 @@ router.post("/:slotId/leave", loadSlot, async (req, res) => {
 
 // POST /api/slots/:slotId/advance - Host advances the queue
 router.post("/:slotId/advance", loadSlot, async (req, res) => {
-  if (req.slot.host !== req.user.userId) {
+  if (req.slot.host.toString() !== req.user.userId) {
     return res.status(403).json({ error: "Only host can advance queue" });
   }
 
