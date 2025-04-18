@@ -12,7 +12,7 @@ import {
   VStack,
   HStack,
 } from "@chakra-ui/react";
-import { getSlotDetails, joinQueue, leaveQueue, fetchQueueByTimeslot, fetchTimeslot } from "../../services/api";
+import { getSlotDetails, joinQueue, fetchQueueByTimeslot, fetchTimeslot } from "../../services/api";
 import { formatSlotTime, isSlotActive } from "../../utils/dateUtils";
 import { toaster } from "../../components/ui/toaster";
 
@@ -24,14 +24,11 @@ const QueuePage = () => {
   const [queue, setQueue] = useState([]);
   const [slot, setSlot] = useState(null);
   const [isJoining, setIsJoining] = useState(false);
-  const [isLeaving, setIsLeaving] = useState(false);
   const [userPosition, setUserPosition] = useState(null);
-  const [userQueueNumber, setUserQueueNumber] = useState(null);
   const [hasJoined, setHasJoined] = useState(false);
   const [loading, setLoading] = useState(true);
   const [queueStatus, setQueueStatus] = useState("inactive");
   const [waitingCount, setWaitingCount] = useState(0);
-  const [currentQueueNumber, setCurrentQueueNumber] = useState("No one");
 
   // Load slot details and queue data
   useEffect(() => {
@@ -87,14 +84,7 @@ const QueuePage = () => {
       setQueue(queueData);
       setWaitingCount(queueData.length);
       
-      // Set current queue number - Fix for Issue #2
-      if (queueData.length > 0) {
-        setCurrentQueueNumber(queueData[0].queueNumber || 1);
-      } else {
-        setCurrentQueueNumber("No one");
-      }
-      
-      // Check if current user is in queue - Fix for Issue #1 and #3
+      // Check if current user is in queue
       if (user && queueData.length > 0) {
         const userInQueue = queueData.find(entry => 
           entry.participant._id === user._id || entry.participant === user._id
@@ -109,11 +99,8 @@ const QueuePage = () => {
           );
           
           setUserPosition(position);
-          // Fix for Issue #1: Use the actual queue number from the entry
-          setUserQueueNumber(position + 1); // Queue numbers start at 1
         } else {
           setUserPosition(null);
-          setUserQueueNumber(null);
         }
       }
     } catch (error) {
@@ -135,24 +122,6 @@ const QueuePage = () => {
     }
   };
 
-  // Fix for Issue #4: Add leave queue functionality
-  const handleLeaveQueue = async () => {
-    setIsLeaving(true);
-    try {
-      await leaveQueue(slotId);
-      await fetchQueueData();
-      setHasJoined(false);
-      setUserPosition(null);
-      setUserQueueNumber(null);
-      toaster.success("Successfully left the queue");
-    } catch (error) {
-      console.error("Failed to leave queue:", error);
-      toaster.error("Failed to leave queue");
-    } finally {
-      setIsLeaving(false);
-    }
-  };
-
   if (loading && !slot) {
     return (
       <Flex justify="center" align="center" h="100vh">
@@ -165,8 +134,8 @@ const QueuePage = () => {
     return (
       <Box textAlign="center" p={8}>
         <Text>Slot not found or you don't have access to view it.</Text>
-        <Button mt={4} onClick={() => navigate("/user/groups")}>
-          Back to Groups
+        <Button mt={4} onClick={() => navigate(-1)}>
+          Back to Consultations
         </Button>
       </Box>
     );
@@ -213,11 +182,12 @@ const QueuePage = () => {
           
           <Flex 
             direction={{ base: "column", md: "row" }} 
-            justify="space-between" 
-            align="center" 
-            gap={6}
+            justify="space-between"
+            align="center"
+            gap={4}
           >
-            <VStack align="flex-start" spacing={2}>
+            {/* Date and Timeslot on the left */}
+            <VStack align="flex-start" spacing={2} minW="150px">
               <Text color="gray.600">Date:</Text>
               <Text fontWeight="medium" color="gray.800">
                 {new Date(slot.start).toLocaleDateString()}
@@ -237,57 +207,46 @@ const QueuePage = () => {
               </Text>
             </VStack>
             
-            <VStack align="center" spacing={2}>
-              <Text color="gray.600">Current Queue Number</Text>
-              <Text 
-                fontSize="4xl" 
-                fontWeight="bold" 
-                color="blue.600"
-              >
-                {currentQueueNumber}
-              </Text>
-              <Text color="gray.600" mt={2}>
-                {waitingCount} users waiting
-              </Text>
-            </VStack>
-          </Flex>
-        </Box>
-        
-        <Separator />
-        
-        <Box p={6} bg="white">
-          <VStack spacing={6}>
-            <HStack spacing={12} w="full" justify="center">
-              <VStack align="center">
-                <Text color="gray.600">Your Queue Number</Text>
+            {/* Queue indicators in the center with larger text */}
+            <Flex 
+              flex="1" 
+              justify="center" 
+              align="center" 
+              gap={8}
+            >
+              <VStack align="center" spacing={1}>
+                <Text color="gray.600" fontSize="md">Queue Position</Text>
                 <Text 
-                  fontSize="2xl" 
+                  fontSize="4xl" 
                   fontWeight="bold" 
-                  color={hasJoined ? "green.500" : "gray.800"}
+                  color={hasJoined ? "blue.600" : "green.600"}
                 >
-                  {userQueueNumber || "-"}
+                  {hasJoined ? userPosition + 1 : "Your Turn"}
                 </Text>
               </VStack>
               
-              <VStack align="center">
-                <Text color="gray.600">People in Front of You</Text>
+              <VStack align="center" spacing={1}>
+                <Text color="gray.600" fontSize="md">Users In Queue</Text>
                 <Text 
-                  fontSize="2xl" 
+                  fontSize="4xl" 
                   fontWeight="bold" 
-                  color={hasJoined ? "blue.500" : "gray.800"}
+                  color="blue.600"
                 >
-                  {hasJoined ? userPosition : "-"}
+                  {waitingCount}
                 </Text>
               </VStack>
-            </HStack>
-          </VStack>
+            </Flex>
+            
+            {/* Empty box to balance the layout */}
+            <Box minW="150px" />
+          </Flex>
         </Box>
       </Box>
       
-      {/* Modified button section to hide button after joining */}
+      {/* Join Queue button section */}
       <Box textAlign="center" mt={6}>
         <HStack spacing={4} justify="center">
-          {!hasJoined ? (
+          {!hasJoined && (
             <Button
               variant="outline"
               isLoading={isJoining}
@@ -297,7 +256,7 @@ const QueuePage = () => {
             >
               Join Queue
             </Button>
-          ) : null}
+          )}
           
           <Button variant="outline" onClick={() => navigate(-1)}>
             Back to Consultations
