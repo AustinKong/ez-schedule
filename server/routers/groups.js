@@ -179,7 +179,9 @@ router.delete("/:groupId", async (req, res) => {
     }
 
     // Authorization check: only group host can delete the group
-    if (group.createdBy !== req.user.userId) {
+    // console.log("(groups.js) createdBy:", group.createdBy); //debug
+    // console.log("(groups.js) req.user.userId:", req.user.userId); //debug
+    if (group.createdBy.toString() !== req.user.userId) {
       return res.status(403).json({ error: "Only host can delete the group." });
     }
 
