@@ -220,15 +220,14 @@ const QueuePage = () => {
         <Box textAlign="center" mt={6}>
           <HStack spacing={4} justify="center">
             <Button
+              colorScheme="blue"
               variant="outline"
               onClick={() => navigate(-1)}
             >
               Back to Timeslots
             </Button>
             <Button
-              variant="outline"
               colorScheme="blue"
-              size="lg"
               onClick={handleCallNext}
               isDisabled={queueData.waitingCount === 0}
             >

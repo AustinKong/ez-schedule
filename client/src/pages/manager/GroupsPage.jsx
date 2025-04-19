@@ -18,15 +18,19 @@ import {
 } from "react-icons/fi";
 import { useGroups } from "@/hooks/useGroups";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
 
 const GroupsPage = () => {
   const { groups, deleteGroup } = useGroups(); // Assuming deleteGroup is available in useGroups
   const [expandedId, setExpandedId] = useState(null);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const toggle = (id) => setExpandedId((prev) => (prev === id ? null : id));
 
-  const handleDelete = (id) => {
+  const handleDelete = (id, event) => {
+    // Add event parameter and stop propagation
+    event.stopPropagation(); // Prevent navigation when delete is clicked
+    
     if (window.confirm("Are you sure you want to delete this group?")) {
       deleteGroup(id)
         .then(() => {
@@ -44,6 +48,10 @@ const GroupsPage = () => {
     }
   };
 
+  const handleGroupClick = (groupId) => {
+    navigate(`/manager/groups/${groupId}`);
+  };
+
   return (
     <Box p={6}>
       <Flex justify="space-between" align="center" mb={4}>
@@ -56,10 +64,17 @@ const GroupsPage = () => {
       <VStack spacing={4} align="stretch">
         {groups.map((group) => (
           <Collapsible.Root key={group._id} open={expandedId === group._id}>
-            <Box borderWidth="1px" borderRadius="md" p={4}>
+            <Box 
+              borderWidth="1px" 
+              borderRadius="md" 
+              p={4}
+              onClick={() => handleGroupClick(group._id)}
+              cursor="pointer"
+              _hover={{ bg: "gray.50" }}
+            >
               <Flex justify="space-between" align="center">
                 <Text fontWeight="bold">{group.name}</Text>
-                <Flex gap={2}>
+                <Flex gap={2} onClick={(e) => e.stopPropagation()}>
                   <IconButton
                     aria-label="Edit"
                     size="sm"
@@ -73,7 +88,7 @@ const GroupsPage = () => {
                     aria-label="Delete"
                     size="sm"
                     variant="ghost"
-                    onClick={() => handleDelete(group._id)}
+                    onClick={(e) => handleDelete(group._id, e)}
                   >
                     <FiTrash />
                   </IconButton>
@@ -88,7 +103,10 @@ const GroupsPage = () => {
                   </IconButton>
                   <Collapsible.Trigger
                     as={IconButton}
-                    onClick={() => toggle(group._id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggle(group._id);
+                    }}
                     aria-label="Toggle group info"
                     size="sm"
                     variant="ghost"
@@ -102,7 +120,7 @@ const GroupsPage = () => {
                 </Flex>
               </Flex>
 
-              <Collapsible.Content>
+              <Collapsible.Content onClick={(e) => e.stopPropagation()}>
                 <Box mt={2} fontsize="sm">
                   <Text>ID: {group._id}</Text>
                   <Text>Created at: {group.createdAt}</Text>
