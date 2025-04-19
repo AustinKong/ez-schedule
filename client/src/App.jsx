@@ -8,74 +8,54 @@ import ProfilePage from './pages/user/ProfilePage';
 import UserProfilePage from './pages/user/UserProfilePage';
 
 // Manager routes
-import GroupsPage from './pages/manager/GroupsPage';
-import GroupForm from './pages/manager/GroupForm';
-import ManagerTimeSlotsPage from './pages/manager/TimeSlotsPage';
-import TimeSlotForm from './pages/manager/TimeSlotForm';
-import ManagerQueuePage from './pages/manager/QueuePage';
-import ShareGroupsPage from './pages/manager/ShareGroupsPage';
-import ManagerNotificationsPage from './pages/manager/ManagerNotificationsPage';
+import GroupsPage from "./pages/manager/GroupsPage";
+import GroupForm from "./pages/manager/GroupForm";
+import ManagerTimeSlotsPage from "./pages/manager/TimeSlotsPage";
+import TimeSlotForm from "./pages/manager/TimeSlotForm";
+import ManagerQueuePage from "./pages/manager/QueuePage";
+import ShareGroupsPage from "./pages/manager/ShareGroupsPage";
+import ManagerNotificationsPage from "./pages/manager/ManagerNotificationsPage";
+import ManagerGroupPage from "./pages/manager/GroupPage";
 
 // User routes
-import UserGroupPage from './pages/user/GroupPage';
-import UserGroupsPage from './pages/user/GroupsPage';
-import JoinGroupsPage from './pages/user/JoinGroupsPage';
-import PreconsultFormPage from './pages/user/PreconsultForm';
-import Timetable from './pages/user/TimeTable';
-import TimeSlotsPage from './pages/user/TimeSlotsUserPage';
-import TimeSlotUserDetailsPage from './pages/user/TimeslotUserDetailsPage';
-import ConsultationConfirmation from './pages/user/ConsultationConfirmation';
-import SubmissionsListPage from './pages/user/SubmissionsListPage';
-import SubmissionDetailsPage from './pages/user/SubmissionDetailsPage';
-import UserQueuePage from './pages/user/QueuePage';
-import UserNotificationsPage from './pages/user/UserNotificationsPage';
+import UserGroupPage from "./pages/user/GroupPage";
+import UserGroupsPage from "./pages/user/GroupsPage";
+import JoinGroupsPage from "./pages/user/JoinGroupsPage";
+import PreconsultFormPage from "./pages/user/PreconsultForm";
+import Timetable from "./pages/user/TimeTable";
+import TimeSlotsPage from "./pages/user/TimeSlotsUserPage";
+import TimeSlotUserDetailsPage from "./pages/user/TimeslotUserDetailsPage";
+import ConsultationConfirmation from "./pages/user/ConsultationConfirmation";
+import SubmissionsListPage from "./pages/user/SubmissionsListPage";
+import SubmissionDetailsPage from "./pages/user/SubmissionDetailsPage";
+import UserQueuePage from "./pages/user/QueuePage";
+import UserNotificationsPage from "./pages/user/UserNotificationsPage";
+
 
 function App() {
-	return (
-		<Router>
-			<Routes>
-				{/* Manager Routes */}
-				<Route
-					element={<Layout />}
-					path='manager'>
-					<Route
-						path='groups/new'
-						element={<GroupForm isEdit={false} />}
-					/>
-					<Route
-						path='groups/:id/edit'
-						element={<GroupForm isEdit={true} />}
-					/>
-					<Route
-						path='groups/:id/share'
-						element={<ShareGroupsPage />}
-					/>
-					<Route
-						path='groups'
-						element={<GroupsPage />}
-					/>
-
-					<Route
-						path='timeslots/new'
-						element={<TimeSlotForm isEdit={false} />}
-					/>
-					<Route
-						path='timeslots/:id'
-						element={<ManagerQueuePage />}
-					/>
-					<Route
-						path='timeslots/:id/edit'
-						element={<TimeSlotForm isEdit={true} />}
-					/>
-					<Route
-						path='timeslots'
-						element={<ManagerTimeSlotsPage />}
-					/>
-					<Route
-						path='notifications'
-						element={<ManagerNotificationsPage />}
-					/>
-				</Route>
+  return (
+    <Router>
+      <Routes>
+        {/* Manager Routes */}
+        <Route element={<Layout />} path="manager">
+          <Route path="groups/new" element={<GroupForm isEdit={false} />} />
+          <Route path="groups/:id" element={<ManagerGroupPage />} />
+          <Route path="groups/:id/edit" element={<GroupForm isEdit={true} />} />
+          <Route path="groups/:id/share" element={<ShareGroupsPage />} />
+          <Route path="groups" element={<GroupsPage />} />
+          
+          <Route
+            path="timeslots/new"
+            element={<TimeSlotForm isEdit={false} />}
+          />
+          <Route path="timeslots/:id" element={<ManagerQueuePage />} />
+          <Route
+            path="timeslots/:id/edit"
+            element={<TimeSlotForm isEdit={true} />}
+          />
+          <Route path="timeslots" element={<ManagerTimeSlotsPage />} />
+          <Route path="notifications" element={<ManagerNotificationsPage />} />
+        </Route>
 
 				{/* User Routes */}
 				<Route
