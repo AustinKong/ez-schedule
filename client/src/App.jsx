@@ -151,7 +151,7 @@ function App() {
 				/>
 				<Route
 					path='/'
-					element={<LoginPage />}
+					element={<LandingPage />}
 				/>
 			</Routes>
 		</Router>
