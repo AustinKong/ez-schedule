@@ -225,19 +225,30 @@ const UserProfilePage = () => {
 
 	if (error) {
 		return (
-			<Alert status="error">
-				<AlertIcon />
-				{error}
-			</Alert>
+			<Alert.Root>
+				<Alert.Indicator />
+				<Alert.Content>
+					<Alert.Title>
+						Something went wrong
+					</Alert.Title>
+					<Alert.Description>
+						{error}
+					</Alert.Description>
+				</Alert.Content>
+			</Alert.Root>
 		);
 	}
 
 	if (!userData) {
 		return (
-			<Alert status="warning">
-				<AlertIcon />
-				User profile not found.
-			</Alert>
+			<Alert.Root>
+				<Alert.Indicator />
+				<Alert.Content>
+					<Alert.Title>
+						User profile not found
+					</Alert.Title>
+				</Alert.Content>
+			</Alert.Root>
 		);
 	}
 
