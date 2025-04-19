@@ -34,6 +34,7 @@ const Navbar = () => {
       })
         .then((response) => response.json())
         .then((user) => {
+    console.log(user)
           setUser(user);
         });
     }
@@ -73,7 +74,7 @@ const Navbar = () => {
             <FiLogOut />
           </IconButton>
           <AvatarRoot as={Link} to={`/users/${userId}`} size="sm">
-            {user?.avatar && <AvatarImage src={user.profilePicture} />}
+            {user?.profilePicture && <AvatarImage src={user.profilePicture} />}
             <AvatarFallback>
               <FiUser />
             </AvatarFallback>
