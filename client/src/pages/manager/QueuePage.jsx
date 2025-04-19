@@ -8,6 +8,7 @@ import {
   VStack,
   Spinner,
   Table,
+  Center,
 } from "@chakra-ui/react";
 
 import { useEffect, useState } from "react";
@@ -82,16 +83,6 @@ const QueuePage = () => {
     }
   };
 
-  const handleCloseSlot = async () => {
-    try {
-      await closeSlot(slotId);
-      await loadQueue();
-      navigate("/manager/slots");
-    } catch (error) {
-      console.error("Failed to close slot:", error);
-    }
-  };
-
   const formatDate = (dateString) => new Date(dateString).toLocaleDateString();
   const formatTime = (dateString) =>
     new Date(dateString).toLocaleTimeString([], {
@@ -137,65 +128,76 @@ const QueuePage = () => {
         </Box>
       </Flex>
 
-      <Box borderRadius="lg" boxShadow="md" mb={6}>
-        <Flex direction={{ base: "column", md: "row" }} p={6} gap={6}>
-          <Box>
-            <Heading size="md" mb={2}>
-              Queue Information
-            </Heading>
-            <Text>Date: {formatDate(queueData.date)}</Text>
-            <Text>
-              Timeslot: {formatTime(queueData.startTime)} -{" "}
-              {formatTime(queueData.endTime)}
-            </Text>
-          </Box>
-
-          <Box borderRadius="lg" p={6} textAlign="center" minW="200px">
-            <Text fontSize="4xl" fontWeight="bold" color="blue.600" mb={2}>
-              {queueData.currentNumber || "No one"}
-            </Text>
-            <Text color="gray.600" mb={4}>
-              Current Queue Number
-            </Text>
-            <Text fontSize="lg" fontWeight="medium">
-              {queueData.waitingCount} users waiting
-            </Text>
-          </Box>
-        </Flex>
-
-        <HStack
-          spacing={4}
-          px={6}
-          py={4}
-          justify="center"
-          borderTop="1px solid"
-          borderColor="gray.200"
-        >
-          {!slot.isClosed && (
-            <Button
-              colorScheme="blue"
-              onClick={handleCallNext}
-              isDisabled={queueData.waitingCount === 0}
+      <Box 
+        borderWidth="1px" 
+        borderRadius="lg" 
+        overflow="hidden" 
+        boxShadow="md"
+      >
+        <Box p={6}>
+          <Heading size="md" mb={4} textAlign="center">
+            Queue Information
+          </Heading>
+          
+          <Flex 
+            direction={{ base: "column", md: "row" }} 
+            justify="space-between"
+            align="center"
+            gap={4}
+          >
+            <VStack align="flex-start" spacing={2} minW="150px">
+              <Text color="gray.600">Date:</Text>
+              <Text fontWeight="medium">
+                {formatDate(queueData.date)}
+              </Text>
+              
+              <Text color="gray.600" mt={2}>Timeslot:</Text>
+              <Text 
+                fontWeight="medium" 
+                color="white"
+                bg="black"
+                px={2}
+                py={1}
+                borderRadius="md"
+              >
+                {formatTime(queueData.startTime)} - {formatTime(queueData.endTime)}
+              </Text>
+            </VStack>
+            
+            <Flex 
+              flex="1" 
+              justify="center" 
+              align="center" 
+              gap={8}
             >
-              Call Next
-            </Button>
-          )}
-          {!slot.isClosed && queueData.currentUser && (
-            <Button colorScheme="red" onClick={handleCloseSlot}>
-              End Session
-            </Button>
-          )}
-        </HStack>
+              
+              <VStack align="center" spacing={1}>
+                <Text color="gray.600" fontSize="md">Users In Queue</Text>
+                <Text 
+                  fontSize="4xl" 
+                  fontWeight="bold" 
+                  color="blue.600"
+                >
+                  {queueData.waitingCount}
+                </Text>
+              </VStack>
+            </Flex>
+            
+            <Box minW="150px" />
+          </Flex>
+        </Box>
 
         {queueData.waitingUsers.length > 0 && (
           <Box px={6} py={4}>
-            <Heading size="sm" mb={4}>
-              Waiting Users
-            </Heading>
+            <Center mb={4}>
+              <Heading size="sm">
+                Waiting Users
+              </Heading>
+            </Center>
             <Table.Root>
               <Table.Header>
                 <Table.Row>
-                  <Table.ColumnHeader>Queue #</Table.ColumnHeader>
+                  <Table.ColumnHeader>Position</Table.ColumnHeader>
                   <Table.ColumnHeader>Name</Table.ColumnHeader>
                 </Table.Row>
               </Table.Header>
@@ -213,10 +215,24 @@ const QueuePage = () => {
       </Box>
 
       {!slot.isClosed && (
-        <Box textAlign="center">
-          <Button colorScheme="red" size="lg" onClick={handleCloseSlot}>
-            Close Slot Early
-          </Button>
+        <Box textAlign="center" mt={6}>
+          <HStack spacing={4} justify="center">
+            <Button
+              variant="outline"
+              onClick={() => navigate(-1)}
+            >
+              Back to Timeslots
+            </Button>
+            <Button
+              variant="outline"
+              colorScheme="blue"
+              size="lg"
+              onClick={handleCallNext}
+              isDisabled={queueData.waitingCount === 0}
+            >
+              Call Next
+            </Button>
+          </HStack>
         </Box>
       )}
     </Box>
