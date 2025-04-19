@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Flex,
   HStack,
   Link as ChakraLink,
@@ -9,7 +10,7 @@ import {
   AvatarFallback,
   Spacer,
 } from "@chakra-ui/react";
-import { FiLogOut, FiUser, FiSearch } from "react-icons/fi";
+import { FiLogOut, FiUser } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { ColorModeButton } from "@/components/ui/color-mode";
 import { useState, useEffect } from "react";
@@ -57,8 +58,9 @@ const Navbar = () => {
 
         {/* Icons */}
         <Spacer />
-        <HStack spacing={3}>
-          <ColorModeButton />
+        <ColorModeButton />
+        {user === null ? 
+          (<HStack spacing={3}>
           <IconButton
             aria-label="Logout"
             variant="ghost"
@@ -73,7 +75,12 @@ const Navbar = () => {
               <FiUser />
             </AvatarFallback>
           </AvatarRoot>
+        </HStack>) : (
+        <HStack spacing={3}>
+          <Button variant="outline" onClick={() => navigate("/login")}>Login</Button>
+          <Button variant="outline" onClick={() => navigate("/register")}>Register</Button>
         </HStack>
+        )}
       </Flex>
     </Box>
   );
