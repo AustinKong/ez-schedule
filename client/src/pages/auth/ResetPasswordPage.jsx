@@ -70,8 +70,8 @@ function ResetPasswordPage() {
     <Flex minH="100vh" align="center" justify="center" bg="gray.50">
       <Toaster />
       <Box bg="white" p={8} rounded="md" shadow="md" minW="350px">
-        <Heading mb={4} size="lg">Reset Password</Heading>
-        <Text mb={6}>Please enter your new password below.</Text>
+        <Heading mb={4} size="lg" color="black">Reset Password</Heading>
+        <Text mb={6} color="black">Please enter your new password below.</Text>
         <VStack spacing={4} align="stretch">
           <PasswordInput
             placeholder="New Password"
