@@ -62,25 +62,30 @@ function App() {
           <Route path="groups" element={<UserGroupsPage />} />
           <Route path="groups/:id" element={<UserGroupPage />} />
           <Route path="groups/:id/join" element={<JoinGroupsPage />} />
-          <Route path="preconsultForm/new" element={<PreconsultFormPage />} />
-          {/* Timeslot Routes */}
+          
+          {/* Preconsultation routes */}
+          <Route 
+            path="slots/:slotId/preconsultation" 
+            element={<PreconsultFormPage />} 
+          />
+          <Route 
+            path="slots/:slotId/confirmation" 
+            element={<ConsultationConfirmation />} 
+          />
+
+          {/* Timeslot routes */}
           <Route path="timeslots" element={<TimeSlotsPage />} />
-          <Route path="/user/timeslots/:id/queue" element={<UserQueuePage />} />
           <Route path="timeslots/all" element={<Timetable />} />
           <Route path="timeslots/:id" element={<TimeSlotUserDetailsPage />} />
-          <Route
-            path="timeslots/:slotId/preconsultation"
-            element={<PreconsultFormPage />}
-          />
-          <Route
-            path="timeslots/:slotId/confirmation"
-            element={<ConsultationConfirmation />}
-          />
+          <Route path="/user/timeslots/:id/queue" element={<UserQueuePage />} />
+
+          {/* Submission routes */}
           <Route path="submissions" element={<SubmissionsListPage />} />
           <Route path="submissions/:id" element={<SubmissionDetailsPage />} />
+
+          {/* Other user routes */}
           <Route path="notifications" element={<UserNotificationsPage />} />
           <Route path="profile" element={<ProfilePage />} />
-          {/* <Route path="timetable" element={<Timetable />} /> */}
           <Route path="" element={<></>} />
         </Route>
 
