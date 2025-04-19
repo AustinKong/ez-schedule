@@ -18,17 +18,16 @@ import {
 } from "react-icons/fi";
 import { useGroups } from "@/hooks/useGroups";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
+import { Link, useNavigate } from "react-router-dom";
 
 const GroupsPage = () => {
-  const { groups, deleteGroup } = useGroups(); // Assuming deleteGroup is available in useGroups
+  const { groups, deleteGroup } = useGroups();
   const [expandedId, setExpandedId] = useState(null);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate(); 
 
   const toggle = (id) => setExpandedId((prev) => (prev === id ? null : id));
 
   const handleDelete = (id, event) => {
-    // Add event parameter and stop propagation
     event.stopPropagation(); // Prevent navigation when delete is clicked
     
     if (window.confirm("Are you sure you want to delete this group?")) {
