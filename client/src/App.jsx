@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/auth/LandingPage";
-import LoginPage from "./pages/auth/LoginPage";
-import RegisterPage from "./pages/auth/RegisterPage";
-import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
-import ForgetPasswordPage from "./pages/auth/ForgetPasswordPage";
-import Layout from "./components/custom/Layout";
-=======
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
@@ -15,7 +7,6 @@ import ForgetPasswordPage from './pages/auth/ForgetPasswordPage';
 import Layout from './components/custom/Layout';
 import ProfilePage from './pages/user/ProfilePage';
 import UserProfilePage from './pages/user/UserProfilePage';
->>>>>>> 078ff6ee57fdfdec898f0c2dd2ba498cb32f20a8
 
 // Manager routes
 import GroupsPage from "./pages/manager/GroupsPage";
@@ -135,17 +126,6 @@ function App() {
 					/>
 				</Route>
 
-<<<<<<< HEAD
-        {/* Auth Routes */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/forget-password" element={<ForgetPasswordPage />} />
-        <Route path="/" element={<LandingPage />} />
-      </Routes>
-    </Router>
-  );
-=======
 				{/* Public User Profile Route */}
 				<Route
 					path='/users/:id'
@@ -176,7 +156,6 @@ function App() {
 			</Routes>
 		</Router>
 	);
->>>>>>> 078ff6ee57fdfdec898f0c2dd2ba498cb32f20a8
 }
 
 export default App;
