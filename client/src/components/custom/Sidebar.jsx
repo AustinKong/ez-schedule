@@ -34,7 +34,7 @@ const Sidebar = () => {
     links = [
       { to: "/user/groups", label: "Groups", icon: FiUsers },
       { to: "/user/timeslots/all", label: "Timeslots", icon: FiCalendar },
-      { to: "/user/preconsultForm/new", label: "Preconsult Form", icon: FiFolder },
+      { to: "/user/submissions", label: "My Submissions", icon: FiFolder }, 
     ];
   }
 
