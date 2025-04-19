@@ -73,7 +73,7 @@ import {
     };
   
     return (
-      <Flex minH="100vh" align="center" justify="center" bg="gray.50">
+      <Flex minH="100vh" align="center" justify="center">
         <Toaster />
         <Box bg="white" p={8} rounded="md" shadow="md" minW="350px">
         <Heading mb={4} size="lg" color="black">

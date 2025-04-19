@@ -19,22 +19,24 @@ import { API_URL } from "../../services/api";
 const links = [{ to: "/", text: "About" }];
 
 const Navbar = () => {
-  const userId = localStorage.getItem("userId");
+  const userId = localStorage.getItem("token");
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`${API_URL}/users/${userId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((user) => {
-        setUser(user);
-      });
+    if (userId !== null) {
+      fetch(`${API_URL}/users/${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((user) => {
+          setUser(user);
+        });
+    }
   }, [userId]);
 
   const handleLogout = () => {
@@ -60,7 +62,7 @@ const Navbar = () => {
         {/* Icons */}
         <Spacer />
         <ColorModeButton />
-        {user === null ? 
+        {user !== null ? 
           (<HStack spacing={3}>
           <IconButton
             aria-label="Logout"
@@ -71,7 +73,7 @@ const Navbar = () => {
             <FiLogOut />
           </IconButton>
           <AvatarRoot as={Link} to={`/users/${userId}`} size="sm">
-            {user?.avatar && <AvatarImage src={`/api/${user?.avatar}`} />}
+            {user?.avatar && <AvatarImage src={user.profilePicture} />}
             <AvatarFallback>
               <FiUser />
             </AvatarFallback>
