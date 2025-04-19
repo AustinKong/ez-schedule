@@ -140,10 +140,9 @@ const Timetable = () => {
     fetchTimeslots();
   }, [groups, colourPalette]);
 
-
-  useEffect(() => {
-    console.log("Updated Timeslots updated:", updatedTimeslots);
-  }, [updatedTimeslots]);
+  // useEffect(() => {
+  //   console.log("Updated Timeslots updated:", updatedTimeslots);
+  // }, [updatedTimeslots]);
 
   // find the earliestTime and latestTime from the list of timeslots
   useEffect(() => {
@@ -243,7 +242,6 @@ const Timetable = () => {
 
   const handlePrevWeek = () => {
     if (displayedWeek > 1) {
-      console.log("Minus 1 week");
       setDisplayedWeek(currWeek => currWeek - 1);
     } else {
       setDisplayedYear(currYear => {
@@ -255,7 +253,6 @@ const Timetable = () => {
   };
 
   const handleNextWeek = () => {
-    console.log("pressed next week");
     if (displayedWeek < 52) {
       setDisplayedWeek(currWeek => currWeek + 1);
     } else {
@@ -306,18 +303,6 @@ const Timetable = () => {
   useEffect(() => {
     setWeekRange(getWeekRange(displayedWeek, displayedYear));
   }, [displayedWeek, displayedYear])
-
-  useEffect(() => {
-    console.log("displayedWeek(UseEffect)", displayedWeek);
-  }, [displayedWeek]);
-
-  useEffect(() => {
-    console.log("displayedYear(UseEffect)", displayedYear);
-  }, [displayedYear]);
-
-  useEffect(() => {
-    console.log("timeslots", updatedTimeslots);
-  }, [updatedTimeslots]);
 
   return (
     <Box>
