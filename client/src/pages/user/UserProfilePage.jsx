@@ -238,7 +238,7 @@ const UserProfilePage = () => {
 					<button
 						className='back-button'
 						onClick={() => navigate('/user/groups')}>
-						<FaArrowLeft /> Back to Groups
+						<FaArrowLeft /> Back to Home
 					</button>
 				</div>
 
