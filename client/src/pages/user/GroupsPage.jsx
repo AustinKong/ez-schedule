@@ -9,7 +9,7 @@ const UserGroupsPage = () => {
   return (
     <Box p={6}>
       <Flex justify="space-between" align="center" mb={4}>
-        <Heading size="md">My Groups</Heading>
+        <Heading size="md">Groups</Heading>
       </Flex>
 
       <VStack spacing={4} align="stretch">
@@ -24,7 +24,7 @@ const UserGroupsPage = () => {
               p={4}
               as={Link}
               to={`/user/groups/${group._id}`}
-              _hover={{ bg: "gray.50" }}
+              _hover={{ bg: "gray.400" }}
             >
               <Text fontWeight="bold" mb={1}>
                 {group.name}

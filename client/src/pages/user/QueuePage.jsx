@@ -135,7 +135,7 @@ const QueuePage = () => {
       <Box textAlign="center" p={8}>
         <Text>Slot not found or you don't have access to view it.</Text>
         <Button mt={4} onClick={() => navigate(-1)}>
-          Back to Consultations
+          Back to Timeslots
         </Button>
       </Box>
     );
@@ -161,8 +161,11 @@ const QueuePage = () => {
         </Box>
         <Box flex={1} p={4} borderRadius="md">
           <Text fontWeight="semibold">Status:</Text>
-          <Text color={queueStatus === "active" ? "green.500" : queueStatus === "closed" ? "red.500" : "yellow.500"}>
-            {queueStatus === "active" ? "Active" : queueStatus === "closed" ? "Closed" : "Inactive"}
+          <Text 
+            color={isSlotActive(slot) ? "green.500" : "red.500"}
+            fontWeight="medium"
+          >
+            {isSlotActive(slot) ? "Active" : "Inactive"}
           </Text>
         </Box>
       </Flex>
@@ -240,29 +243,27 @@ const QueuePage = () => {
       
       <Box textAlign="center" mt={6}>
         <HStack spacing={4} justify="center">
-          {!hasJoined && (
-            <Button
-              variant="outline"
-              colorScheme="blue"
-              isLoading={isJoining}
-              loadingText="Joining..."
-              onClick={handleJoinQueue}
-              isDisabled={queueStatus !== "active"}
-            >
-              Join Queue
-            </Button>
-          )}
-          
-          <Button variant="outline" onClick={() => navigate(-1)}>
-            Back to Consultations
+
+        <Button variant="outline" onClick={() => navigate(-1)}>
+          Back to Timeslots
+        </Button>
+
+        {!hasJoined && (
+          <Button
+            colorScheme="blue"
+            isLoading={isJoining}
+            loadingText="Joining..."
+            onClick={handleJoinQueue}
+            isDisabled={queueStatus !== "active"}
+          >
+            Join Queue
           </Button>
+        )} 
         </HStack>
         
         {queueStatus !== "active" && (
           <Text color="red.500" mt={4} textAlign="center">
-            {queueStatus === "closed" 
-              ? "This slot is closed and not accepting new entries." 
-              : "This slot is not active yet."}
+            {"This slot is not active"}
           </Text>
         )}
       </Box>
