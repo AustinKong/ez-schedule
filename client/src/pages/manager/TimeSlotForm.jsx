@@ -16,7 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { FiEdit } from "react-icons/fi";
-import { format } from "date-fns";
+import { format, setHours, setMinutes } from "date-fns";
 import { useTimeslots } from "@/hooks/useTimeslots";
 import { useGroups } from "@/hooks/useGroups";
 import { createListCollection } from "@chakra-ui/react";
@@ -30,6 +30,8 @@ const TimeSlotForm = ({ isEdit }) => {
   const [groupId, setGroupId] = useState("");
   const [alertIsOpen, setAlertIsOpen] = useState(true);
   const [timeslot, setTimeslot] = useState(null);
+  const [startDate, setStartDate] = useState(setHours(setMinutes(new Date(), 30), 16));
+
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -151,7 +153,7 @@ const TimeSlotForm = ({ isEdit }) => {
               w="100%"
             />
           </Field.Root>
-
+            
           <Field.Root required w="100%">
             <Field.Label>
               End Time (SGT) <Field.RequiredIndicator />

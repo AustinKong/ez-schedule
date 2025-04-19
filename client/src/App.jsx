@@ -1,11 +1,12 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginPage from './pages/auth/LoginPage';
-import RegisterPage from './pages/auth/RegisterPage';
-import ResetPasswordPage from './pages/auth/ResetPasswordPage';
-import ForgetPasswordPage from './pages/auth/ForgetPasswordPage';
-import Layout from './components/custom/Layout';
-import ProfilePage from './pages/user/ProfilePage';
-import UserProfilePage from './pages/user/UserProfilePage';
+import LandingPage from "./pages/auth/LandingPage";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+import ForgetPasswordPage from "./pages/auth/ForgetPasswordPage";
+import Layout from "./components/custom/Layout";
+import ProfilePage from "./pages/user/ProfilePage";
+import UserProfilePage from "./pages/user/UserProfilePage";
 
 // Manager routes
 import GroupsPage from "./pages/manager/GroupsPage";
@@ -31,7 +32,6 @@ import SubmissionDetailsPage from "./pages/user/SubmissionDetailsPage";
 import UserQueuePage from "./pages/user/QueuePage";
 import UserNotificationsPage from "./pages/user/UserNotificationsPage";
 
-
 function App() {
   return (
     <Router>
@@ -43,7 +43,7 @@ function App() {
           <Route path="groups/:id/edit" element={<GroupForm isEdit={true} />} />
           <Route path="groups/:id/share" element={<ShareGroupsPage />} />
           <Route path="groups" element={<GroupsPage />} />
-          
+
           <Route
             path="timeslots/new"
             element={<TimeSlotForm isEdit={false} />}
@@ -57,104 +57,47 @@ function App() {
           <Route path="notifications" element={<ManagerNotificationsPage />} />
         </Route>
 
-				{/* User Routes */}
-				<Route
-					element={<Layout />}
-					path='user'>
-					<Route
-						path='groups'
-						element={<UserGroupsPage />}
-					/>
-					<Route
-						path='groups/:id'
-						element={<UserGroupPage />}
-					/>
-					<Route
-						path='groups/:id/join'
-						element={<JoinGroupsPage />}
-					/>
-					<Route
-						path='preconsultForm/new'
-						element={<PreconsultFormPage />}
-					/>
-					{/* Timeslot Routes */}
-					<Route
-						path='timeslots'
-						element={<TimeSlotsPage />}
-					/>
-					<Route
-						path='/user/timeslots/:id/queue'
-						element={<UserQueuePage />}
-					/>
-					<Route
-						path='timeslots/all'
-						element={<Timetable />}
-					/>
-					<Route
-						path='timeslots/:id'
-						element={<TimeSlotUserDetailsPage />}
-					/>
-					<Route
-						path='timeslots/:slotId/preconsultation'
-						element={<PreconsultFormPage />}
-					/>
-					<Route
-						path='timeslots/:slotId/confirmation'
-						element={<ConsultationConfirmation />}
-					/>
-					<Route
-						path='submissions'
-						element={<SubmissionsListPage />}
-					/>
-					<Route
-						path='submissions/:id'
-						element={<SubmissionDetailsPage />}
-					/>
-					<Route
-						path='notifications'
-						element={<UserNotificationsPage />}
-					/>
-					<Route
-						path='profile'
-						element={<ProfilePage />}
-					/>
-					{/* <Route path="timetable" element={<Timetable />} /> */}
-					<Route
-						path=''
-						element={<></>}
-					/>
-				</Route>
+        {/* User Routes */}
+        <Route element={<Layout />} path="user">
+          <Route path="groups" element={<UserGroupsPage />} />
+          <Route path="groups/:id" element={<UserGroupPage />} />
+          <Route path="groups/:id/join" element={<JoinGroupsPage />} />
+          <Route path="preconsultForm/new" element={<PreconsultFormPage />} />
+          {/* Timeslot Routes */}
+          <Route path="timeslots" element={<TimeSlotsPage />} />
+          <Route path="/user/timeslots/:id/queue" element={<UserQueuePage />} />
+          <Route path="timeslots/all" element={<Timetable />} />
+          <Route path="timeslots/:id" element={<TimeSlotUserDetailsPage />} />
+          <Route
+            path="timeslots/:slotId/preconsultation"
+            element={<PreconsultFormPage />}
+          />
+          <Route
+            path="timeslots/:slotId/confirmation"
+            element={<ConsultationConfirmation />}
+          />
+          <Route path="submissions" element={<SubmissionsListPage />} />
+          <Route path="submissions/:id" element={<SubmissionDetailsPage />} />
+          <Route path="notifications" element={<UserNotificationsPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          {/* <Route path="timetable" element={<Timetable />} /> */}
+          <Route path="" element={<></>} />
+        </Route>
 
-				{/* Public User Profile Route */}
-				<Route
-					path='/users/:id'
-					element={<UserProfilePage />}
-				/>
+        {/* Public User Profile Route */}
+        <Route element={<Layout />}>
+          <Route path="/users/:id" element={<UserProfilePage />} />
+        </Route>
 
-				{/* Auth Routes */}
-				<Route
-					path='/login'
-					element={<LoginPage />}
-				/>
-				<Route
-					path='/register'
-					element={<RegisterPage />}
-				/>
-				<Route
-					path='/reset-password'
-					element={<ResetPasswordPage />}
-				/>
-				<Route
-					path='/forget-password'
-					element={<ForgetPasswordPage />}
-				/>
-				<Route
-					path='/'
-					element={<LoginPage />}
-				/>
-			</Routes>
-		</Router>
-	);
+        {/* Auth Routes */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/forget-password" element={<ForgetPasswordPage />} />
+        <Route path="/" element={<LandingPage />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;

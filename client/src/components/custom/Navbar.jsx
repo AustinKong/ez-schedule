@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Flex,
   HStack,
   Link as ChakraLink,
@@ -9,7 +10,7 @@ import {
   AvatarFallback,
   Spacer,
 } from "@chakra-ui/react";
-import { FiLogOut, FiUser, FiSearch } from "react-icons/fi";
+import { FiLogOut, FiUser } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { ColorModeButton } from "@/components/ui/color-mode";
 import { useState, useEffect } from "react";
@@ -18,22 +19,24 @@ import { API_URL } from "../../services/api";
 const links = [{ to: "/", text: "About" }];
 
 const Navbar = () => {
-  const userId = localStorage.getItem("userId");
+  const userId = localStorage.getItem("token");
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`${API_URL}/users/${userId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((user) => {
-        setUser(user);
-      });
+    if (userId !== null) {
+      fetch(`${API_URL}/users/${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((user) => {
+          setUser(user);
+        });
+    }
   }, [userId]);
 
   const handleLogout = () => {
@@ -58,8 +61,9 @@ const Navbar = () => {
 
         {/* Icons */}
         <Spacer />
-        <HStack spacing={3}>
-          <ColorModeButton />
+        <ColorModeButton />
+        {user !== null ? 
+          (<HStack spacing={3}>
           <IconButton
             aria-label="Logout"
             variant="ghost"
@@ -69,12 +73,17 @@ const Navbar = () => {
             <FiLogOut />
           </IconButton>
           <AvatarRoot as={Link} to={`/users/${userId}`} size="sm">
-            {user?.avatar && <AvatarImage src={`/api/${user?.avatar}`} />}
+            {user?.avatar && <AvatarImage src={user.profilePicture} />}
             <AvatarFallback>
               <FiUser />
             </AvatarFallback>
           </AvatarRoot>
+        </HStack>) : (
+        <HStack spacing={3}>
+          <Button variant="outline" onClick={() => navigate("/login")}>Login</Button>
+          <Button variant="outline" onClick={() => navigate("/register")}>Register</Button>
         </HStack>
+        )}
       </Flex>
     </Box>
   );
