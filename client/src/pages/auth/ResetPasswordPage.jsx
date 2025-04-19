@@ -11,6 +11,7 @@ import { useState } from "react";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { API_URL } from '../../services/api'
 
 const isValidPassword = (pw) => pw && pw.length >= 1; // Example minimum
 
@@ -35,7 +36,7 @@ function ResetPasswordPage() {
     }
     setLoading(true);
     try {
-      const response = await fetch("/api/auth/reset-password", {
+      const response = await fetch(`${API_URL}/auth/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, newPassword: password }),

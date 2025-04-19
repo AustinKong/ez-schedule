@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { FiTag, FiUser, FiCompass, FiFolder } from "react-icons/fi";
 import { FiUsers, FiCalendar } from "react-icons/fi";
 import { useEffect, useState } from "react";
+import { API_URL } from "../../services/api";
 
 const Sidebar = () => {
   const userId = localStorage.getItem("userId");
@@ -10,7 +11,7 @@ const Sidebar = () => {
   const location = useLocation();
 
   useEffect(() => {
-    fetch(`/api/users/${userId}`, {
+    fetch(`${API_URL}/users/${userId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

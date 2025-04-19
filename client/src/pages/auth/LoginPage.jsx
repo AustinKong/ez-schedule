@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { PasswordInput } from "@/components/ui/password-input";
+import { API_URL } from '../../services/api'
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -33,7 +34,7 @@ function LoginPage() {
 
     // Server call
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

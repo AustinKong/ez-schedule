@@ -12,7 +12,7 @@ import {
   VStack,
   HStack,
 } from "@chakra-ui/react";
-import { getSlotDetails, joinQueue, fetchQueueByTimeslot, fetchTimeslot } from "../../services/api";
+import { API_URL, getSlotDetails, joinQueue, fetchQueueByTimeslot, fetchTimeslot } from "../../services/api";
 import { formatSlotTime, isSlotActive } from "../../utils/dateUtils";
 import { toaster } from "../../components/ui/toaster";
 
@@ -66,7 +66,7 @@ const QueuePage = () => {
   // Separate function to fetch queue data using the existing API function
   const fetchQueueData = async () => {
     const userId = localStorage.getItem("userId");
-    const response = await fetch(`/api/users/${userId}`, {
+    const response = await fetch(`${API_URL}/users/${userId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       }

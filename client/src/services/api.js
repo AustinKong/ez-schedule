@@ -1,5 +1,5 @@
 // src/services/api.js
-const API_URL = "http://localhost:5000/api";
+export const API_URL = import.meta.env.VITE_API_URL;
 
 // Group Endpoints
 export const fetchGroups = async () => {
@@ -305,18 +305,17 @@ export const submitPreConsultation = async (slotId, formData) => {
     }
   }
 
-  await fetch(`/api/slots/${slotId}/preconsultation`, {
+  await fetch(`${API_URL}/slots/${slotId}/preconsultation`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
-      // ❌ DO NOT set Content-Type manually for FormData – let the browser handle it
     },
     body: formPayload,
   });
 };
 
 export const fetchSubmissionDetails = async (formId) => {
-  const res = await fetch(`/api/preconsultations/${formId}`, {
+  const res = await fetch(`${API_URL}/preconsultations/${formId}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -333,7 +332,7 @@ export const fetchSubmissionDetails = async (formId) => {
 
 //added in
 export const checkExistingSubmission = async (slotId) => {
-  const response = await fetch(`/api/preconsultations/slot/${slotId}`, {
+  const response = await fetch(`${API_URL}/preconsultations/slot/${slotId}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },

@@ -14,6 +14,7 @@ import { useState } from "react";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Link, useNavigate } from "react-router-dom";
+import { API_URL } from '../../services/api'
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -42,7 +43,7 @@ function RegisterPage() {
     }
 
     try {
-      const response = await fetch("/api/auth/register", {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, username, userType }),

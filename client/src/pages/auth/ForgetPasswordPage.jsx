@@ -13,6 +13,7 @@ import {
   import { useState } from "react";
   import { useNavigate } from "react-router-dom";
   import { Toaster, toaster } from "@/components/ui/toaster";
+  import { API_URL } from '../../services/api'
   
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   
@@ -37,7 +38,7 @@ import {
   
       setLoading(true);
       try {
-        const response = await fetch("/api/auth/forgot-password", {
+        const response = await fetch(`${API_URL}/auth/forgot-password`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
