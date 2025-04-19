@@ -59,11 +59,11 @@ import {
         <Flex justify="space-between" align="center" mb={6}>
           <Heading size="lg">Timeslots</Heading>
           <Flex gap={3}>
-            <Button onClick={handleCreateTimeslot} colorScheme="blue">
-              Create Timeslot
-            </Button>
             <Button onClick={handleBackToGroups} variant="outline">
               Back to Groups
+            </Button>
+            <Button onClick={handleCreateTimeslot} colorScheme="blue">
+              Create Timeslot
             </Button>
           </Flex>
         </Flex>
