@@ -118,14 +118,16 @@ const QueuePage = () => {
       </Flex>
 
       <Flex gap={4} mb={8} direction={{ base: "column", md: "row" }}>
-        <Box flex={1} p={4} borderRadius="md">
-          <Text fontWeight="semibold">Location:</Text>
-          <Text>{slot.location || "Not specified"}</Text>
-        </Box>
-        <Box flex={1} p={4} borderRadius="md">
-          <Text fontWeight="semibold">Status:</Text>
-          <Text>{isSlotActive(slot) ? "Active" : "Closed"}</Text>
-        </Box>
+      <Box flex={1} p={4} borderRadius="md">
+        <Text fontWeight="semibold">Status:</Text>
+        <Text 
+          color={isSlotActive(slot) ? "green.500" : "red.500"}
+          fontWeight="medium"
+        >
+          {isSlotActive(slot) ? "Active" : "Closed"}
+        </Text>
+      </Box>
+
       </Flex>
 
       <Box 

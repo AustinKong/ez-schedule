@@ -161,11 +161,9 @@ const QueuePage = () => {
         </Box>
         <Box flex={1} p={4} borderRadius="md">
           <Text fontWeight="semibold">Status:</Text>
-          <Badge 
-            colorScheme={queueStatus === "active" ? "green" : queueStatus === "closed" ? "red" : "yellow"}
-          >
+          <Text color={queueStatus === "active" ? "green.500" : queueStatus === "closed" ? "red.500" : "yellow.500"}>
             {queueStatus === "active" ? "Active" : queueStatus === "closed" ? "Closed" : "Inactive"}
-          </Badge>
+          </Text>
         </Box>
       </Flex>
 
