@@ -119,12 +119,16 @@ const QueuePage = () => {
 
       <Flex gap={4} mb={8} direction={{ base: "column", md: "row" }}>
       <Box flex={1} p={4} borderRadius="md">
+        <Text fontWeight="semibold">Location:</Text>
+        <Text>{slot.location || "Not specified"}</Text>
+      </Box>
+      <Box flex={1} p={4} borderRadius="md">
         <Text fontWeight="semibold">Status:</Text>
         <Text 
           color={isSlotActive(slot) ? "green.500" : "red.500"}
           fontWeight="medium"
         >
-          {isSlotActive(slot) ? "Active" : "Closed"}
+          {isSlotActive(slot) ? "Active" : "Inactive"}
         </Text>
       </Box>
 
@@ -192,15 +196,15 @@ const QueuePage = () => {
         {queueData.waitingUsers.length > 0 && (
           <Box px={6} py={4}>
             <Center mb={4}>
-              <Heading size="sm">
+              <Heading size="md" textAlign="center">
                 Waiting Users
               </Heading>
             </Center>
             <Table.Root>
               <Table.Header>
                 <Table.Row>
-                  <Table.ColumnHeader>Position</Table.ColumnHeader>
-                  <Table.ColumnHeader>Name</Table.ColumnHeader>
+                  <Table.ColumnHeader fontWeight="bold">Position</Table.ColumnHeader>
+                  <Table.ColumnHeader fontWeight="bold">Name</Table.ColumnHeader>
                 </Table.Row>
               </Table.Header>
               <Table.Body>

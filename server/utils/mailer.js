@@ -9,9 +9,10 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendResetPasswordEmail(to, token) {
-//   const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${token}`;
-  // const resetLink = `http://localhost:${process.env.PORT}/reset-password?token=${token}`;
-  const resetLink = `http://localhost:5173/reset-password?token=${token}`;
+  // const resetLink = `http://localhost:5173/reset-password?token=${token}`; // for localhost
+  // const resetLink = `https://ez-schedule.onrender.com/reset-password?token=${token}`; //for deployed website on render
+  const resetLink = `${process.env.CLIENT_URL || "http://localhost:5173"}/reset-password?token=${token}`;
+
 
 
 

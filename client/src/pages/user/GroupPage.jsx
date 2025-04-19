@@ -53,7 +53,7 @@ const GroupPage = () => {
   return (
     <Box px={6} py={8} maxW="5xl" mx="auto">
       <Flex justify="space-between" align="center" mb={6}>
-        <Heading size="lg">Available Consultations</Heading>
+        <Heading size="lg">Timeslots</Heading>
         <Button onClick={handleLeaveGroup} colorScheme="red">
           Leave Group
         </Button>
@@ -80,7 +80,7 @@ const GroupPage = () => {
                     colorScheme="blue"
                     onClick={() => handleViewDetails(slot._id)}
                   >
-                    View Details
+                    View Queue
                   </Button>
                   <Button
                     onClick={() =>
