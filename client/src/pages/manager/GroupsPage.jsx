@@ -70,7 +70,7 @@ const GroupsPage = () => {
               p={4}
               onClick={() => handleGroupClick(group._id)}
               cursor="pointer"
-              _hover={{ bg: "gray.50" }}
+              _hover={{ bg: "gray.400" }}
             >
               <Flex justify="space-between" align="center">
                 <Text fontWeight="bold">{group.name}</Text>
@@ -120,11 +120,14 @@ const GroupsPage = () => {
                 </Flex>
               </Flex>
 
+              <Text fontSize="sm" color="gray.600">
+              {group.description}
+              </Text>
+
               <Collapsible.Content onClick={(e) => e.stopPropagation()}>
                 <Box mt={2} fontsize="sm">
                   <Text>ID: {group._id}</Text>
                   <Text>Created at: {group.createdAt}</Text>
-                  <Text>Description: {group.description}</Text>
                 </Box>
               </Collapsible.Content>
             </Box>
