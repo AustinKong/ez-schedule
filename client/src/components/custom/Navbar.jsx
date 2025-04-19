@@ -60,7 +60,7 @@ const Navbar = () => {
         {/* Icons */}
         <Spacer />
         <ColorModeButton />
-        {user === null ? 
+        {user ? 
           (<HStack spacing={3}>
           <IconButton
             aria-label="Logout"

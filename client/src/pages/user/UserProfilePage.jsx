@@ -1,7 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import {
-	FaUser,
+	Box,
+	Flex,
+	Avatar,
+	Button,
+	Heading,
+	Text,
+	Input,
+	Textarea,
+	IconButton,
+	Badge,
+	Spinner,
+	Alert,
+	Image,
+} from '@chakra-ui/react';
+import {
 	FaEnvelope,
 	FaUserTag,
 	FaEdit,
@@ -10,11 +23,14 @@ import {
 	FaCamera,
 	FaArrowLeft,
 } from 'react-icons/fa';
-import './UserProfilePage.css';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Toaster, toaster } from '@/components/ui/toaster';
+import { FiUser } from 'react-icons/fi';
 
 const UserProfilePage = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
+
 	const [userData, setUserData] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
@@ -32,29 +48,20 @@ const UserProfilePage = () => {
 		const fetchUserProfile = async () => {
 			try {
 				const token = localStorage.getItem('token');
-
-				if (!token) {
-					throw new Error('Authentication required');
-				}
+				if (!token) throw new Error('Authentication required');
 
 				const response = await fetch(`/api/users/${id}`, {
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
+					headers: { Authorization: `Bearer ${token}` },
 				});
 
-				if (!response.ok) {
-					throw new Error('Failed to fetch user data');
-				}
-
+				if (!response.ok) throw new Error('Failed to fetch user data');
 				const data = await response.json();
+
 				setUserData(data);
 				setBio(data.bio || '');
 				setContactNumber(data.contactNumber || '');
 				setEditedUsername(data.username);
-				if (data.profilePicture) {
-					setPhotoPreview(data.profilePicture);
-				}
+				if (data.profilePicture) setPhotoPreview(data.profilePicture);
 			} catch (error) {
 				setError('Failed to load user data');
 			} finally {
@@ -68,60 +75,51 @@ const UserProfilePage = () => {
 	const handlePhotoChange = async (e) => {
 		const file = e.target.files[0];
 		if (file) {
+			const reader = new FileReader();
+			reader.onloadend = () => setPhotoPreview(reader.result);
+			reader.readAsDataURL(file);
+
 			try {
 				const token = localStorage.getItem('token');
-				if (!token) {
-					throw new Error('Authentication required');
-				}
+				if (!token) throw new Error('Authentication required');
 
-				// Create preview immediately
-				const reader = new FileReader();
-				reader.onloadend = () => {
-					setPhotoPreview(reader.result);
-				};
-				reader.readAsDataURL(file);
-
-				// Upload to server
 				const formData = new FormData();
 				formData.append('profilePicture', file);
 
 				const response = await fetch(`/api/users/${id}/profile-picture`, {
 					method: 'POST',
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
+					headers: { Authorization: `Bearer ${token}` },
 					body: formData,
 				});
 
-				if (!response.ok) {
-					throw new Error('Failed to update profile picture');
-				}
+				if (!response.ok) throw new Error('Failed to update profile picture');
 
 				const data = await response.json();
-				setUserData((prev) => ({
-					...prev,
-					profilePicture: data.profilePicture,
-				}));
+				setUserData((prev) => ({ ...prev, profilePicture: data.profilePicture }));
 				setIsEditingPhoto(false);
+
+				toaster.create({
+					title: 'Profile Picture Updated',
+					description: 'Your profile picture has been changed.',
+					type: 'success',
+				});
 			} catch (err) {
 				setSaveError(err.message);
-				// Revert preview on error
 				setPhotoPreview(userData?.profilePicture || null);
+
+				toaster.create({
+					title: 'Upload Failed',
+					description: err.message,
+					type: 'error',
+				});
 			}
 		}
-	};
-
-	const handlePhotoCancel = () => {
-		setIsEditingPhoto(false);
-		setPhotoPreview(userData?.profilePicture || null);
 	};
 
 	const handleSave = async () => {
 		try {
 			const token = localStorage.getItem('token');
-			if (!token) {
-				throw new Error('Authentication required');
-			}
+			if (!token) throw new Error('Authentication required');
 
 			const response = await fetch(`/api/users/${id}`, {
 				method: 'PATCH',
@@ -132,303 +130,299 @@ const UserProfilePage = () => {
 				body: JSON.stringify({ username: editedUsername }),
 			});
 
-			if (!response.ok) {
-				throw new Error('Failed to update username');
-			}
+			if (!response.ok) throw new Error('Failed to update username');
 
-			setUserData((prevData) => ({
-				...prevData,
-				username: editedUsername,
-			}));
-
+			setUserData((prev) => ({ ...prev, username: editedUsername }));
 			setIsEditing(false);
 			setSaveError(null);
+
+			toaster.create({
+				title: 'Username Updated',
+				description: 'Your new username has been saved.',
+				type: 'success',
+			});
 		} catch (err) {
 			setSaveError(err.message);
+			toaster.create({
+				title: 'Update Failed',
+				description: err.message,
+				type: 'error',
+			});
 		}
-	};
-
-	const handleCancel = () => {
-		setEditedUsername(userData.username);
-		setIsEditing(false);
-		setSaveError(null);
 	};
 
 	const handleBioSave = async () => {
 		try {
 			const token = localStorage.getItem('token');
-			if (!token) {
-				throw new Error('Authentication required');
-			}
+			if (!token) throw new Error('Authentication required');
 
-			const response = await fetch(`/api/users/${id}`, {
+			const res = await fetch(`/api/users/${id}`, {
 				method: 'PATCH',
 				headers: {
-					'Content-Type': 'application/json',
 					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({ bio }),
 			});
-			if (!response.ok) throw new Error('Failed to update bio');
+
+			if (!res.ok) throw new Error();
 			setUserData((prev) => ({ ...prev, bio }));
 			setIsEditingBio(false);
-		} catch (error) {
-			setError('Failed to update bio');
+
+			toaster.create({
+				title: 'Bio Updated',
+				description: 'Your bio has been saved.',
+				type: 'success',
+			});
+		} catch {
+			toaster.create({
+				title: 'Failed to update bio',
+				description: 'Please try again later.',
+				type: 'error',
+			});
 		}
 	};
 
 	const handleContactSave = async () => {
 		try {
 			const token = localStorage.getItem('token');
-			if (!token) {
-				throw new Error('Authentication required');
-			}
+			if (!token) throw new Error('Authentication required');
 
-			const response = await fetch(`/api/users/${id}`, {
+			const res = await fetch(`/api/users/${id}`, {
 				method: 'PATCH',
 				headers: {
-					'Content-Type': 'application/json',
 					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({ contactNumber }),
 			});
-			if (!response.ok) throw new Error('Failed to update contact number');
+
+			if (!res.ok) throw new Error();
 			setUserData((prev) => ({ ...prev, contactNumber }));
 			setIsEditingContact(false);
-		} catch (error) {
-			setError('Failed to update contact number');
+
+			toaster.create({
+				title: 'Contact Updated',
+				description: 'Your contact number has been saved.',
+				type: 'success',
+			});
+		} catch {
+			toaster.create({
+				title: 'Failed to update contact',
+				description: 'Please try again later.',
+				type: 'error',
+			});
 		}
 	};
 
 	if (loading) {
 		return (
-			<div className='loading-container'>
-				<div className='spinner'></div>
-			</div>
+			<Flex justify="center" align="center" minH="100vh">
+				<Spinner size="xl" />
+			</Flex>
 		);
 	}
 
 	if (error) {
 		return (
-			<div className='error-container'>
-				<div className='error-content'>
-					<h2>Error</h2>
-					<p>{error}</p>
-				</div>
-			</div>
+			<Alert status="error">
+				<AlertIcon />
+				{error}
+			</Alert>
 		);
 	}
 
 	if (!userData) {
 		return (
-			<div className='warning-container'>
-				<div className='warning-content'>
-					<h2>No Data</h2>
-					<p>User profile not found</p>
-				</div>
-			</div>
+			<Alert status="warning">
+				<AlertIcon />
+				User profile not found.
+			</Alert>
 		);
 	}
 
 	return (
-		<div className='profile-container'>
-			<div className='profile-card'>
-				{/* Go Back Button */}
-				<div className='back-button-container'>
-					<button
-						className='back-button'
-						onClick={() => navigate('/user/groups')}>
-						<FaArrowLeft /> Back to Home
-					</button>
-				</div>
-
-				{/* Profile Picture Section - Centered at the top */}
-				<div className='profile-avatar-container'>
-					{isEditingPhoto ? (
-						<div className='photo-edit-container'>
-							<div className='photo-preview'>
+		<>
+			<Toaster />
+			<Flex direction="column" align="center" p={6} minH="100vh">
+				<Box w="100%" maxW="800px" p={6}>
+					{/* Profile Picture */}
+					<Flex justify="center" mb={6}>
+						{isEditingPhoto ? (
+							<Flex direction="column" align="center">
 								{photoPreview ? (
-									<img
-										src={photoPreview}
-										alt='Profile preview'
-									/>
+									<Image src={photoPreview} boxSize="150px" borderRadius="full" objectFit="cover" />
 								) : (
-									<div className='profile-avatar'>{userData.username?.[0]?.toUpperCase()}</div>
+									<Avatar.Root size="2xl">
+										{userData?.profilePicture && (<Avatar.Image src={userData.profilePicture} alt={userData.username} />)}
+										<Avatar.Fallback>
+											<FiUser />
+										</Avatar.Fallback>
+									</Avatar.Root>
 								)}
-							</div>
-							<div className='photo-edit-controls'>
-								<label className='photo-upload-button'>
-									<FaCamera /> Choose Photo
-									<input
-										type='file'
-										accept='image/*'
-										onChange={handlePhotoChange}
-										style={{ display: 'none' }}
-									/>
-								</label>
-								<button
-									onClick={handlePhotoCancel}
-									className='cancel-button'>
-									<FaTimes /> Cancel
-								</button>
-							</div>
-						</div>
-					) : (
-						<div className='profile-avatar-wrapper'>
-							{userData.profilePicture ? (
-								<img
-									src={userData.profilePicture}
-									alt={`${userData.username}'s profile`}
-									className='profile-avatar-image'
+								<Flex gap={2} mt={2}>
+									<label>
+										<Button leftIcon={<FaCamera />} as="span">
+											Choose Photo
+											<input type="file" hidden accept="image/*" onChange={handlePhotoChange} />
+										</Button>
+									</label>
+									<Button leftIcon={<FaTimes />} colorScheme="red" onClick={() => setIsEditingPhoto(false)}>
+										Cancel
+									</Button>
+								</Flex>
+							</Flex>
+						) : (
+							<Flex direction="column" align="center" position="relative">
+								{userData.profilePicture ? (
+									<Image src={userData.profilePicture} boxSize="150px" borderRadius="full" objectFit="cover" />
+								) : (
+									<Avatar.Root size="2xl">
+										{userData?.profilePicture && (<Avatar.Image src={userData.profilePicture} alt={userData.username} />)}
+										<Avatar.Fallback>
+											<FiUser />
+										</Avatar.Fallback>
+									</Avatar.Root>
+								)}
+								<IconButton
+									aria-label="Edit Photo"
+									position="absolute"
+									bottom={0}
+									right={0}
+									onClick={() => setIsEditingPhoto(true)}
+									isRound
+									size="sm"
+								>
+									<FaCamera />
+								</IconButton>
+							</Flex>
+						)}
+					</Flex>
+
+					{/* Username */}
+					<Flex direction="column" align="center" mb={6}>
+						{isEditing ? (
+							<>
+								<Input
+									value={editedUsername}
+									onChange={(e) => setEditedUsername(e.target.value)}
+									textAlign="center"
+									maxW="300px"
+									fontSize="2xl"
+									mb={2}
 								/>
-							) : (
-								<div className='profile-avatar'>{userData.username?.[0]?.toUpperCase()}</div>
-							)}
-							<button
-								onClick={() => setIsEditingPhoto(true)}
-								className='edit-photo-button'
-								title='Edit profile picture'>
-								<FaCamera />
-							</button>
-						</div>
-					)}
-				</div>
-
-				{/* Username Section - Centered underneath profile picture */}
-				<div className='username-section'>
-					{isEditing ? (
-						<div className='edit-form'>
-							<input
-								type='text'
-								value={editedUsername}
-								onChange={(e) => setEditedUsername(e.target.value)}
-								className='username-input'
-							/>
-							<div className='button-group'>
-								<button
-									onClick={handleSave}
-									className='save-button'>
-									<FaCheck /> Save
-								</button>
-								<button
-									onClick={handleCancel}
-									className='cancel-button'>
-									<FaTimes /> Cancel
-								</button>
-							</div>
-							{saveError && <p className='error-message'>{saveError}</p>}
-						</div>
-					) : (
-						<div className='username-display'>
-							<h1>{userData.username}</h1>
-							<button
-								onClick={() => setIsEditing(true)}
-								className='edit-button'>
-								<FaEdit /> Edit
-							</button>
-						</div>
-					)}
-				</div>
-
-				{/* User Information Card - All details in one card */}
-				<div className='info-card'>
-					<div className='detail-item'>
-						<FaEnvelope className='detail-icon' />
-						<span className='detail-label'>Email:</span>
-						<span className='detail-value'>{userData.email}</span>
-					</div>
-
-					<div className='detail-item'>
-						<FaUserTag className='detail-icon' />
-						<span className='detail-label'>Role:</span>
-						<span className={`role-badge ${userData.userRole}`}>{userData.userRole}</span>
-					</div>
-
-					{/* Bio Section */}
-					<div className='profile-section'>
-						<div className='section-header'>
-							<h2>Bio</h2>
-							{!isEditingBio ? (
-								<button
-									onClick={() => setIsEditingBio(true)}
-									className='edit-button'>
-									<FaEdit />
-								</button>
-							) : (
-								<div className='button-group'>
-									<button
-										onClick={handleBioSave}
-										className='save-button'>
-										<FaCheck />
-									</button>
-									<button
+								<Flex gap={2}>
+									<Button onClick={handleSave}>
+									<FaCheck />
+										Save
+									</Button>
+									<Button
 										onClick={() => {
-											setIsEditingBio(false);
-											setBio(userData.bio || '');
-										}}
-										className='cancel-button'>
-										<FaTimes />
-									</button>
-								</div>
-							)}
-						</div>
-						{isEditingBio ? (
-							<textarea
-								value={bio}
-								onChange={(e) => setBio(e.target.value)}
-								placeholder='Write something about yourself...'
-								className='bio-textarea'
-							/>
+											setIsEditing(false);
+											setEditedUsername(userData.username);
+										}}>
+											<FaTimes />
+										Cancel
+									</Button>
+								</Flex>
+								{saveError && <Text color="red.500">{saveError}</Text>}
+							</>
 						) : (
-							<p className='bio-text'>{userData.bio || 'No bio added yet.'}</p>
-						)}
-					</div>
-
-					{/* Contact Number Section */}
-					<div className='profile-section'>
-						<div className='section-header'>
-							<h2>Contact Number</h2>
-							{!isEditingContact ? (
-								<button
-									onClick={() => setIsEditingContact(true)}
-									className='edit-button'>
+							<>
+								<Heading size="lg">{userData.username}</Heading>
+								<Button variant="ghost" onClick={() => setIsEditing(true)}>
 									<FaEdit />
-								</button>
-							) : (
-								<div className='button-group'>
-									<button
-										onClick={handleContactSave}
-										className='save-button'>
-										<FaCheck />
-									</button>
-									<button
-										onClick={() => {
-											setIsEditingContact(false);
-											setContactNumber(userData.contactNumber || '');
-										}}
-										className='cancel-button'>
-										<FaTimes />
-									</button>
-								</div>
-							)}
-						</div>
-						{isEditingContact ? (
-							<input
-								type='tel'
-								value={contactNumber}
-								onChange={(e) => setContactNumber(e.target.value)}
-								placeholder='Enter your contact number'
-								className='contact-input'
-							/>
-						) : (
-							<p className='contact-text'>
-								{userData.contactNumber || 'No contact number added yet.'}
-							</p>
+									Edit
+								</Button>
+							</>
 						)}
-					</div>
-				</div>
-			</div>
-		</div>
+					</Flex>
+
+					{/* Info Card */}
+					<Box p={4} borderRadius="md">
+						<Flex align="center" mb={4}>
+							<FaEnvelope />
+							<Text ml={2} fontWeight="semibold">
+								Email:
+							</Text>
+							<Text ml={2}>{userData.email}</Text>
+						</Flex>
+
+						<Flex align="center" mb={4}>
+							<FaUserTag />
+							<Text ml={2} fontWeight="semibold">
+								Role:
+							</Text>
+							<Badge ml={2} colorScheme={userData.userRole === 'admin' ? 'red' : userData.userRole === 'manager' ? 'green' : 'blue'}>
+								{userData.userRole}
+							</Badge>
+						</Flex>
+
+						{/* Bio */}
+						<Box mt={4}>
+							<Flex justify="space-between" align="center">
+								<Heading size="sm">Bio</Heading>
+								{isEditingBio ? (
+									<Flex gap={2}>
+										<IconButton size="sm" onClick={handleBioSave}>
+											<FaCheck />
+										</IconButton>
+										<IconButton
+											size="sm"
+											onClick={() => {
+												setIsEditingBio(false);
+												setBio(userData.bio || '');
+											}}>
+											<FaTimes />
+										</IconButton>
+									</Flex>
+								) : (
+									<IconButton size="sm" onClick={() => setIsEditingBio(true)}>
+										<FaEdit />
+									</IconButton>
+								)}
+							</Flex>
+							{isEditingBio ? (
+								<Textarea value={bio} onChange={(e) => setBio(e.target.value)} mt={2} />
+							) : (
+								<Text mt={2}>{userData.bio || 'No bio added yet.'}</Text>
+							)}
+						</Box>
+
+						{/* Contact Number */}
+						<Box mt={6}>
+							<Flex justify="space-between" align="center">
+								<Heading size="sm">Contact Number</Heading>
+								{isEditingContact ? (
+									<Flex gap={2}>
+										<IconButton size="sm" onClick={handleContactSave}>
+											<FaCheck />
+										</IconButton>
+										<IconButton
+											size="sm"
+											onClick={() => {
+												setIsEditingContact(false);
+												setContactNumber(userData.contactNumber || '');
+											}}>
+											<FaTimes />
+										</IconButton>
+									</Flex>
+								) : (
+									<IconButton size="sm" onClick={() => setIsEditingContact(true)}>
+										<FaEdit />
+									</IconButton>
+								)}
+							</Flex>
+							{isEditingContact ? (
+								<Input mt={2} type="tel" value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} />
+							) : (
+								<Text mt={2}>{userData.contactNumber || 'No contact number added yet.'}</Text>
+							)}
+						</Box>
+					</Box>
+				</Box>
+			</Flex>
+		</>
 	);
 };
 
