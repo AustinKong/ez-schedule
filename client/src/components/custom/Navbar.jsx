@@ -14,6 +14,7 @@ import { FiLogOut, FiUser } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { ColorModeButton } from "@/components/ui/color-mode";
 import { useState, useEffect } from "react";
+import { API_URL } from "../../services/api";
 
 const links = [{ to: "/", text: "About" }];
 
@@ -23,7 +24,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`/api/users/${userId}`, {
+    fetch(`${API_URL}/users/${userId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

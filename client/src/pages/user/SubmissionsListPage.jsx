@@ -13,6 +13,7 @@ import {
   Table,
 } from "@chakra-ui/react";
 import { format, parseISO } from "date-fns";
+import { API_URL } from "../../services/api";
 
 const SubmissionsListPage = () => {
   const [submissions, setSubmissions] = useState([]);
@@ -25,7 +26,7 @@ const SubmissionsListPage = () => {
   useEffect(() => {
     const loadSubmissions = async () => {
       try {
-        const response = await fetch("/api/preconsultations/user", {
+        const response = await fetch(`${API_URL}/preconsultations/user`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

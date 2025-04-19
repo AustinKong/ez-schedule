@@ -18,6 +18,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
+import { API_URL } from "../../services/api";
 
 const TimeslotUserDetailsPage = () => {
   const { id } = useParams();
@@ -39,7 +40,7 @@ const TimeslotUserDetailsPage = () => {
         const timeslotData = await getTimeslot(id);
         setTimeslot(timeslotData);
 
-        const response = await fetch(`/api/preconsultations/slot/${id}`, {
+        const response = await fetch(`${API_URL}/preconsultations/slot/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
