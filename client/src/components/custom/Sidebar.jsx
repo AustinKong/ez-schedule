@@ -29,13 +29,11 @@ const Sidebar = () => {
     links = [
       { to: "/manager/groups", label: "Groups", icon: FiUsers },
       { to: "/manager/timeslots", label: "Timeslots", icon: FiCalendar },
-      { to: "/queue", label: "Queue", icon: FiUser },
     ];
   } else if (user?.userRole === "participant") {
     links = [
       { to: "/user/groups", label: "Groups", icon: FiUsers },
       { to: "/user/timeslots/all", label: "Timeslots", icon: FiCalendar },
-      { to: "/queue", label: "Queue", icon: FiUser },
       { to: "/user/preconsultForm/new", label: "Preconsult Form", icon: FiFolder },
     ];
   }

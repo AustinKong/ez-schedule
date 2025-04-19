@@ -339,15 +339,3 @@ export const checkExistingSubmission = async (slotId) => {
   });
   return handleResponse(response);
 };
-
-// Add this to your services/api.js file if it's not already there
-export const leaveQueue = async (slotId) => {
-  const response = await fetch(`${API_URL}/slots/${slotId}/leave`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
-  if (!response.ok) throw new Error("Failed to leave queue");
-  return response.json();
-};

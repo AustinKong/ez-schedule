@@ -44,8 +44,13 @@ function LoginPage() {
         const { token, userId, userRole } = await response.json();
         localStorage.setItem("token", token);
         localStorage.setItem("userId", userId);
-        if (userRole === "host") navigate("/manager");
-        else if (userRole === "participant") navigate("/user");
+        
+        // Redirect directly to groups page
+        if (userRole === "host") {
+          navigate("/manager/groups");
+        } else if (userRole === "participant") {
+          navigate("/user/groups");
+        }
       } else {
         toaster.create({
           title: "Login Failed",

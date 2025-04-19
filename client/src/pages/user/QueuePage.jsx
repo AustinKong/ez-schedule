@@ -20,7 +20,7 @@ const QueuePage = () => {
   const { id: slotId } = useParams();
   const navigate = useNavigate();
   
-  // Manage all state locally
+  // Manage all states locally
   const [queue, setQueue] = useState([]);
   const [slot, setSlot] = useState(null);
   const [isJoining, setIsJoining] = useState(false);
@@ -155,17 +155,15 @@ const QueuePage = () => {
         mb={8} 
         direction={{ base: "column", md: "row" }}
       >
-        <Box flex={1} p={4} borderRadius="md" bg="gray.50">
-          <Text fontWeight="semibold" color="gray.800">Location:</Text>
-          <Text color="gray.800">{slot.location || "Not specified"}</Text>
+        <Box flex={1} p={4} borderRadius="md">
+          <Text fontWeight="semibold">Location:</Text>
+          <Text>{slot.location || "Not specified"}</Text>
         </Box>
-        <Box flex={1} p={4} borderRadius="md" bg="gray.50">
-          <Text fontWeight="semibold" color="gray.800">Status:</Text>
-          <Badge 
-            colorScheme={queueStatus === "active" ? "green" : queueStatus === "closed" ? "red" : "yellow"}
-          >
+        <Box flex={1} p={4} borderRadius="md">
+          <Text fontWeight="semibold">Status:</Text>
+          <Text color={queueStatus === "active" ? "green.500" : queueStatus === "closed" ? "red.500" : "yellow.500"}>
             {queueStatus === "active" ? "Active" : queueStatus === "closed" ? "Closed" : "Inactive"}
-          </Badge>
+          </Text>
         </Box>
       </Flex>
 
@@ -175,8 +173,8 @@ const QueuePage = () => {
         overflow="hidden" 
         boxShadow="md"
       >
-        <Box bg="blue.50" p={6}>
-          <Heading size="md" mb={4} textAlign="center" color="gray.800">
+        <Box p={6}>
+          <Heading size="md" mb={4} textAlign="center">
             Queue Information
           </Heading>
           
@@ -186,10 +184,9 @@ const QueuePage = () => {
             align="center"
             gap={4}
           >
-            {/* Date and Timeslot on the left */}
             <VStack align="flex-start" spacing={2} minW="150px">
               <Text color="gray.600">Date:</Text>
-              <Text fontWeight="medium" color="gray.800">
+              <Text fontWeight="medium">
                 {new Date(slot.start).toLocaleDateString()}
               </Text>
               
@@ -207,7 +204,6 @@ const QueuePage = () => {
               </Text>
             </VStack>
             
-            {/* Queue indicators in the center with larger text */}
             <Flex 
               flex="1" 
               justify="center" 
@@ -219,7 +215,7 @@ const QueuePage = () => {
                 <Text 
                   fontSize="4xl" 
                   fontWeight="bold" 
-                  color={hasJoined ? "blue.600" : "green.600"}
+                  color="blue.600"
                 >
                   {hasJoined ? userPosition + 1 : "-"}
                 </Text>
@@ -237,18 +233,17 @@ const QueuePage = () => {
               </VStack>
             </Flex>
             
-            {/* Empty box to balance the layout */}
             <Box minW="150px" />
           </Flex>
         </Box>
       </Box>
       
-      {/* Join Queue button section */}
       <Box textAlign="center" mt={6}>
         <HStack spacing={4} justify="center">
           {!hasJoined && (
             <Button
               variant="outline"
+              colorScheme="blue"
               isLoading={isJoining}
               loadingText="Joining..."
               onClick={handleJoinQueue}
