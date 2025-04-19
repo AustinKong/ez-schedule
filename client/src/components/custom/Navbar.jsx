@@ -19,7 +19,7 @@ import { API_URL } from "../../services/api";
 const links = [{ to: "/", text: "About" }];
 
 const Navbar = () => {
-  const userId = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
