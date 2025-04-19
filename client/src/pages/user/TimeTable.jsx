@@ -112,6 +112,7 @@ const Timetable = () => {
   useEffect(() => {
     const fetchTimeslots = async () => {
       if (groups.length > 0) {
+        
         const allTimeslotsWithDetails = await Promise.all(
           groups.map(async (group) => {
             try {
@@ -119,7 +120,8 @@ const Timetable = () => {
               return response.map(timeslot => ({
                 ...timeslot,
                 groupName: group.name,
-                day: daysOfWeek[new Date(timeslot.start).getDay() - 1],
+                day: new Date(timeslot.start).toLocaleDateString('en-SG', { weekday: 'short', timeZone: 'Asia/Singapore' }).toUpperCase(),
+                //day: daysOfWeek[new Date(timeslot.start).getDay() - 1],
                 startHours: new Date(timeslot.start).getHours() + (new Date(timeslot.start).getMinutes() / 60),
                 endHours: new Date(timeslot.end).getHours() + (new Date(timeslot.end).getMinutes() / 60),
                 week: getWeekNumber(timeslot.start),
@@ -131,7 +133,6 @@ const Timetable = () => {
             }
           })
         ).then(results => results.flat()); // Flatten the array of arrays into a single array of timeslots
-  
         setUpdatedTimeslots(allTimeslotsWithDetails);
       }
     };
@@ -140,9 +141,9 @@ const Timetable = () => {
   }, [groups, colourPalette]);
 
 
-  // useEffect(() => {
-  //   console.log("Updated Timeslots updated:", updatedTimeslots);
-  // }, [updatedTimeslots]);
+  useEffect(() => {
+    console.log("Updated Timeslots updated:", updatedTimeslots);
+  }, [updatedTimeslots]);
 
   // find the earliestTime and latestTime from the list of timeslots
   useEffect(() => {
