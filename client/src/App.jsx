@@ -13,6 +13,7 @@ import TimeSlotForm from "./pages/manager/TimeSlotForm";
 import ManagerQueuePage from "./pages/manager/QueuePage";
 import ShareGroupsPage from "./pages/manager/ShareGroupsPage";
 import ManagerNotificationsPage from "./pages/manager/ManagerNotificationsPage";
+import ManagerGroupPage from "./pages/manager/GroupPage";
 
 // User routes
 import UserGroupPage from "./pages/user/GroupPage";
@@ -36,10 +37,11 @@ function App() {
         {/* Manager Routes */}
         <Route element={<Layout />} path="manager">
           <Route path="groups/new" element={<GroupForm isEdit={false} />} />
+          <Route path="groups/:id" element={<ManagerGroupPage />} />
           <Route path="groups/:id/edit" element={<GroupForm isEdit={true} />} />
           <Route path="groups/:id/share" element={<ShareGroupsPage />} />
           <Route path="groups" element={<GroupsPage />} />
-
+          
           <Route
             path="timeslots/new"
             element={<TimeSlotForm isEdit={false} />}
