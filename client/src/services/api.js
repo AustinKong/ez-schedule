@@ -349,3 +349,22 @@ export const checkExistingSubmission = async (slotId) => {
     return false;
   }
 };
+
+export const fetchSubmissionDetailsByUser = async (slotId, userId) => {
+  const res = await fetch(`${API_URL}/preconsultations/slot/${slotId}/user/${userId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  if (!res.ok) {
+    if (res.status === 404) {
+      throw new Error("No submission found for this user");
+    }
+    throw new Error("Failed to fetch submission details");
+  }
+
+  return res.json();
+};
+
