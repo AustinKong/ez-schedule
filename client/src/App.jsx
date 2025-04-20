@@ -80,8 +80,6 @@ function App() {
           <Route path="submissions/:id" element={<SubmissionDetailsPage />} />
           <Route path="notifications" element={<UserNotificationsPage />} />
           <Route path="profile" element={<ProfilePage />} />
-          {/* <Route path="timetable" element={<Timetable />} /> */}
-          <Route path="" element={<></>} />
         </Route>
 
         {/* Public User Profile Route */}

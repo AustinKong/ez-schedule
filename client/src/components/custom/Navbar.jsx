@@ -50,7 +50,22 @@ const Navbar = () => {
     <Box px={6} py={2} borderBottom="1px solid gray">
       <Flex align="center" gap={6}>
         <Box fontWeight="bold" fontSize="xl" mr={4}>
-          EzSchedule
+          {user === null ? (
+            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+              EzSchedule
+            </Link>
+          ) : (
+              user.userRole === "host" ? (
+              <Link to="/user/groups" style={{ textDecoration: 'none', color: 'inherit' }}>
+                EzSchedule
+              </Link>
+            ) : (
+              <Link to="/user/groups" style={{ textDecoration: 'none', color: 'inherit' }}>
+              EzSchedule
+            </Link>
+            )
+          )}
+            
         </Box>
 
         <HStack spacing={4} display={{ base: "none", md: "flex" }}>
