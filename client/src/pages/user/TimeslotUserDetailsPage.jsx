@@ -140,7 +140,7 @@ const TimeslotUserDetailsPage = () => {
             {!submissionExists ? (
               <Button
                 as={RouterLink}
-                to={`/user/slots/${id}/preconsultation`}
+                to={`/user/timeslots/${id}/preconsultation`}
                 colorScheme="blue"
               >
                 Submit Pre-Consultation Form

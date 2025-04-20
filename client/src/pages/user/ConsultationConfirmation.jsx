@@ -37,7 +37,7 @@ const ConsultationConfirmation = () => {
           </Button>
           <Button 
             as={RouterLink} 
-            to="/user/timeslots" 
+            to="/user/timeslots/all" 
             colorScheme="gray"
           >
             Back to Timeslots

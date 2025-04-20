@@ -24,7 +24,6 @@ import UserGroupsPage from "./pages/user/GroupsPage";
 import JoinGroupsPage from "./pages/user/JoinGroupsPage";
 import PreconsultFormPage from "./pages/user/PreconsultForm";
 import Timetable from "./pages/user/TimeTable";
-import TimeSlotsPage from "./pages/user/TimeSlotsUserPage";
 import TimeSlotUserDetailsPage from "./pages/user/TimeslotUserDetailsPage";
 import ConsultationConfirmation from "./pages/user/ConsultationConfirmation";
 import SubmissionsListPage from "./pages/user/SubmissionsListPage";
@@ -65,19 +64,20 @@ function App() {
           
           {/* Preconsultation routes */}
           <Route 
-            path="slots/:slotId/preconsultation" 
+            path="timeslots/:slotId/preconsultation" 
             element={<PreconsultFormPage />} 
           />
           <Route 
-            path="slots/:slotId/confirmation" 
+            path="timeslots/:slotId/confirmation" 
             element={<ConsultationConfirmation />} 
           />
 
           {/* Timeslot routes */}
-          <Route path="timeslots" element={<TimeSlotsPage />} />
           <Route path="timeslots/all" element={<Timetable />} />
           <Route path="timeslots/:id" element={<TimeSlotUserDetailsPage />} />
           <Route path="/user/timeslots/:id/queue" element={<UserQueuePage />} />
+          <Route path="/user/timeslots/:id/queue" element={<UserQueuePage />} />
+
 
           {/* Submission routes */}
           <Route path="submissions" element={<SubmissionsListPage />} />
