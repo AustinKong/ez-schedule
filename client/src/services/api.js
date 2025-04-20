@@ -359,9 +359,12 @@ export const fetchSubmissionDetailsByUser = async (slotId, userId) => {
   });
 
   if (!res.ok) {
+    if (res.status === 404) {
+      throw new Error("No submission found for this user");
+    }
     throw new Error("Failed to fetch submission details");
   }
 
-  const data = await res.json();
-  return data;
+  return res.json();
 };
+
