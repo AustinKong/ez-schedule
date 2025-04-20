@@ -99,6 +99,7 @@ router.get("/:formId", async (req, res) => {
       _id: form._id,
       concerns: form.concerns,
       objectives: form.objectives,
+      attachments: form.attachments,
       createdAt: form.createdAt,
       status: "submitted",
       slot: await getSlotById(form.slotId.toString()),

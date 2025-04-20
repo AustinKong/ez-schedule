@@ -141,9 +141,10 @@ const PreconsultFormPage = () => {
           )}
         </Field.Root>
 
-        <Field.Root required>
+        <Field.Root required paddingTop={"50px"}>
           <Checkbox.Root
             checked={agreeTerms}
+            variant={"subtle"}
             onCheckedChange={(e) => setAgreeTerms(!!e.checked)}
           >
             <Checkbox.HiddenInput />

@@ -11,8 +11,10 @@ import {
   Stack,
   Flex,
   Table,
+  IconButton,
 } from "@chakra-ui/react";
 import { format, parseISO } from "date-fns";
+import { LuSearch } from "react-icons/lu"
 import { API_URL } from "../../services/api";
 
 const SubmissionsListPage = () => {
@@ -166,12 +168,15 @@ const SubmissionsListPage = () => {
                   </Box>
                 </Table.Cell>
                 <Table.Cell>
-                  <Link
+                  <IconButton
+                    aria-label="Edit"
+                    size="sm"
+                    variant="ghost"
+                    as={Link}
                     to={`/user/submissions/${submission._id}`}
-                    style={{ color: "blue" }}
                   >
-                    View
-                  </Link>
+                    <LuSearch />
+                  </IconButton>
                 </Table.Cell>
               </Table.Row>
             ))}

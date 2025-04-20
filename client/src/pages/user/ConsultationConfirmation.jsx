@@ -1,4 +1,3 @@
-// src/components/user/ConsultationConfirmation.jsx
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import {
   Box,
@@ -22,14 +21,26 @@ const ConsultationConfirmation = () => {
           Your pre-consultation form has been submitted successfully.
         </Text>
         <Stack spacing={3}>
-          <Button as={RouterLink} to={`/user/timeslots/${slotId}`} colorScheme="blue">
+          <Button 
+            as={RouterLink} 
+            to={`/user/timeslots/${slotId}`}  // Points to existing timeslots route
+            colorScheme="blue"
+          >
             View Consultation Details
           </Button>
-          <Button as={RouterLink} to="/user/timeslots" colorScheme="gray">
-            Back to My Consultations
-          </Button>
-          <Button as={RouterLink} to="/user/submissions" colorScheme="gray">
+          <Button 
+            as={RouterLink} 
+            to="/user/submissions" 
+            colorScheme="gray"
+          >
             View All Submissions
+          </Button>
+          <Button 
+            as={RouterLink} 
+            to="/user/timeslots/all" 
+            colorScheme="gray"
+          >
+            Back to Timeslots
           </Button>
         </Stack>
       </Box>

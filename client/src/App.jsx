@@ -24,7 +24,6 @@ import UserGroupsPage from "./pages/user/GroupsPage";
 import JoinGroupsPage from "./pages/user/JoinGroupsPage";
 import PreconsultFormPage from "./pages/user/PreconsultForm";
 import Timetable from "./pages/user/TimeTable";
-import TimeSlotsPage from "./pages/user/TimeSlotsUserPage";
 import TimeSlotUserDetailsPage from "./pages/user/TimeslotUserDetailsPage";
 import ConsultationConfirmation from "./pages/user/ConsultationConfirmation";
 import SubmissionsListPage from "./pages/user/SubmissionsListPage";
@@ -62,26 +61,31 @@ function App() {
           <Route path="groups" element={<UserGroupsPage />} />
           <Route path="groups/:id" element={<UserGroupPage />} />
           <Route path="groups/:id/join" element={<JoinGroupsPage />} />
-          <Route path="preconsultForm/new" element={<PreconsultFormPage />} />
-          {/* Timeslot Routes */}
-          <Route path="timeslots" element={<TimeSlotsPage />} />
-          <Route path="/user/timeslots/:id/queue" element={<UserQueuePage />} />
+          
+          {/* Preconsultation routes */}
+          <Route 
+            path="timeslots/:slotId/preconsultation" 
+            element={<PreconsultFormPage />} 
+          />
+          <Route 
+            path="timeslots/:slotId/confirmation" 
+            element={<ConsultationConfirmation />} 
+          />
+
+          {/* Timeslot routes */}
           <Route path="timeslots/all" element={<Timetable />} />
           <Route path="timeslots/:id" element={<TimeSlotUserDetailsPage />} />
-          <Route
-            path="timeslots/:slotId/preconsultation"
-            element={<PreconsultFormPage />}
-          />
-          <Route
-            path="timeslots/:slotId/confirmation"
-            element={<ConsultationConfirmation />}
-          />
+          <Route path="/user/timeslots/:id/queue" element={<UserQueuePage />} />
+          <Route path="/user/timeslots/:id/queue" element={<UserQueuePage />} />
+
+
+          {/* Submission routes */}
           <Route path="submissions" element={<SubmissionsListPage />} />
           <Route path="submissions/:id" element={<SubmissionDetailsPage />} />
+
+          {/* Other user routes */}
           <Route path="notifications" element={<UserNotificationsPage />} />
           <Route path="profile" element={<ProfilePage />} />
-          {/* <Route path="timetable" element={<Timetable />} /> */}
-          <Route path="" element={<></>} />
         </Route>
 
         {/* Public User Profile Route */}

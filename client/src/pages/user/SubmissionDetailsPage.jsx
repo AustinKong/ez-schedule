@@ -24,6 +24,7 @@ const SubmissionDetailsPage = () => {
         const data = await fetchSubmissionDetails(id);
         setSubmission(data);
         console.log(data);
+        console.log("Have submission", submission.attachments)
       } catch (error) {
         console.error("Failed to load submission:", error);
       } finally {
@@ -35,6 +36,7 @@ const SubmissionDetailsPage = () => {
 
   if (loading) return <Spinner size="xl" />;
   if (!submission) return <Text>Submission not found</Text>;
+  
 
   return (
     <Box p={6} maxW="7xl" mx="auto">
@@ -84,18 +86,18 @@ const SubmissionDetailsPage = () => {
               </ChakraTable.Cell>
             </ChakraTable.Row>
 
-            {submission.documents?.length > 0 && (
+            {submission.attachments?.length > 0 && (
               <ChakraTable.Row>
                 <ChakraTable.Cell as="th">Documents</ChakraTable.Cell>
                 <ChakraTable.Cell>
-                  {submission.documents.map((file, index) => (
+                  {submission.attachments.map((file, index) => (
                     <Link
                       key={index}
-                      href={`/api/preconsultation/${file.path}`}
+                      href={`http://localhost:5000/api/preconsultation/${submission._id}/${index}`}
                       isExternal
                       color="blue.500"
                     >
-                      {file.originalname}
+                      {file.name}
                     </Link>
                   ))}
                 </ChakraTable.Cell>
