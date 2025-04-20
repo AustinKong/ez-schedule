@@ -12,12 +12,15 @@ import {
 } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FiEdit } from "react-icons/fi";
+import { FiEdit, FiTrash } from "react-icons/fi";
 import { format } from "date-fns";
 import { useTimeslots } from "@/hooks/useTimeslots"; // adjust path
+import { Toaster, toaster } from "@/components/ui/toaster";
+
+
 
 const TimeSlotsPage = () => {
-  const { timeslots, loading, error, loadTimeslots } = useTimeslots();
+  const { timeslots, loading, error, loadTimeslots, removeTimeslot } = useTimeslots();
 
   useEffect(() => {
     loadTimeslots();
@@ -30,6 +33,27 @@ const TimeSlotsPage = () => {
       </Flex>
     );
   }
+
+  const handleDelete = (id, event) => {
+    // event.stopPropagation(); // Prevent navigation when delete is clicked
+     
+     if (window.confirm("Are you sure you want to delete this group?")) {
+      removeTimeslot(id)
+         .then(() => {
+           toaster.success({
+             title: "Group deleted.",
+             description: "The group has been successfully deleted.",
+           });
+           loadTimeslots();
+         })
+         .catch((error) => {
+           toaster.error({
+             title: "Error deleting group.",
+             description: error.message || "An error occurred.",
+           });
+         });
+     }
+   };
 
   return (
     <Box p={6}>
@@ -47,6 +71,7 @@ const TimeSlotsPage = () => {
       )}
 
       <VStack spacing={4} align="stretch">
+        <Toaster />
         {timeslots.length === 0 && <Text>No timeslots found.</Text>}
         {timeslots.map((slot) => (
           <Box key={slot._id} borderWidth="1px" borderRadius="md" p={4}>
@@ -72,6 +97,14 @@ const TimeSlotsPage = () => {
                   variant="ghost"
                 >
                   <FiEdit />
+                </IconButton>
+                <IconButton
+                  aria-label="Delete"
+                  size="sm"
+                  variant="ghost"
+                  onClick={(e) => handleDelete(slot._id, e)}
+                >
+                  <FiTrash />
                 </IconButton>
               </HStack>
             </HStack>

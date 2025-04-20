@@ -4,6 +4,7 @@ import {
   fetchTimeslot,
   createTimeslot,
   updateTimeslot,
+  deleteTimeslot,
 } from "../services/api";
 
 export const useTimeslots = () => {
@@ -16,7 +17,6 @@ export const useTimeslots = () => {
       setLoading(true);
       const data = await fetchHostTimeslots();
       setTimeslots(data);
-      console.log(data);
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -62,6 +62,17 @@ export const useTimeslots = () => {
     }
   };
 
+  const removeTimeslot = async (id) => {
+    try {
+      const updatedTimeslot = await deleteTimeslot(id);
+      setError(null);
+      return updatedTimeslot;
+    } catch (err) {
+      setError(err.message);
+      return null;
+    }
+  };
+
   
 
   useEffect(() => {
@@ -76,5 +87,6 @@ export const useTimeslots = () => {
     getTimeslot,
     addTimeslot,
     editTimeslot,
+    removeTimeslot,
   };
 };

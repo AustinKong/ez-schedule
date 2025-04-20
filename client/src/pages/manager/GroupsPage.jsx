@@ -8,7 +8,7 @@ import {
   VStack,
   Collapsible,
 } from "@chakra-ui/react";
-import { toaster } from "@/components/ui/toaster";
+import { Toaster, toaster } from "@/components/ui/toaster";
 import {
   FiChevronDown,
   FiChevronUp,
@@ -62,6 +62,7 @@ const GroupsPage = () => {
       </Flex>
 
       <VStack spacing={4} align="stretch">
+        <Toaster />
         {groups.map((group) => (
           <Collapsible.Root key={group._id} open={expandedId === group._id}>
             <Box 

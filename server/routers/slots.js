@@ -8,6 +8,7 @@ import {
   getSlotsByHost,
   updateSlot,
   closeSlot,
+  deleteSlot,
 } from "../database/slotDb.js";
 import multer from "multer";
 import { createPreconsultForm } from "../database/preconsultFormDb.js";
@@ -232,7 +233,7 @@ router.get("/:slotId/position", loadSlot, (req, res) => {
 
 
 router.put("/:slotId", loadSlot, async (req, res) => {
-  if (req.slot.host !== req.user.userId) {
+  if (req.slot.host.toString() !== req.user.userId) {
     return res.status(403).json({ error: "Only host can edit timeslot" });
   }
 
@@ -259,11 +260,14 @@ router.put("/:slotId", loadSlot, async (req, res) => {
 
 // DELETE /api/slots/:slotId - Delete a specific slot
 router.delete("/:slotId", loadSlot, async (req, res) => {
-  if (req.slot.host !== req.user.userId) {
+  
+  if (req.slot.host.toString() !== req.user.userId) {
     return res.status(403).json({ error: "Only host can delete the slot" });
   }
 
-  await deleteSlot(req.slot._id);
+  console.log(req.slot._id.toString());
+
+  await deleteSlot(req.slot._id.toString());
   res.status(200).json({ message: "Slot deleted successfully" });
 });
 
