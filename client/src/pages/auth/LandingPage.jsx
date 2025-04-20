@@ -49,17 +49,17 @@ return (
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={10}>
         <FeatureCard
           title="Easy Appointment Scheduling"
-          description="Let users book appointments with you in a few clicks. Customisable availability and buffer times."
+          description="Schedule and book appointments in a few clicks. Customisable availability and simple to use."
           icon={FiCalendar}
         />
         <FeatureCard
           title="Meeting Coordination"
-          description="Find the best time for group meetings with built-in availability comparison."
+          description="Coordinate meetings with ease and no-fuss."
           icon={FiUsers}
         />
         <FeatureCard
-          title="Automated Reminders"
-          description="Reduce no-shows with automated email and SMS reminders for scheduled events."
+          title="Queue System & Automated Reminders"
+          description="Built-in queue system with automated email reminders for scheduled meetings."
           icon={FiClock}
         />
         </SimpleGrid>
