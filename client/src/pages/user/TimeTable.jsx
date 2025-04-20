@@ -140,10 +140,6 @@ const Timetable = () => {
     fetchTimeslots();
   }, [groups, colourPalette]);
 
-  // useEffect(() => {
-  //   console.log("Updated Timeslots updated:", updatedTimeslots);
-  // }, [updatedTimeslots]);
-
   // find the earliestTime and latestTime from the list of timeslots
   useEffect(() => {
     if (updatedTimeslots.length > 0) {

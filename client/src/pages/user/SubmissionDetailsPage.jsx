@@ -23,8 +23,6 @@ const SubmissionDetailsPage = () => {
       try {
         const data = await fetchSubmissionDetails(id);
         setSubmission(data);
-        console.log(data);
-        console.log("Have submission", submission.attachments)
       } catch (error) {
         console.error("Failed to load submission:", error);
       } finally {

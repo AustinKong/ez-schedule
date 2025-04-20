@@ -28,7 +28,6 @@ const router = express.Router();
 // Middleware to ensure slot exists
 async function loadSlot(req, res, next) {
   const slotId = req.params.slotId;
-  // console.log("(slots.js) slotId", slotId); //debug
 
   const slot = await getSlotById(slotId);
   if (!slot || slot.isClosed)

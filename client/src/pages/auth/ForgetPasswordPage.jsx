@@ -102,12 +102,16 @@ import {
               )}
             </Box>
             <Button
-              colorScheme="blue"
-              width="full"
               onClick={handleSubmit}
               isLoading={loading}
             >
               Send Reset Link
+            </Button>
+            <Button
+              isLoading={loading}
+              onClick={() => navigate("/login")}
+            >
+              Cancel
             </Button>
           </VStack>
         </Box>
