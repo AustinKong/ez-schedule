@@ -67,12 +67,13 @@ const QueuePage = () => {
         waitingCount: queue.length,
         waitingUsers: queue.map(entry => ({
           id: entry._id,
+          userId: entry.participant._id || entry.participant, // Make sure userId is available
           name: entry.participant.username,
           queueNumber: entry.queueNumber,
         })),
       });
     }
-  }, [queue, slot]);
+  }, [queue, slot]);  
 
   const handleCallNext = async () => {
     try {
@@ -205,6 +206,7 @@ const QueuePage = () => {
                 <Table.Row>
                   <Table.ColumnHeader fontWeight="bold">Position</Table.ColumnHeader>
                   <Table.ColumnHeader fontWeight="bold">Name</Table.ColumnHeader>
+                  <Table.ColumnHeader fontWeight="bold">Actions</Table.ColumnHeader>
                 </Table.Row>
               </Table.Header>
               <Table.Body>
@@ -212,6 +214,16 @@ const QueuePage = () => {
                   <Table.Row key={user.id}>
                     <Table.Cell>{user.queueNumber}</Table.Cell>
                     <Table.Cell>{user.name}</Table.Cell>
+                    <Table.Cell>
+                      <Button
+                        size="sm"
+                        colorScheme="blue"
+                        variant="outline"
+                        onClick={() => navigate(`/manager/timeslots/${slotId}/submissions/${user.userId || user.participant}`)}
+                      >
+                        View
+                      </Button>
+                    </Table.Cell>
                   </Table.Row>
                 ))}
               </Table.Body>

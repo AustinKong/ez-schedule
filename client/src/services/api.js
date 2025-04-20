@@ -349,3 +349,19 @@ export const checkExistingSubmission = async (slotId) => {
     return false;
   }
 };
+
+export const fetchSubmissionDetailsByUser = async (slotId, userId) => {
+  const res = await fetch(`${API_URL}/preconsultations/slot/${slotId}/user/${userId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch submission details");
+  }
+
+  const data = await res.json();
+  return data;
+};
