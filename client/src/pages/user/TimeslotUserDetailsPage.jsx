@@ -85,7 +85,7 @@ const TimeslotUserDetailsPage = () => {
       <Box p={6} mb={6}>
         <Flex justify="space-between" align="flex-start" mb={4}>
           <Box>
-            <Heading size="md">{timeslot.name}</Heading>
+            <Heading fontSize="150%">{timeslot.name}</Heading>
             <Stack mt={2} spacing={2}>
               <TimeslotStatusBadge
                 status={
