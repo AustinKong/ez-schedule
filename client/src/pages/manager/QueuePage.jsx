@@ -201,12 +201,12 @@ const QueuePage = () => {
                 Waiting Users
               </Heading>
             </Center>
-            <Table.Root>
+            <Table.Root variant="simple" width="100%">
               <Table.Header>
                 <Table.Row>
-                  <Table.ColumnHeader fontWeight="bold">Position</Table.ColumnHeader>
-                  <Table.ColumnHeader fontWeight="bold">Name</Table.ColumnHeader>
-                  <Table.ColumnHeader fontWeight="bold">Actions</Table.ColumnHeader>
+                  <Table.ColumnHeader fontWeight="bold" width="40%">Position</Table.ColumnHeader>
+                  <Table.ColumnHeader fontWeight="bold" width="40%">Name</Table.ColumnHeader>
+                  <Table.ColumnHeader fontWeight="bold" width="40%">Pre-Consultation Form</Table.ColumnHeader>
                 </Table.Row>
               </Table.Header>
               <Table.Body>
