@@ -11,7 +11,7 @@ import {
   Stack,
   Table as ChakraTable, // renamed to avoid naming conflicts if needed
 } from "@chakra-ui/react";
-import { fetchSubmissionDetails } from "../../services/api";
+import { API_URL, fetchSubmissionDetails } from "../../services/api";
 
 const SubmissionDetailsPage = () => {
   const { id } = useParams();
@@ -93,7 +93,7 @@ const SubmissionDetailsPage = () => {
                   {submission.attachments.map((file, index) => (
                     <Link
                       key={index}
-                      href={`http://localhost:5000/api/preconsultation/${submission._id}/${index}`}
+                      href={`${API_URL}/preconsultations/${submission._id}/${index}`}
                       isExternal
                       color="blue.500"
                     >
