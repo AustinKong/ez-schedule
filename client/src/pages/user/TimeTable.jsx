@@ -144,16 +144,16 @@ const Timetable = () => {
   useEffect(() => {
     if (updatedTimeslots.length > 0) {
       const findEarliestTime = () => {
-        const earliestTime = Math.min(...updatedTimeslots
+        const earliestTime = Math.floor(Math.min(...updatedTimeslots
           .filter(timeslot => timeslot.week === displayedWeek)
-          .map(timeslot2 => timeslot2.startHours));
+          .map(timeslot2 => timeslot2.startHours)));
         setFirstTime(earliestTime);
       };
     
       const findLatestTime = () => {
-        const latestTime = Math.max(...updatedTimeslots
+        const latestTime = Math.ceil(Math.max(...updatedTimeslots
           .filter(timeslot => timeslot.week === displayedWeek)
-          .map(timeslot2 => timeslot2.endHours));
+          .map(timeslot2 => timeslot2.endHours)));
         setlastTime(latestTime);
       };
 
