@@ -332,10 +332,20 @@ export const fetchSubmissionDetails = async (formId) => {
 
 //added in
 export const checkExistingSubmission = async (slotId) => {
-  const response = await fetch(`${API_URL}/preconsultations/slot/${slotId}`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
-  return handleResponse(response);
+  try {
+    const response = await fetch(`${API_URL}/preconsultations/slot/${slotId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    if (response.ok) {
+      return true;
+    } else if (response.status === 404) {
+      return false;
+    } else {
+      throw new Error("Unexpected error occurred");
+    }
+  } catch (error) {
+    return false;
+  }
 };

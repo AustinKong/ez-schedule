@@ -9,7 +9,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { leaveGroup } from "@/services/api";
+import { leaveGroup, API_URL } from "@/services/api";
 import { formatSlotTime } from "@/utils/dateUtils";
 import { fetchTimeslotsByGroup } from "../../services/api";
 import { useParams, useNavigate } from "react-router-dom";
@@ -24,9 +24,21 @@ const GroupPage = () => {
     const fetchTimeslots = async () => {
       setLoading(true);
       try {
-        const data = await fetchTimeslotsByGroup(groupId);
+        let data = await fetchTimeslotsByGroup(groupId);
+        data = await Promise.all(data.map(async (slot) => {
+          const submission = await fetch(`${API_URL}/preconsultations/slot/${slot._id}`, {
+            headers: {
+              Authorization : `Bearer ${localStorage.getItem("token")}`,
+            }
+          });
+          if (submission.ok) {
+            const submissionData = await submission.json();
+            return { ...slot, hasSubmission: true, submission: submissionData };
+          } else {
+            return { ...slot, hasSubmission: false };
+          }
+        }))
         setTimeslots(data);
-        console.log(data);
       } catch (err) {
         console.error("Failed to fetch timeslots", err);
       } finally {
@@ -82,13 +94,25 @@ const GroupPage = () => {
                   >
                     View Queue
                   </Button>
-                  <Button
-                    onClick={() =>
-                      navigate(`/user/timeslots/${slot._id}/preconsultation`)
-                    }
-                  >
-                    Fill Pre-Consultation Form
-                  </Button>
+                  {
+                    slot.hasSubmission ? (
+                      <Button
+                        onClick={() =>
+                          navigate(`/user/submissions/${slot.submission._id}`)
+                        }
+                      >
+                        View Submission
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() =>
+                          navigate(`/user/timeslots/${slot._id}/preconsultation`)
+                        }
+                      >
+                        Fill Form
+                      </Button>
+                    )
+                  }
                 </Flex>
               </Box>
             ))
