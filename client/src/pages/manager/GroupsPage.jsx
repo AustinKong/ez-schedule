@@ -21,14 +21,14 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const GroupsPage = () => {
-  const { groups, deleteGroup } = useGroups();
+  const { groups, deleteGroup, loadGroups } = useGroups();
   const [expandedId, setExpandedId] = useState(null);
   const navigate = useNavigate(); 
 
   const toggle = (id) => setExpandedId((prev) => (prev === id ? null : id));
 
   const handleDelete = (id, event) => {
-    event.stopPropagation(); // Prevent navigation when delete is clicked
+   // event.stopPropagation(); // Prevent navigation when delete is clicked
     
     if (window.confirm("Are you sure you want to delete this group?")) {
       deleteGroup(id)
@@ -37,6 +37,7 @@ const GroupsPage = () => {
             title: "Group deleted.",
             description: "The group has been successfully deleted.",
           });
+          loadGroups();
         })
         .catch((error) => {
           toaster.error({

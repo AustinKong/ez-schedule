@@ -62,6 +62,8 @@ export const useTimeslots = () => {
     }
   };
 
+  
+
   useEffect(() => {
     loadTimeslots();
   }, []);
