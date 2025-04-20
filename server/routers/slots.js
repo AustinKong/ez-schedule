@@ -88,6 +88,12 @@ router.get("/:slotId", loadSlot, (req, res) => {
   res.json(req.slot);
 });
 
+// GET /api/slots/:slotId/group - View group based on slot ID
+router.get("/:slotId/group", loadSlot, async (req, res) => {
+  const slotId = req.params.slotId;
+  const slot = await getSlotById(slotId);
+})
+
 router.post("/:slotId/preconsultation", upload.array("documents"), // Accepts multiple files with field name 'documents'
   async (req, res) => {
     const { slotId } = req.params;
@@ -264,8 +270,6 @@ router.delete("/:slotId", loadSlot, async (req, res) => {
   if (req.slot.host.toString() !== req.user.userId) {
     return res.status(403).json({ error: "Only host can delete the slot" });
   }
-
-  console.log(req.slot._id.toString());
 
   await deleteSlot(req.slot._id.toString());
   res.status(200).json({ message: "Slot deleted successfully" });

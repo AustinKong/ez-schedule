@@ -125,7 +125,6 @@ export async function reopenSlot(slotId) {
 
 export async function deleteSlot(slotId) {
   const db = await connectDb();
-  console.log("(slotDb.js) slotId:", slotId, "typeof:", typeof slotId);
   try {
     return await db
       .collection("slots")

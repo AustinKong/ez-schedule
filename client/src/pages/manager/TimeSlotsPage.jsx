@@ -10,17 +10,49 @@ import {
   Spinner,
   Flex,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FiEdit, FiTrash } from "react-icons/fi";
 import { format } from "date-fns";
 import { useTimeslots } from "@/hooks/useTimeslots"; // adjust path
 import { Toaster, toaster } from "@/components/ui/toaster";
+import { fetchGroup } from "../../services/api";
 
 
 
 const TimeSlotsPage = () => {
-  const { timeslots, loading, error, loadTimeslots, removeTimeslot } = useTimeslots();
+  const { timeslots, loadTimeslots, removeTimeslot } = useTimeslots();
+  const [groupNames, setGroupNames] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    loadTimeslots();
+  }, []);
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      setLoading(true);
+      setError(null);
+      console.log("Timeslots:", timeslots);
+      try {
+        // Fetch group names for each timeslot
+        const names = {};
+        for (const slot of timeslots) {
+          const group = await fetchGroup(slot.groupId);
+          console.log(group);
+          names[slot._id] = group?.name || 'No Group Assigned';
+        }
+        setGroupNames(names);
+      } catch (err) {
+        console.error("Error fetching timeslots or groups:", err);
+        setError("Failed to load timeslots.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInitialData();
+  }, [timeslots]);
 
   useEffect(() => {
     loadTimeslots();
@@ -82,7 +114,7 @@ const TimeSlotsPage = () => {
                   {format(new Date(slot.end), "h:mm a")}
                 </Heading>
                 <Text fontSize="sm" color="gray.600">
-                  Slot ID: {slot._id}
+                  Group: {groupNames[slot._id]}
                 </Text>
               </Box>
               <HStack>

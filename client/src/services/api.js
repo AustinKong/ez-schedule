@@ -203,14 +203,22 @@ export const deleteTimeslot = async (timeslotId) => {
   return response.json();
 };
 
-export const getGroupByTimeslot = async (timeslotId) => {
-  const response = await fetch(`${API_URL}/slots/${timeslotId}/group`, {
+export const fetchSubmissionDetailsByUser = async (slotId, userId) => {
+  const res = await fetch(`${API_URL}/preconsultations/slot/${slotId}/user/${userId}`, {
+    method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
-  });
-  if (!response.ok) throw new Error("Failed to get group for timeslot");
-  return response.json();
+  })
+
+  if (!res.ok) {
+    if (res.status === 404) {
+      throw new Error("No submission found for this user");
+    }
+    throw new Error("Failed to fetch submission details");
+  }
+
+  return res.json();
 };
 
 // Queue management endpoints
@@ -332,39 +340,10 @@ export const fetchSubmissionDetails = async (formId) => {
 
 //added in
 export const checkExistingSubmission = async (slotId) => {
-  try {
-    const response = await fetch(`${API_URL}/preconsultations/slot/${slotId}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    if (response.ok) {
-      return true;
-    } else if (response.status === 404) {
-      return false;
-    } else {
-      throw new Error("Unexpected error occurred");
-    }
-  } catch (error) {
-    return false;
-  }
-};
-
-export const fetchSubmissionDetailsByUser = async (slotId, userId) => {
-  const res = await fetch(`${API_URL}/preconsultations/slot/${slotId}/user/${userId}`, {
-    method: "GET",
+  const response = await fetch(`${API_URL}/preconsultations/slot/${slotId}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
-
-  if (!res.ok) {
-    if (res.status === 404) {
-      throw new Error("No submission found for this user");
-    }
-    throw new Error("Failed to fetch submission details");
-  }
-
-  return res.json();
+  return handleResponse(response);
 };
-
