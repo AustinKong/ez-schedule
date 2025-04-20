@@ -17,6 +17,7 @@ import ManagerQueuePage from "./pages/manager/QueuePage";
 import ShareGroupsPage from "./pages/manager/ShareGroupsPage";
 import ManagerNotificationsPage from "./pages/manager/ManagerNotificationsPage";
 import ManagerGroupPage from "./pages/manager/GroupPage";
+import ManagerSubmissionDetailsPage from "./pages/manager/SubmissionDetailsPage.jsx";
 
 // User routes
 import UserGroupPage from "./pages/user/GroupPage";
@@ -48,6 +49,7 @@ function App() {
             element={<TimeSlotForm isEdit={false} />}
           />
           <Route path="timeslots/:id" element={<ManagerQueuePage />} />
+          <Route path="timeslots/:slotId/submissions/:userId" element={<ManagerSubmissionDetailsPage />} />
           <Route
             path="timeslots/:id/edit"
             element={<TimeSlotForm isEdit={true} />}

@@ -135,4 +135,48 @@ router.get("/:formId/:fileIndex", async (req, res) => {
   }
 });
 
+// GET /api/preconsultations/slot/:slotId/user/:userId - Get preconsult form by slot and specific user (for managers)
+router.get("/slot/:slotId/user/:userId", requireAuth, async (req, res) => {
+  const { slotId, userId } = req.params;
+  
+  // Check if requester is a manager/host
+  if (req.user.userRole !== "host") {
+    return res.status(403).json({ error: "Unauthorized access" });
+  }
+  
+  try {
+    const form = await getPreconsultFormBySlotAndParticipant(slotId, userId);
+
+    if (!form) {
+      return res
+        .status(404)
+        .json({ error: "No submission found for this user." });
+    }
+
+    const slot = await getSlotById(slotId);
+
+    const response = {
+      _id: form._id,
+      concerns: form.concerns,
+      objectives: form.objectives,
+      createdAt: form.createdAt,
+      status: "submitted",
+      slot,
+    };
+
+    // Convert each attachment into frontend expected format
+    if (Array.isArray(form.attachments) && form.attachments.length > 0) {
+      response.attachments = form.attachments.map((file) => ({
+        name: file.name,
+        mimetype: file.mimetype,
+      }));
+    }
+
+    res.json(response);
+  } catch (error) {
+    console.error("Error fetching submission by slot and user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 export default router;
