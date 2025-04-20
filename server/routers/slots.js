@@ -88,9 +88,7 @@ router.get("/:slotId", loadSlot, (req, res) => {
   res.json(req.slot);
 });
 
-router.post(
-  "/:slotId/preconsultation",
-  upload.array("documents"), // Accepts multiple files with field name 'documents'
+router.post("/:slotId/preconsultation", upload.array("documents"), // Accepts multiple files with field name 'documents'
   async (req, res) => {
     const { slotId } = req.params;
     const { concerns, objectives } = req.body;
@@ -101,7 +99,6 @@ router.post(
     }
 
     try {
-      console.log(req.files);
       // Convert uploaded files to base64 attachments
       const attachments = req.files?.length
         ? req.files.map((file) => ({
@@ -116,7 +113,7 @@ router.post(
         createdBy: userId,
         concerns,
         objectives,
-        attachments, // this is now an array
+        attachments,
       });
 
       res.status(201).json({ success: true, id: result.insertedId });
