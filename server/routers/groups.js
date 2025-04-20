@@ -139,7 +139,9 @@ router.patch("/:groupId/editGroup", async (req, res) => {
       return res.status(404).json({ message: "Group not found." });
     }
 
-    if (group.createdBy !== req.user.userId) {
+    const userGroupId = group.createdBy.toString();
+
+    if (userGroupId !== req.user.userId) {
       return res
         .status(403)
         .json({ error: "Only host can update group details." });
