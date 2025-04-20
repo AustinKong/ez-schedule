@@ -63,6 +63,12 @@ const RegisterPage = () => {
 		}
 	};
 
+	const handleKeyDown = (event) => {
+		if (event.key === 'Enter') {
+			handleRegister();
+		}
+	};
+
 	return (
 		<Flex minH='100vh'>
 			<AuthLeftPanel
@@ -100,6 +106,7 @@ const RegisterPage = () => {
 							type='email'
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
+							onKeyDown={handleKeyDown}
 						/>
 						{email && !isValidEmail(email) && (
 							<Text
@@ -120,6 +127,7 @@ const RegisterPage = () => {
 							type='text'
 							value={username}
 							onChange={(e) => setUsername(e.target.value)}
+							onKeyDown={handleKeyDown}
 						/>
 					</Box>
 
@@ -133,6 +141,7 @@ const RegisterPage = () => {
 						<PasswordInput
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
+							onKeyDown={handleKeyDown}
 						/>
 					</Box>
 
@@ -146,6 +155,7 @@ const RegisterPage = () => {
 						<PasswordInput
 							value={repeatPassword}
 							onChange={(e) => setRepeatPassword(e.target.value)}
+							onKeyDown={handleKeyDown}
 						/>
 						{password && repeatPassword !== password && (
 							<Text

@@ -69,6 +69,12 @@ const LoginPage = () => {
 		}
 	};
 
+	const handleKeyDown = (event) => {
+		if (event.key === 'Enter') {
+			handleLogin();
+		}
+	};
+
 	return (
 		<Flex minH='100vh'>
 			<AuthLeftPanel
@@ -104,6 +110,7 @@ const LoginPage = () => {
 							type='email'
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
+							onKeyDown={handleKeyDown}
 						/>
 						{email && !isValidEmail(email) && (
 							<Text
@@ -123,6 +130,7 @@ const LoginPage = () => {
 						<PasswordInput
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
+							onKeyDown={handleKeyDown}
 						/>
 					</Box>
 
